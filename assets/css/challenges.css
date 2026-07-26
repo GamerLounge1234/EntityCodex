@@ -1,0 +1,703 @@
+/* ==========================================================================
+   ROOT VARIABLES & PREMIUM THEME DEFINITIONS
+   ========================================================================== */
+:root {
+    /* Core Colors */
+    --bg-dark: #050508;
+    --bg-void: #0a0505;
+    --entity-red: #d32f2f;
+    --entity-blood: #9a031e;
+    --entity-glow: rgba(211, 47, 47, 0.8);
+    --neon-glow: 0 0 20px rgba(211, 47, 47, 0.7), 0 0 40px rgba(154, 3, 30, 0.5);
+
+    /* UI Elements */
+    --glass-bg: rgba(15, 10, 15, 0.65);
+    --glass-border: rgba(211, 47, 47, 0.25);
+    --steel-grey: #1a1a24;
+    --text-light: #f0f0f5;
+    --text-muted: #888899;
+    --gold-ascension: #e5b824;
+
+    /* Typography & Animation Variables */
+    --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --font-mono: 'Courier New', Courier, monospace;
+    --transition-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* ==========================================================================
+   GLOBAL RESETS & BASE STYLES
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    width: 100%;
+    max-width: 100vw;
+    min-height: 100%;
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    font-family: var(--font-main);
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+    background: #331111;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--entity-red);
+}
+
+/* Looping Cinematic Fog Background */
+.fog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200vw;
+    height: 100vh;
+    background: transparent url('https://www.transparenttextures.com/patterns/stardust.png') repeat;
+    opacity: 0.12;
+    animation: driftFog 60s linear infinite;
+    pointer-events: none;
+    z-index: -1;
+    mix-blend-mode: screen;
+}
+
+.bg-gradient {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at 50% 10%, #2a0808 0%, var(--bg-dark) 60%);
+    z-index: -2;
+}
+
+.beta-banner {
+    background: linear-gradient(90deg, rgba(211, 47, 47, 0) 0%, rgba(211, 47, 47, 0.2) 50%, rgba(211, 47, 47, 0) 100%);
+    color: var(--entity-red);
+    text-align: center;
+    padding: clamp(0.5rem, 2vw, 0.8rem);
+    font-size: clamp(0.7rem, 2vw, 0.85rem);
+    letter-spacing: clamp(1px, 1vw, 3px);
+    text-transform: uppercase;
+    font-weight: 800;
+    border-bottom: 1px solid rgba(211, 47, 47, 0.4);
+    animation: pulseBanner 2s infinite;
+}
+
+/* ==========================================================================
+   KEYFRAME ANIMATIONS (LOOPING & PREMIUM EFFECTS)
+   ========================================================================== */
+@keyframes driftFog {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50vw); }
+}
+
+@keyframes pulseBanner {
+    0% { text-shadow: 0 0 5px var(--entity-red); }
+    50% { text-shadow: 0 0 15px var(--entity-red), 0 0 30px var(--entity-blood); }
+    100% { text-shadow: 0 0 5px var(--entity-red); }
+}
+
+@keyframes glitchText {
+    0% { text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75), -0.025em -0.05em 0 rgba(0, 255, 0, 0.75), 0.025em 0.05em 0 rgba(0, 0, 255, 0.75); }
+    14% { text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75), -0.025em -0.05em 0 rgba(0, 255, 0, 0.75), 0.025em 0.05em 0 rgba(0, 0, 255, 0.75); }
+    15% { text-shadow: -0.05em -0.025em 0 rgba(255, 0, 0, 0.75), 0.025em 0.025em 0 rgba(0, 255, 0, 0.75), -0.05em -0.05em 0 rgba(0, 0, 255, 0.75); }
+    49% { text-shadow: -0.05em -0.025em 0 rgba(255, 0, 0, 0.75), 0.025em 0.025em 0 rgba(0, 255, 0, 0.75), -0.05em -0.05em 0 rgba(0, 0, 255, 0.75); }
+    50% { text-shadow: 0.025em 0.05em 0 rgba(255, 0, 0, 0.75), 0.05em 0 0 rgba(0, 255, 0, 0.75), 0 -0.05em 0 rgba(0, 0, 255, 0.75); }
+    99% { text-shadow: 0.025em 0.05em 0 rgba(255, 0, 0, 0.75), 0.05em 0 0 rgba(0, 255, 0, 0.75), 0 -0.05em 0 rgba(0, 0, 255, 0.75); }
+    100% { text-shadow: -0.025em 0 0 rgba(255, 0, 0, 0.75), -0.025em -0.025em 0 rgba(0, 255, 0, 0.75), -0.025em -0.05em 0 rgba(0, 0, 255, 0.75); }
+}
+
+@keyframes entityBreathe {
+    0% { box-shadow: 0 0 20px rgba(154, 3, 30, 0.2); border-color: rgba(211, 47, 47, 0.3); }
+    50% { box-shadow: 0 0 40px rgba(154, 3, 30, 0.6); border-color: rgba(211, 47, 47, 0.8); }
+    100% { box-shadow: 0 0 20px rgba(154, 3, 30, 0.2); border-color: rgba(211, 47, 47, 0.3); }
+}
+
+@keyframes floatCard {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+/* ==========================================================================
+   NAVIGATION BAR - STICKY FIX
+   ========================================================================== */
+.navbar {
+    /* THE FIX: Sticky keeps it at the top, but inside the document flow so it pushes content down */
+    position: sticky; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 70px;
+    height: auto;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(180deg, rgba(0, 0, 0, .98) 0%, rgba(12, 0, 0, .92) 60%, rgba(22, 0, 0, .96) 100%);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 2px solid rgba(110, 25, 25, .7);
+    z-index: 1000;
+    animation: organicHeartbeatBorder 4s ease-in-out infinite;
+}
+
+.nav-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(10px, 3vw, 42px);
+    flex-wrap: wrap; /* Wraps cleanly on mobile */
+    margin: 0;
+    padding: 5px 0;
+    list-style: none;
+}
+
+.navbar li a {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(5px, 1.5vw, 8px) clamp(10px, 2vw, 16px);
+    font-family: var(--font-ui, 'Segoe UI', sans-serif);
+    font-size: clamp(0.85rem, 2.5vw, 1.15rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: clamp(1px, 1vw, 3px);
+    text-decoration: none;
+    color: var(--muted-bone, #888899);
+    transition: color .35s ease, text-shadow .35s ease, transform .35s ease;
+    white-space: nowrap;
+}
+
+/* Blood Slash */
+.navbar li a::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0%;
+    height: 3px;
+    background: var(--arterial-spray, #ff0505);
+    transform: translate(-50%, -50%) rotate(-4deg);
+    opacity: 0;
+    border-radius: 20px;
+    box-shadow: 0 0 10px var(--arterial-spray, #ff0505), 0 0 20px rgba(255, 30, 30, .5);
+    transition: width .45s cubic-bezier(.22, 1, .36, 1), opacity .3s ease;
+}
+
+/* Hover & Active States */
+.navbar li a:hover {
+    color: var(--bone-white, #ffffff);
+    transform: translateY(-2px);
+    text-shadow: 0 0 8px rgba(255, 255, 255, .3), 0 0 18px rgba(255, 40, 40, .7);
+}
+.navbar li a:hover::before { width: 110%; opacity: 1; }
+.navbar li a:active { transform: scale(.96); }
+
+/* This stays structurally intact but only activates if HTML triggers it */
+.navbar li a.active {
+    color: var(--bone-white, #ffffff);
+    text-shadow: 0 0 10px rgba(255, 255, 255, .35), 0 0 18px rgba(255, 0, 0, .75);
+}
+.navbar li a.active::before { width: 110%; opacity: 1; }
+
+@keyframes organicHeartbeatBorder {
+    0% { border-bottom-color: #4d1111; box-shadow: 0 4px 18px rgba(0, 0, 0, .55); }
+    10% { border-bottom-color: #ff2d2d; box-shadow: 0 4px 18px rgba(0, 0, 0, .55), 0 0 12px rgba(255, 40, 40, .35); }
+    20% { border-bottom-color: #6e1616; }
+    45% { border-bottom-color: #5a1414; }
+    50% { border-bottom-color: #ff4545; box-shadow: 0 4px 18px rgba(0, 0, 0, .55), 0 0 20px rgba(255, 40, 40, .55); }
+    60% { border-bottom-color: #6e1616; }
+    100% { border-bottom-color: #4d1111; box-shadow: 0 4px 18px rgba(0, 0, 0, .55); }
+}
+
+.auth-links {
+    position: absolute;
+    right: clamp(15px, 4vw, 40px);
+    display: flex;
+    align-items: center;
+    gap: clamp(8px, 2vw, 15px);
+}
+
+.auth-links a { transition: transform .3s ease, box-shadow .3s ease, opacity .3s ease; }
+.auth-links a:hover { transform: translateY(-2px); box-shadow: 0 0 18px rgba(255, 45, 45, .45); }
+
+/* Stack navbar neatly on extreme small screens */
+@media(max-width: 800px) {
+    .auth-links { position: relative; right: 0; justify-content: center; width: 100%; margin-top: 10px; }
+    .navbar { flex-direction: column; padding-bottom: 15px; }
+}
+
+/* ==========================================================================
+   ENTITY'S DESCENT HERO SECTION
+   ========================================================================== */
+.entity-gauntlet-container {
+    font-family: var(--font-mono);
+    position: relative;
+    line-height: 1.6;
+    width: 100%;
+}
+
+.descent-hero {
+    text-align: center;
+    padding: clamp(4rem, 10vw, 8rem) clamp(1rem, 5vw, 2rem);
+    background: radial-gradient(circle at center, rgba(30, 10, 10, 0.8) 0%, transparent 70%);
+    position: relative;
+    z-index: 2;
+    border-bottom: 2px solid var(--glass-border);
+    border-top: 2px solid var(--glass-border);
+    /* Because navbar is sticky, it physically pushes this down. Only natural margin needed now */
+    margin-top: clamp(2rem, 5vw, 4rem);
+    margin-bottom: clamp(2rem, 5vw, 3rem);
+}
+
+.glitch-text {
+    font-size: clamp(2.5rem, 8vw, 6rem);
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: clamp(3px, 2vw, 8px);
+    margin-bottom: 20px;
+    position: relative;
+    display: inline-block;
+    animation: glitchText 3s infinite;
+    word-wrap: break-word;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.8;
+}
+.glitch-text::before { left: 2px; text-shadow: -2px 0 red; clip: rect(24px, 550px, 90px, 0); animation: glitchText 2s infinite linear alternate-reverse; }
+.glitch-text::after { left: -2px; text-shadow: -2px 0 blue; clip: rect(85px, 550px, 140px, 0); animation: glitchText 2.5s infinite linear alternate-reverse; }
+
+.descent-hero p.quote {
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    font-style: italic;
+    color: #aaa;
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+    padding: 0 10px;
+}
+
+/* ==========================================================================
+   CONTENT SECTIONS & PREMIUM CARDS
+   ========================================================================== */
+.descent-section {
+    padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 5vw, 2rem);
+    max-width: 1200px;
+    width: 95%;
+    margin: 0 auto clamp(2rem, 5vw, 3rem) auto;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    position: relative;
+    z-index: 2;
+}
+
+.section-header {
+    color: var(--entity-red);
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    border-left: 6px solid var(--entity-red);
+    padding-left: clamp(10px, 3vw, 20px);
+    margin-bottom: 1.5rem;
+    text-shadow: var(--neon-glow);
+}
+
+.section-desc {
+    font-size: clamp(1rem, 2.5vw, 1.1rem);
+    color: var(--text-muted);
+    margin-bottom: clamp(2rem, 5vw, 3rem);
+    max-width: 800px;
+    line-height: 1.8;
+}
+
+/* ==========================================================================
+   PREMIUM ACCORDION (PERK DISCIPLINES)
+   ========================================================================== */
+.perk-accordion-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.perk-accordion {
+    background: rgba(10, 10, 15, 0.8);
+    border: 1px solid #333;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: var(--transition-smooth);
+}
+
+.perk-accordion:hover {
+    border-color: var(--entity-red);
+    box-shadow: 0 0 15px rgba(211, 47, 47, 0.2);
+}
+
+.accordion-header {
+    padding: clamp(15px, 4vw, 20px) clamp(15px, 4vw, 30px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    background: linear-gradient(90deg, rgba(20, 20, 30, 1) 0%, rgba(10, 10, 15, 1) 100%);
+    user-select: none;
+    transition: var(--transition-smooth);
+}
+
+.accordion-header h4 {
+    font-size: clamp(1.1rem, 3vw, 1.4rem);
+    color: #fff;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.accordion-header h4::before {
+    content: '';
+    display: inline-block;
+    width: clamp(8px, 2vw, 12px);
+    height: clamp(8px, 2vw, 12px);
+    background: var(--entity-red);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--entity-red);
+}
+
+.accordion-icon {
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
+    color: var(--entity-red);
+    transition: transform 0.4s ease;
+}
+
+.perk-accordion.active .accordion-icon { transform: rotate(180deg); }
+.perk-accordion.active .accordion-header { border-bottom: 1px solid var(--glass-border); }
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    background: #08080a;
+}
+
+.perk-grid {
+    display: grid;
+    /* Added min(100%) to ensure it never horizontally overflows */
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+    gap: clamp(10px, 3vw, 15px);
+    padding: clamp(15px, 4vw, 30px);
+}
+
+.perk-item {
+    background: #111116;
+    border: 1px dashed #444;
+    padding: 12px 15px;
+    border-radius: 6px;
+    font-size: clamp(0.85rem, 2vw, 0.95rem);
+    color: #ccc;
+    text-align: center;
+    transition: var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px;
+}
+
+.perk-item:hover {
+    border-color: var(--entity-red);
+    background: rgba(211, 47, 47, 0.1);
+    color: #fff;
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    cursor: default;
+}
+
+/* ==========================================================================
+   THE DESCENT ANIMATION (LOOPING MECHANIC)
+   ========================================================================== */
+.descent-altar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(20px, 5vw, 60px);
+    margin: clamp(2rem, 6vw, 4rem) 0;
+    padding: clamp(20px, 5vw, 40px) 0;
+    position: relative;
+}
+
+/* Blood Line connecting perks */
+.descent-altar::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--entity-red), transparent);
+    z-index: 0;
+    opacity: 0.5;
+}
+
+.altar-slot {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(10px, 3vw, 20px);
+}
+
+.perk-diamond {
+    width: clamp(60px, 15vw, 80px);
+    height: clamp(60px, 15vw, 80px);
+    background: linear-gradient(135deg, #222 0%, #0a0a0a 100%);
+    border: 2px solid #555;
+    transform: rotate(45deg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: var(--transition-bounce);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.8);
+    position: relative;
+}
+
+.perk-diamond span {
+    transform: rotate(-45deg);
+    font-weight: bold;
+    color: #aaa;
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    font-family: var(--font-main);
+}
+
+.slot-label {
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: clamp(0.75rem, 2vw, 0.85rem);
+    font-weight: bold;
+    transition: var(--transition-smooth);
+}
+
+.altar-slot.consumed .perk-diamond {
+    background: var(--entity-blood);
+    border-color: #ff0000;
+    box-shadow: 0 0 30px var(--entity-red), inset 0 0 20px #000;
+    transform: rotate(45deg) scale(0.8);
+    animation: shake 0.5s ease-in-out;
+}
+
+.altar-slot.consumed .perk-diamond span { color: #000; text-shadow: none; }
+.altar-slot.consumed .slot-label { color: var(--entity-red); text-shadow: 0 0 10px var(--entity-red); }
+
+@keyframes shake {
+    0%, 100% { transform: rotate(45deg) scale(0.8) translate(0, 0); }
+    25% { transform: rotate(45deg) scale(0.8) translate(5px, 5px); }
+    50% { transform: rotate(45deg) scale(0.8) translate(-5px, -5px); }
+    75% { transform: rotate(45deg) scale(0.8) translate(5px, -5px); }
+}
+
+/* ==========================================================================
+   ASCENSION TIERS
+   ========================================================================== */
+.ascension-grid {
+    display: grid;
+    /* Added min(100%) for strict bounds */
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+    gap: clamp(15px, 4vw, 20px);
+}
+
+.ascension-card {
+    background: rgba(20, 20, 25, 0.8);
+    border: 1px solid #333;
+    padding: clamp(20px, 5vw, 30px);
+    border-radius: 12px;
+    text-align: center;
+    transition: var(--transition-smooth);
+    position: relative;
+    overflow: hidden;
+    animation: floatCard 6s infinite ease-in-out;
+}
+
+.ascension-card:nth-child(2) { animation-delay: 1.5s; }
+.ascension-card:nth-child(3) { animation-delay: 3s; }
+.ascension-card:nth-child(4) { animation-delay: 4.5s; }
+
+.ascension-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(180deg, rgba(229, 184, 36, 0.1) 0%, transparent 100%);
+    opacity: 0;
+    transition: var(--transition-smooth);
+    pointer-events: none;
+}
+
+.ascension-card:hover {
+    border-color: var(--gold-ascension);
+    transform: translateY(-15px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(229, 184, 36, 0.15);
+}
+
+.ascension-card:hover::after { opacity: 1; }
+
+.tier-num {
+    font-size: clamp(2.5rem, 6vw, 3rem);
+    color: var(--gold-ascension);
+    font-weight: 900;
+    opacity: 0.3;
+    position: absolute;
+    top: -10px;
+    right: 10px;
+}
+
+.ascension-card h4 {
+    font-size: clamp(1.1rem, 3vw, 1.3rem);
+    color: #fff;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+}
+
+.ascension-card p {
+    color: var(--text-muted);
+    font-size: clamp(0.85rem, 2vw, 0.95rem);
+    position: relative;
+    z-index: 1;
+}
+
+/* ==========================================================================
+   OTHER CHALLENGES (OLD THEME MAINTAINED BUT ANIMATED)
+   ========================================================================== */
+.challenge-grid {
+    display: grid;
+    /* Added min(100%) for strict bounds */
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    gap: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.challenge-card {
+    background: linear-gradient(145deg, #1a1a24 0%, #0d0d12 100%);
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: clamp(1.5rem, 5vw, 2.5rem);
+    cursor: pointer;
+    transition: var(--transition-bounce);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.challenge-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 4px;
+    background: var(--entity-red);
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+    transform-origin: left;
+}
+
+.challenge-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--entity-red);
+    box-shadow: var(--neon-glow);
+    animation: entityBreathe 3s infinite;
+}
+
+.challenge-card:hover::before { transform: scaleX(1); }
+
+.card-type {
+    font-size: clamp(0.75rem, 2vw, 0.85rem);
+    text-transform: uppercase;
+    color: var(--entity-red);
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+    font-weight: bold;
+}
+
+.card-title {
+    font-size: clamp(1.4rem, 4vw, 1.8rem);
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+/* ==========================================================================
+   MODAL & LEADERBOARD (PREMIUM STYLING)
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(12px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: var(--transition-smooth);
+    z-index: 2000;
+}
+
+.modal-overlay.active { opacity: 1; pointer-events: all; }
+
+.modal-content {
+    background: linear-gradient(180deg, #15151a 0%, #050508 100%);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    width: 95%;
+    max-width: 850px;
+    padding: clamp(1.5rem, 5vw, 3rem);
+    position: relative;
+    transform: scale(0.95) translateY(20px);
+    transition: var(--transition-bounce);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(211, 47, 47, 0.1);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-overlay.active .modal-content { transform: scale(1) translateY(0); }
+
+.close-btn {
+    position: absolute;
+    top: clamp(1rem, 3vw, 1.5rem);
+    right: clamp(1.5rem, 4vw, 2rem);
+    font-size: clamp(2rem, 5vw, 2.5rem);
+    color: #666;
+    cursor: pointer;
+    transition: color 0.2s;
+    line-height: 1;
+}
+
+.close-btn:hover { color: var(--entity-red); text-shadow: 0 0 10px red; }

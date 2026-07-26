@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Return to the Fog - Login</title>
+    <link rel="stylesheet" href="../assets/css/reg.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <img src="../assets/images/general/camfire.gif" class="bg-gif" alt="Background Animation">
+    <nav class="navbar">
+            <ul class="nav-links">
+                <li><a href="../index.html">Lobby</a></li>
+                <li><a href="../pages/perks.html">Perks</a></li>
+                <li><a href="../pages/Randomizer.html">Randomizer</a></li>
+                <li><a href="../pages/Challenges.html">Challenges</a></li>
+                <li><a href="../pages/killers.html">Killer Wheel</a></li>
+                <li><a href="../pages/CreatorsLounge.html">Creators</a></li>
+            </ul>
+        </nav>
+    <div class="blood-web-container">
+        <h1>Return to the Fog</h1>
+        
+        <div class="login-link">
+            New victim? <a href="../pages/register.html">Offer your soul here</a>
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="sacrificeName">Sacrifice Name (Username):</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="sacrificeName" required placeholder="Enter your display name...">
+                    <button type="button" id="btnReveal" class="secondary-btn">Find Me</button>
+                </div>
+            </div>
+
+            <div id="statusMessage" style="margin-bottom: 15px;"></div>
+
+            <div id="authSteps" style="display: none;">
+                
+                <div class="form-group">
+                    <label>Your Secret Question:</label>
+                    <div id="theSecretQuestion" class="question-display"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="secretAnswer">Answer:</label>
+                    <input type="text" id="secretAnswer" required placeholder="Your secret answer...">
+                </div>
+
+                <div class="form-group">
+                    <label>Enter Your 2-Perk Secret Lock:</label>
+                    <div class="combination-lock" id="combinationLock">
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Awaken in the Trial</button>
+            </div>
+        </form>
+    </div>
+
+   <!-- THE FIX: Added type="module" right here -->
+    <script type="module" src="../assets/js/login.js"></script>
+    <script src="../assets/js/session.js"></script>
+</body>
+</html>

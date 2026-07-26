@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBD Streamer Build Queue - Premium Edition</title>
+    <style>
+        /* ==========================================================================
+           CSS RESET & CORE VARIABLES
+           ========================================================================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        :root { 
+            --bg-dark: #0a0a0f; 
+            --entity-red: #d32f2f; 
+            --neon-glow: 0 0 15px rgba(211, 47, 47, 0.7); 
+            --glass-bg: rgba(15, 15, 20, 0.75); 
+            --glass-border: rgba(255, 0, 0, 0.15);
+            --text-light: #e0e0e0; 
+            --text-muted: #888; 
+            --success-green: #00ff00;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100vh;
+            background-color: var(--bg-dark); 
+            color: var(--text-light);
+            overflow: hidden; /* One frame design */
+            scroll-behavior: smooth;
+            position: relative;
+        }
+
+        /* Cinematic Background Layer */
+        .cinematic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 50% 0%, #1a0505 0%, #050508 60%, #000000 100%);
+            z-index: -2;
+            transition: all 0.3s ease;
+        }
+
+        /* Rain / Particle Effect */
+        .particles {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: transparent url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%23ffffff" opacity="0.05" x="10" y="10" width="1" height="5"/><rect fill="%23ffffff" opacity="0.03" x="50" y="50" width="1" height="8"/><rect fill="%23ffffff" opacity="0.06" x="80" y="20" width="1" height="4"/></svg>') repeat;
+            background-size: 100px 100px;
+            animation: rainDrop 2s linear infinite;
+            z-index: -1;
+            pointer-events: none;
+        }
+        @keyframes rainDrop {
+            0% { background-position: 0 0; }
+            100% { background-position: 20px 100px; }
+        }
+
+        /* Chroma Key (Green Screen) Mode for OBS overlays */
+        body.chroma-key-mode .cinematic-bg {
+            background: #00FF00 !important;
+            background-image: none !important;
+        }
+        body.chroma-key-mode .particles {
+            display: none;
+        }
+        body.chroma-key-mode .navbar {
+            background: rgba(0, 255, 0, 0.9);
+            border-color: #004400;
+            box-shadow: none;
+        }
+        body.chroma-key-mode .challenge-card, 
+        body.chroma-key-mode .queue-container, 
+        body.chroma-key-mode .input-section {
+            background: rgba(0, 0, 0, 0.85); /* Keep elements dark so they pop on stream */
+            border: 2px solid #000;
+            box-shadow: none;
+        }
+
+        /* ==========================================================================
+           RESPONSIVE NAVBAR
+           ========================================================================== */
+        .navbar {
+            width: calc(100% - 60px);
+            max-width: 1600px;
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 28px;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.95) 0%, rgba(15, 0, 0, 0.88) 100%);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.12);
+        }
+
+        .navbar-brand {
+            font-size: 1.2rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #fff;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--entity-red);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+        }
+
+        .navbar li a, .navbar li button {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #d8d8d8;
+            text-decoration: none;
+            text-transform: uppercase;
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            padding: 8px 12px;
+            transition: all 0.3s ease;
+        }
+
+        .navbar li a:hover, .navbar li button:hover {
+            color: white;
+            text-shadow: 0 0 12px rgba(255, 0, 0, 0.7);
+        }
+
+        /* ==========================================================================
+           MAIN LAYOUT (ONE FRAME DESIGN)
+           ========================================================================== */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr 300px; /* Input | Detailed Queue | Mini Queue */
+            gap: 20px;
+            width: 100%;
+            max-width: 1800px;
+            height: calc(100vh - 100px);
+            margin: 80px auto 20px auto;
+            padding: 0 30px;
+        }
+
+        /* Sections common styling */
+        .panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            font-size: 1.2rem;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            border-bottom: 2px solid var(--entity-red);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            text-shadow: var(--neon-glow);
+        }
+
+        /* ==========================================================================
+           LEFT PANEL: INPUT SECTION
+           ========================================================================== */
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .request-input {
+            width: 100%;
+            height: 150px;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #fff;
+            padding: 15px;
+            font-size: 1rem;
+            resize: none;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .request-input:focus {
+            border-color: var(--entity-red);
+            box-shadow: inset 0 0 10px rgba(211, 47, 47, 0.2);
+        }
+
+        .btn-add {
+            background: linear-gradient(90deg, #8b0000 0%, var(--entity-red) 100%);
+            color: #fff;
+            border: none;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(211, 47, 47, 0.6);
+        }
+
+        .debug-console {
+            flex-grow: 1;
+            background: #000;
+            border: 1px dashed #333;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #0f0;
+            overflow-y: auto;
+        }
+
+        /* ==========================================================================
+           MIDDLE PANEL: DETAILED QUEUE
+           ========================================================================== */
+        .queue-container {
+            overflow-y: auto;
+            padding-right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Custom Scrollbar */
+        .queue-container::-webkit-scrollbar, .mini-queue-list::-webkit-scrollbar { width: 8px; }
+        .queue-container::-webkit-scrollbar-track, .mini-queue-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 4px; }
+        .queue-container::-webkit-scrollbar-thumb, .mini-queue-list::-webkit-scrollbar-thumb { background: var(--entity-red); border-radius: 4px; }
+
+        .challenge-card {
+            background: linear-gradient(145deg, #1a1a24 0%, #0d0d12 100%);
+            border: 1px solid #333;
+            border-left: 4px solid var(--entity-red);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .card-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .queue-number {
+            font-size: 2rem;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.1);
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            pointer-events: none;
+        }
+
+        .killer-title {
+            font-size: 1.6rem;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .perk-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .perk-slot {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px dashed #444;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .perk-name {
+            color: var(--entity-red);
+            font-weight: bold;
+        }
+        .perk-desc {
+            color: #aaa;
+            font-size: 0.75rem;
+            line-height: 1.3;
+        }
+
+        .btn-complete {
+            width: 100%;
+            background: transparent;
+            color: var(--success-green);
+            border: 1px solid var(--success-green);
+            padding: 10px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .btn-complete:hover {
+            background: var(--success-green);
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+        }
+
+        /* ==========================================================================
+           RIGHT PANEL: MINI QUEUE
+           ========================================================================== */
+        .mini-queue-list {
+            list-style: none;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .mini-queue-item {
+            background: rgba(0,0,0,0.4);
+            border-left: 2px solid var(--entity-red);
+            padding: 12px 15px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: #ccc;
+            transition: background 0.2s;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .mini-queue-item span.index {
+            color: var(--entity-red);
+            font-size: 1.2rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #555;
+            font-style: italic;
+            margin-top: 50px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="cinematic-bg"></div>
+    <div class="particles"></div>
+
+    <nav class="navbar">
+        <div class="navbar-brand">Build request System</div>
+        <ul class="nav-links">
+            <li><button onclick="clearQueue()">Clear Queue</button></li>
+            <li><a href="index.html" onclick="alert('Redirecting to Main Site...')">Return Home</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-layout">
+        <div class="panel">
+            <h2 class="panel-header">Incoming Request</h2>
+            <div class="input-section">
+                <textarea id="viewerInput" class="request-input" placeholder="Paste viewer chat message here...&#10;&#10;"></textarea>
+                <button class="btn-add" onclick="processInput()">Queue Build</button>
+            </div>
+            
+            <h2 class="panel-header" style="margin-top: 30px; border-bottom: 2px solid #333;">System Log</h2>
+            <div id="debugLog" class="debug-console">
+                > System initialized.<br>
+                > Awaiting intelligence extraction...
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2 class="panel-header">Current Active Builds</h2>
+            <div id="detailedQueue" class="queue-container">
+                <div class="empty-state">No builds in queue. Waiting for requests...</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2 class="panel-header">Up Next</h2>
+            <ul id="miniQueue" class="mini-queue-list">
+                <div class="empty-state">Queue is empty.</div>
+            </ul>
+        </div>
+    </div>
+
+<script>
+        const KILLERS_DB = {
+            "The Trapper": ["trapper", "evan", "macmillan"],
+            "The Wraith": ["wraith", "bing bong", "philip", "ojomo", "bingbong", "bell boy"],
+            "The Hillbilly": ["hillbilly", "billy", "max", "thompson"],
+            "The Nurse": ["nurse", "sally", "smithson"],
+            "The Shape": ["shape", "michael", "myers", "mayers", "miguel", "mikey", "halloween"],
+            "The Hag": ["hag", "lisa", "sherwood"],
+            "The Doctor": ["doctor", "doc", "herman", "carter", "zappy"],
+            "The Huntress": ["huntress", "anna", "bunny", "lullaby"],
+            "The Cannibal": ["cannibal", "bubba", "leatherface", "sawyer"],
+            "The Nightmare": ["nightmare", "freddy", "krueger", "sharp hand joe"],
+            "The Pig": ["pig", "amanda", "young", "peppa", "snoot", "boop"],
+            "The Clown": ["clown", "kenneth", "chase", "jeffrey", "hawk"],
+            "The Spirit": ["spirit", "rin", "yamaoka", "waluigi"],
+            "The Legion": ["legion", "frank", "julie", "susie", "joey", "stabby gang"],
+            "The Plague": ["plague", "adiris", "vommy mommy", "puke"],
+            "The Ghost Face": ["ghost face", "ghostface", "danny", "jed", "olsen", "scream"],
+            "The Demogorgon": ["demogorgon", "demo", "demodog", "gorgon", "stranger things"],
+            "The Oni": ["oni", "kazan", "yamaoka", "bam bam", "angry boy"],
+            "The Deathslinger": ["deathslinger", "caleb", "quinn", "slinger", "cowboy", "gun"],
+            "The Executioner": ["executioner", "pyramid head", "pyramid", "phead", "dorito"],
+            "The Blight": ["blight", "talbot", "grimes", "pinball"],
+            "The Twins": ["twins", "charlotte", "victor", "baby"],
+            "The Trickster": ["trickster", "ji-woon", "hak", "kpop", "k-pop", "korean"],
+            "The Nemesis": ["nemesis", "nemmy", "resident evil", "zombies", "stars"],
+            "The Cenobite": ["cenobite", "pinhead", "elliot", "spencer", "box", "hellraiser"],
+            "The Artist": ["artist", "carmina", "mora", "bird lady", "crow"],
+            "The Onryō": ["onryō", "onryo", "sadako", "yamamura", "oreo", "ring", "tv"],
+            "The Dredge": ["dredge", "turkey", "locker boy", "shadow"],
+            "The Mastermind": ["mastermind", "wesker", "albert", "uroboros", "seven minutes"],
+            "The Knight": ["knight", "tarhos", "kovacs", "guards", "medieval"],
+            "The Skull Merchant": ["skull merchant", "adriana", "imai", "chess", "drone"],
+            "The Singularity": ["singularity", "hux", "meatball", "robot", "ai"],
+            "The Xenomorph": ["xenomorph", "xeno", "alien", "tail"],
+            "The Good Guy": ["good guy", "chucky", "charles", "lee", "ray", "doll"],
+            "The Unknown": ["unknown", "creepy guy", "ax", "hallucination"],
+            "The Lich": ["lich", "vecna", "dnd", "dungeons and dragons"],
+            "Dracula": ["dracula", "vlad", "dark lord", "vampire", "castlevania"],
+            "The Houndmaster": ["houndmaster", "portia", "maye", "dog", "dog lady"],
+            "The Slasher": ["slasher", "jason", "voorhees", "friday", "hockey mask"],
+            "The First": ["first", "henry", "creel", "vecna stranger things", "upside down"],
+            "The Krasue": ["krasue", "burong", "floating head", "entrails"],
+            "The Animatronic": ["animatronic", "springtrap", "fnaf", "william", "afton", "bunny mech"],
+            "The Ghoul": ["ghoul", "ken", "kaneki", "tokyo"]
+        };
+
+        const PERKS_DB = [
+            { name:"A Nurse's Calling", category:"INFO", desc:"The Auras of injured Survivors being healed are revealed within 28/30/32m." },
+            { name:"Agitation", category:"SPEED", desc:"Increases Carrying speed by 6/12/18% and Terror Radius by +12m." },
+            { name:"Alien Instinct", category:"INFO", desc:"Hooking reveals farthest injured Survivor for 8s, inflicts Oblivious." },
+            { name:"Awakened Awareness", category:"INFO", desc:"While carrying, Auras of Survivors within 16/18/20m revealed." },
+            { name:"Bamboozle", category:"CHASE", desc:"Vaulting speed +15%. Vaulting a Window blocks it for 16s." },
+            { name:"Barbecue & Chilli", category:"INFO", desc:"After hooking, Survivors 40m+ away are revealed for 5s." },
+            { name:"Batteries Included", category:"SPEED", desc:"Within 16m of completed Gen, gain +5% Haste." },
+            { name:"Beast of Prey", category:"TERROR", desc:"Bloodlust grants Undetectable for 30/35/40s." },
+            { name:"Bitter Murmur", category:"INFO", desc:"Gen complete reveals nearby Auras. Last Gen reveals all for 10s." },
+            { name:"Blood Echo", category:"SLOW DOWN", desc:"Hooking inflicts Exhausted and Haemorrhage on injured Survivors." },
+            { name:"Blood Warden", category:"SLOW DOWN", desc:"Hooking blocks open Exit Gates for 40/50/60s." },
+            { name:"Bloodhound", category:"CHASE", desc:"Pools of Blood bright red, last longer." },
+            { name:"Brutal Strength", category:"CHASE", desc:"Break/Damage speed +20%." },
+            { name:"Call of Brine", category:"GEN", desc:"Damage Gen -> 150% regression for 70s. Noise on Good Skill Check." },
+            { name:"Corrupt Intervention", category:"SLOW DOWN", desc:"3 farthest Gens blocked for 120s at start." },
+            { name:"Coulrophobia", category:"SLOW DOWN", desc:"Healing in Terror Radius -50% speed, fast skill checks." },
+            { name:"Coup de Grâce", category:"CHASE", desc:"Completed Gen = Token. Consume for +80% Lunge range." },
+            { name:"Cruel Limits", category:"CHASE", desc:"Gen complete blocks all Windows for 30s." },
+            { name:"Dark Arrogance", category:"CHASE", desc:"Vault speed +25%. Stun/Blind duration increased." },
+            { name:"Dark Devotion", category:"TERROR", desc:"Injure Obsession -> Transfers TR, grants Undetectable." },
+            { name:"Darkness Revealed", category:"INFO", desc:"Search locker -> Reveal Auras near all lockers for 8s." },
+            { name:"Dead Man's Switch", category:"SLOW DOWN", desc:"Hook -> Next Gen let go is blocked for 35s." },
+            { name:"Deadlock", category:"SLOW DOWN", desc:"Gen complete blocks most progressed Gen for 25s." },
+            { name:"Deathbound", category:"INFO", desc:"Healing away from you causes scream, Oblivious." },
+            { name:"Deerstalker", category:"INFO", desc:"Reveals dying Survivors." },
+            { name:"Discordance", category:"INFO", desc:"Gens with 2+ Survivors highlighted yellow." },
+            { name:"Dissolution", category:"CHASE", desc:"Injure -> Next fast vault breaks Pallet." },
+            { name:"Distressing", category:"TERROR", desc:"Terror Radius +30%." },
+            { name:"Dragon's Grip", category:"EXPOSE", desc:"Damage Gen -> Next touch screams, Exposed." },
+            { name:"Dying Light", category:"SLOW DOWN", desc:"Hook non-Obsession slows team. Obsession gets buff." },
+            { name:"Enduring", category:"CHASE", desc:"Pallet Stun duration -50%." },
+            { name:"Eruption", category:"GEN", desc:"Damage Gen. Down Survivor -> Gen explodes, loses 10%." },
+            { name:"Fire Up", category:"SPEED", desc:"Gens done -> Actions faster." },
+            { name:"Forced Hesitation", category:"SLOW DOWN", desc:"Down Survivor -> Nearby suffer Hindered." },
+            { name:"Forced Penance", category:"SLOW DOWN", desc:"Protection Hit -> Broken for 80s." },
+            { name:"Franklin's Demise", category:"SLOW DOWN", desc:"Basic Attacks make Survivors drop Items." },
+            { name:"Friends 'til the End", category:"EXPOSE", desc:"Hook non-Obsession -> Obsession Exposed." },
+            { name:"Furtive Chase", category:"TERROR", desc:"Hook Obsession -> Undetectable and Haste." },
+            { name:"Game Afoot", category:"SPEED", desc:"Break/Damage while chasing Obsession -> Haste." },
+            { name:"Gearhead", category:"INFO", desc:"Injure -> Good Skill Checks reveal Aura." },
+            { name:"Genetic Limits", category:"SLOW DOWN", desc:"Lose Health State -> Exhausted for 8s." },
+            { name:"Grim Embrace", category:"SLOW DOWN", desc:"Hook everyone once -> Block all Gens for 40s." },
+            { name:"Hex: Blood Favour", category:"HEX", desc:"Injure -> Blocks nearby pallets." },
+            { name:"Hex: Crowd Control", category:"HEX", desc:"Fast vault blocks Window." },
+            { name:"Hex: Devour Hope", category:"HEX", desc:"Unhooks far away grant tokens. 3 = Exposed. 5 = Kill." },
+            { name:"Hex: Face the Darkness", category:"HEX", desc:"Injure -> Others scream periodically." },
+            { name:"Hex: Haunted Ground", category:"HEX", desc:"Cleanse -> All Exposed for 60s." },
+            { name:"Hex: Huntress Lullaby", category:"HEX", desc:"Hooks silence Skill Check warning." },
+            { name:"Hex: No One Escapes Death", category:"HEX", desc:"Gates powered -> Exposed, Haste." },
+            { name:"Hex: Pentimento", category:"HEX", desc:"Rekindle cleansed totems to slow game down." },
+            { name:"Hex: Plaything", category:"HEX", desc:"First hook -> Cursed Survivor is Oblivious." },
+            { name:"Hex: Retribution", category:"HEX", desc:"Cleanse/Bless -> Oblivious. Break Hex -> Reveal Auras." },
+            { name:"Hex: Ruin", category:"HEX", desc:"Unrepaired Gens automatically regress at 150%." },
+            { name:"Hex: The Third Seal", category:"HEX", desc:"Hits inflict Blindness." },
+            { name:"Hex: Thrill of the Hunt", category:"HEX", desc:"Slows cleansing/blessing based on totems left." },
+            { name:"Hex: Undying", category:"HEX", desc:"Auras near Dull Totems revealed. Saves broken Hex." },
+            { name:"Hoarder", category:"INFO", desc:"Noise when chest unlocked/item picked up." },
+            { name:"Hubris", category:"EXPOSE", desc:"Stunning you inflicts Exposed." },
+            { name:"Hysteria", category:"SLOW DOWN", desc:"Injure -> Injured suffer Oblivious." },
+            { name:"I'm All Ears", category:"INFO", desc:"Fast vault near you reveals Aura." },
+            { name:"Infectious Fright", category:"INFO", desc:"Down Survivor -> Others in TR scream." },
+            { name:"Insidious", category:"TERROR", desc:"Stand still -> Undetectable." },
+            { name:"Iron Grasp", category:"CHASE", desc:"Wiggle effects reduced, wiggle time increased." },
+            { name:"Iron Maiden", category:"EXPOSE", desc:"Search lockers faster. Exiting locker -> Exposed." },
+            { name:"Knock Out", category:"SLOW DOWN", desc:"Downed Survivors' Auras hidden from afar." },
+            { name:"Lethal Pursuer", category:"INFO", desc:"Start of trial: see Auras. Aura reading +2s." },
+            { name:"Leverage", category:"SLOW DOWN", desc:"Unhooking reduces Healing speed." },
+            { name:"Lightborn", category:"CHASE", desc:"Immunity to Blinds. Attempted blinds reveal Aura." },
+            { name:"Machine Learning", category:"SPEED", desc:"Compromised Gen done -> Undetectable + Haste." },
+            { name:"Mad Grit", category:"CHASE", desc:"No missed attack cooldown while carrying." },
+            { name:"Make Your Choice", category:"EXPOSE", desc:"Unhook far away -> Rescuer Exposed." },
+            { name:"Merciless Storm", category:"GEN", desc:"Gen hits 90% -> Continuous skill checks." },
+            { name:"Mindbreaker", category:"SLOW DOWN", desc:"Repairing causes Blindness and Exhausted." },
+            { name:"Monitor & Abuse", category:"TERROR", desc:"In chase TR increased, out of chase TR decreased." },
+            { name:"Nemesis", category:"INFO", desc:"Stun/Blind makes them Obsession, Oblivious." },
+            { name:"No Way Out", category:"SLOW DOWN", desc:"Hooks grant tokens. Blocks gate switches." },
+            { name:"Nowhere to Hide", category:"INFO", desc:"Damage Gen -> Reveal nearby Auras." },
+            { name:"Oppression", category:"GEN", desc:"Damage Gen -> 4 others regress." },
+            { name:"Overcharge", category:"GEN", desc:"Damage Gen -> Hard skill check, fast regression." },
+            { name:"Overwhelming Presence", category:"SLOW DOWN", desc:"Using items in TR causes Exhausted." },
+            { name:"Play with Your Food", category:"SPEED", desc:"Chase & lose Obsession -> Token for Haste." },
+            { name:"Pop Goes the Weasel", category:"GEN", desc:"Hook -> Next Gen kick removes 20% total progress." },
+            { name:"Predator", category:"CHASE", desc:"Lose chase -> Aura revealed." },
+            { name:"Rancor", category:"EXPOSE", desc:"Gens done -> See Auras. Gates done -> Obsession Exposed/Mori." },
+            { name:"Rapid Brutality", category:"SPEED", desc:"No Bloodlust. Basic Hit -> Haste." },
+            { name:"Remember Me", category:"SLOW DOWN", desc:"Obsession hits increase gate opening time." },
+            { name:"Save the Best for Last", category:"SPEED", desc:"Hits on non-Obsession reduce attack cooldown." },
+            { name:"Scourge Hook: Floods of Rage", category:"INFO", desc:"Unhook from Scourge -> Reveal all Auras." },
+            { name:"Scourge Hook: Gift of Pain", category:"SLOW DOWN", desc:"Unhook from Scourge -> Slow heal/repair." },
+            { name:"Scourge Hook: Pain Resonance", category:"GEN", desc:"Scourge hook -> Explode highest progressed Gen." },
+            { name:"Shadowborn", category:"SPEED", desc:"Blinded -> Haste." },
+            { name:"Sloppy Butcher", category:"SLOW DOWN", desc:"Basic hits cause Mangled & Haemorrhage." },
+            { name:"Spies from the Shadows", category:"INFO", desc:"Crows give visual notifications." },
+            { name:"Spirit Fury", category:"CHASE", desc:"Break Pallets -> Next stun auto-breaks Pallet." },
+            { name:"Starstruck", category:"EXPOSE", desc:"Carry Survivor -> Others in TR are Exposed." },
+            { name:"Stridor", category:"INFO", desc:"Survivors breathe and grunt louder." },
+            { name:"Superior Anatomy", category:"CHASE", desc:"Survivor fast vaults -> Your vault speed +40%." },
+            { name:"Surge", category:"GEN", desc:"Down Survivor -> Nearby Gens explode." },
+            { name:"Surveillance", category:"INFO", desc:"See regression colors. Hear repair further." },
+            { name:"Terminus", category:"SLOW DOWN", desc:"Gates powered -> Injured suffer Broken." },
+            { name:"Territorial Imperative", category:"INFO", desc:"Enter basement -> Reveal Aura." },
+            { name:"Thanatophobia", category:"SLOW DOWN", desc:"Injured Survivors slow team's action speeds." },
+            { name:"Thrilling Tremors", category:"INFO", desc:"Pick up -> Block un-repaired Gens." },
+            { name:"Tinkerer", category:"INFO", desc:"Gen hits 70% -> Notification, Undetectable." },
+            { name:"Trail of Torment", category:"TERROR", desc:"Damage Gen -> Undetectable." },
+            { name:"Ultimate Weapon", category:"INFO", desc:"Search Locker -> Nearby scream, suffer Blindness." },
+            { name:"Unforeseen", category:"TERROR", desc:"Damage Gen -> Transfers TR to Gen, Undetectable." },
+            { name:"Unnerving Presence", category:"SLOW DOWN", desc:"TR reduces skill check success zone." },
+            { name:"Unrelenting", category:"CHASE", desc:"Missed attack cooldown reduced." },
+            { name:"Whispers", category:"INFO", desc:"Hear Entity when Survivor is close." },
+            { name:"Zanshin Tactics", category:"INFO", desc:"See Pallet/Window Auras." }
+        ];
+
+        // Massively Upgraded Dictionary
+        const PERK_ALIASES = {
+            "bbq": "Barbecue & Chilli",
+            "barbecue": "Barbecue & Chilli",
+            "noed": "Hex: No One Escapes Death",
+            "ruin": "Hex: Ruin",
+            "stbfl": "Save the Best for Last",
+            "save the best": "Save the Best for Last",
+            "pwyf": "Play with Your Food",
+            "pop": "Pop Goes the Weasel",
+            "pain res": "Scourge Hook: Pain Resonance",
+            "pain resonance": "Scourge Hook: Pain Resonance",
+            "agri": "Agitation",
+            "lethal": "Lethal Pursuer",
+            "brutal": "Brutal Strength",
+            "corrupt": "Corrupt Intervention",
+            "corrupt intervention": "Corrupt Intervention",
+            "deadlock": "Deadlock",
+            "dms": "Dead Man's Switch",
+            "nurses": "A Nurse's Calling",
+            "nurse's": "A Nurse's Calling",
+            "nurse's calling": "A Nurse's Calling",
+            "nurses calling": "A Nurse's Calling",
+            "thrill of the hunt": "Hex: Thrill of the Hunt",
+            "blood warden": "Blood Warden",
+            "end game": "Blood Warden",
+            "bamboozle": "Bamboozle",
+            "bam bam": "Bamboozle",
+            "surge": "Surge",
+            "jolt": "Surge", 
+            "sloppy": "Sloppy Butcher",
+            "sloppy butcher": "Sloppy Butcher",
+            "devour": "Hex: Devour Hope",
+            "plaything": "Hex: Plaything",
+            "pentimento": "Hex: Pentimento",
+            "undying": "Hex: Undying",
+            "retribution": "Hex: Retribution",
+            "haunted": "Hex: Haunted Ground",
+            "franklins": "Franklin's Demise",
+            "franklin's": "Franklin's Demise",
+            "lightborn": "Lightborn",
+            "shadowborn": "Shadowborn",
+            "discordance": "Discordance",
+            "tinkerer": "Tinkerer",
+            "infectious": "Infectious Fright",
+            "monitor": "Monitor & Abuse",
+            "m&a": "Monitor & Abuse",
+            "aw": "Awakened Awareness",
+            "no way out": "No Way Out",
+            "eruption": "Eruption",
+            "call of brine": "Call of Brine",
+            "cob": "Call of Brine",
+            "overcharge": "Overcharge",
+            "trail": "Trail of Torment",
+            "merciless": "Merciless Storm",
+            "mindbreaker": "Mindbreaker",
+            "fearmonger": "Mindbreaker",
+            "claustrophobia": "Cruel Limits",
+            "lullaby": "Hex: Huntress Lullaby"
+        };
+
+        let globalQueue = [];
+        let autoIncId = 1;
+
+        function logDebug(msg) {
+            const consoleEl = document.getElementById('debugLog');
+            consoleEl.innerHTML += `<br>> ${msg}`;
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        // INTELLIGENCE ALGORITHM 1: Extractor for Perks via Index Tracking
+        function extractPerks(rawText) {
+            let foundPerks = [];
+            let textLower = rawText.toLowerCase();
+            // Critical fix for viewers forgetting spaces (e.g., "Surge,Sloppy")
+            // Replaces basic punctuation with spaces while protecting apostrophes
+            let cleanSearchString = textLower.replace(/[.,:;!\-_]/g, ' ');
+
+            // Pass 1: Aliases
+            for (let [alias, official] of Object.entries(PERK_ALIASES)) {
+                let cleanAlias = alias.toLowerCase().replace(/[.,:;!\-_]/g, ' ');
+                let regex = new RegExp(`\\b${cleanAlias}\\b`, 'i');
+                let match = cleanSearchString.match(regex);
+                
+                if (match && !foundPerks.some(p => p.name === official)) {
+                    const perkObj = PERKS_DB.find(p => p.name === official);
+                    if (perkObj) foundPerks.push({ ...perkObj, _index: match.index });
+                }
+            }
+
+            // Pass 2: Official Database
+            const sortedDB = [...PERKS_DB].sort((a, b) => b.name.length - a.name.length);
+            for (let perk of sortedDB) {
+                let cleanPerk = perk.name.toLowerCase().replace(/[.,:;!\-_]/g, ' ');
+                let regex = new RegExp(`\\b${cleanPerk}\\b`, 'i');
+                let match = cleanSearchString.match(regex);
+                
+                if (match && !foundPerks.some(p => p.name === perk.name)) {
+                    foundPerks.push({ ...perk, _index: match.index });
+                }
+            }
+
+            // Intelligence upgrade: Sort by appearance in the text, extract up to 4
+            foundPerks.sort((a, b) => a._index - b._index);
+            return foundPerks.slice(0, 4).map(p => {
+                let clean = { ...p };
+                delete clean._index;
+                return clean;
+            });
+        }
+
+        // INTELLIGENCE ALGORITHM 2: Masks Out Perks to Protect Killer Extraction
+        function maskExtractedPerks(rawText, perks) {
+            let masked = rawText.toLowerCase();
+            
+            // Mask official names
+            perks.forEach(p => {
+                masked = masked.replace(p.name.toLowerCase(), '');
+            });
+            
+            // Mask aliases that triggered those perks
+            for (let [alias, official] of Object.entries(PERK_ALIASES)) {
+                if (perks.some(p => p.name === official)) {
+                    masked = masked.replace(alias.toLowerCase(), '');
+                }
+            }
+            return masked;
+        }
+
+        // INTELLIGENCE ALGORITHM 3: Index-Based Killer Extraction
+        function extractKiller(maskedText) {
+            let textLower = maskedText.replace(/[.,:;!\-_]/g, ' ');
+            let bestMatch = "Dealer's Choice";
+            let earliestIndex = Infinity;
+
+            for (let [officialName, aliases] of Object.entries(KILLERS_DB)) {
+                let searchTerms = [
+                    officialName.toLowerCase().replace(/[.,:;!\-_]/g, ' '), 
+                    ...aliases.map(a => a.toLowerCase().replace(/[.,:;!\-_]/g, ' '))
+                ];
+                
+                for (let term of searchTerms) {
+                    let regex = new RegExp(`\\b${term}\\b`, 'i');
+                    let match = textLower.match(regex);
+                    
+                    if (match && match.index < earliestIndex) {
+                        earliestIndex = match.index;
+                        bestMatch = officialName;
+                    }
+                }
+            }
+            return bestMatch;
+        }
+
+        // INTELLIGENCE ALGORITHM 4: Add-on Regex Parsing
+        function extractAddons(rawText) {
+            const addonRegex = /add-?ons?[:\s]+(.*?)(?:$|\n)/i;
+            const match = rawText.match(addonRegex);
+            if (match && match[1]) {
+                // Return string up to end, removing trailing periods
+                return match[1].trim().replace(/\.$/, '');
+            }
+            return null;
+        }
+
+        function processInput() {
+            const inputEl = document.getElementById('viewerInput');
+            const rawText = inputEl.value.trim();
+            
+            if (!rawText) {
+                alert("Please paste a viewer message first.");
+                return;
+            }
+
+            logDebug(`Analyzing payload...`);
+            
+            // 1. Extract Perks first
+            const perksAssigned = extractPerks(rawText);
+            logDebug(`Extracted Perks: [${perksAssigned.map(p => p.name).join(', ')}]`);
+            
+            // 2. Erase the detected perk text entirely from a shadow-copy to prevent false killer matching
+            const shadowText = maskExtractedPerks(rawText, perksAssigned);
+            
+            // 3. Extract Killer safely
+            const killerAssigned = extractKiller(shadowText);
+            logDebug(`Extracted Killer: ${killerAssigned}`);
+
+            // 4. Extract Add-ons
+            const addonsAssigned = extractAddons(rawText);
+            if (addonsAssigned) logDebug(`Extracted Addons: ${addonsAssigned}`);
+
+            const buildObj = {
+                id: autoIncId++,
+                killer: killerAssigned,
+                perks: perksAssigned,
+                addons: addonsAssigned,
+                raw: rawText
+            };
+
+            globalQueue.push(buildObj);
+            
+            inputEl.value = ""; // Clear input
+            logDebug(`Build added to queue successfully.`);
+            
+            updateDOM();
+        }
+
+        function updateDOM() {
+            const detailContainer = document.getElementById('detailedQueue');
+            const miniContainer = document.getElementById('miniQueue');
+            
+            detailContainer.innerHTML = '';
+            miniContainer.innerHTML = '';
+
+            if (globalQueue.length === 0) {
+                detailContainer.innerHTML = '<div class="empty-state">No builds in queue. Waiting for requests...</div>';
+                miniContainer.innerHTML = '<div class="empty-state">Queue is empty.</div>';
+                return;
+            }
+
+            globalQueue.forEach((build, index) => {
+                const qNum = index + 1;
+
+                let perksHTML = '';
+                if (build.perks.length > 0) {
+                    build.perks.forEach(perk => {
+                        perksHTML += `
+                            <div class="perk-slot">
+                                <span class="perk-name">${perk.name}</span>
+                                <span class="perk-desc">${perk.desc}</span>
+                            </div>
+                        `;
+                    });
+                    for(let i = build.perks.length; i < 4; i++) {
+                        perksHTML += `
+                            <div class="perk-slot" style="opacity: 0.3; justify-content: center; align-items: center;">
+                                <span>[ Empty Slot ]</span>
+                            </div>
+                        `;
+                    }
+                } else {
+                    perksHTML = `
+                        <div class="perk-slot" style="grid-column: span 2; text-align: center; color: var(--entity-red);">
+                            <strong>Dealer's Choice (No valid perks detected)</strong>
+                        </div>
+                    `;
+                }
+
+                let addonHTML = build.addons ? `<div class="addon-section"><strong>➕ Requested Add-ons:</strong> ${build.addons}</div>` : '';
+
+                const cardHTML = `
+                    <div class="challenge-card" id="card-${build.id}">
+                        <div class="queue-number">#${qNum}</div>
+                        <div class="card-header-top">
+                            <div class="killer-title">🔪 ${build.killer}</div>
+                            ${addonHTML}
+                        </div>
+                        <div class="perk-grid">
+                            ${perksHTML}
+                        </div>
+                        <button class="btn-complete" onclick="completeRequest(${build.id})">✔ Mark as Complete</button>
+                    </div>
+                `;
+                detailContainer.insertAdjacentHTML('beforeend', cardHTML);
+
+                const miniHTML = `
+                    <li class="mini-queue-item">
+                        <span class="index" style="color: var(--entity-red); font-weight: bold;">${qNum}.</span>
+                        <span>${build.killer}</span>
+                    </li>
+                `;
+                miniContainer.insertAdjacentHTML('beforeend', miniHTML);
+            });
+        }
+
+        function completeRequest(id) {
+            const idx = globalQueue.findIndex(b => b.id === id);
+            if (idx > -1) {
+                const card = document.getElementById(`card-${id}`);
+                card.style.transform = "translateX(50px)";
+                card.style.opacity = "0";
+                
+                setTimeout(() => {
+                    globalQueue.splice(idx, 1);
+                    logDebug(`Build Request ID ${id} completed & removed.`);
+                    updateDOM();
+                }, 300);
+            }
+        }
+
+        function clearQueue() {
+            if(confirm("Are you sure you want to completely clear the queue?")) {
+                globalQueue = [];
+                logDebug("Queue wiped by user.");
+                updateDOM();
+            }
+        }
+
+        function toggleGreenScreen() {
+            document.body.classList.toggle('chroma-key-mode');
+            const isActive = document.body.classList.contains('chroma-key-mode');
+            logDebug(`Chroma Key (Green Screen) Mode: ${isActive ? 'ON' : 'OFF'}`);
+        }
+    </script>
+</body>
+</html>

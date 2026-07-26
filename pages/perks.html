@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBD | Quantum Terminal</title>
+    <link rel="stylesheet" href="../assets/css/perks.css">
+</head>
+<body>
+        <img src="../assets/images/general/camfire.gif" class="bg-gif" alt="Background Animation">
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a href="../index.html">Lobby</a></li>
+            <li><a href="../pages/perks.html">Perks</a></li>
+            <li><a href="../pages/Randomizer.html">Randomizer</a></li>
+            <li><a href="../pages/Challenges.html">Challenges</a></li>
+            <li><a href="../pages/killers.html">Killer Wheel</a></li>
+            <li><a href="../pages/CreatorsLounge.html">Creators</a></li>
+        </ul>
+    </nav>
+
+    <div class="app-container">
+        <header class="controls-header">
+            <div class="controls-top">
+                <div class="faction-toggle">
+                    <button class="faction-btn active" id="btn-survivor" onclick="setFaction('survivor')">Survivor</button>
+                    <button class="faction-btn" id="btn-killer" onclick="setFaction('killer')">Killer</button>
+                </div>
+                <div class="search-container">
+                    <input type="text" id="search-input" class="search-bar" placeholder="Query Database (e.g. Sprint Burst, Healing...)" oninput="handleSearch()">
+                </div>
+                <select id="sort-select" class="sort-dropdown" onchange="handleSort()">
+                    <option value="A-Z">Sort: A - Z</option>
+                    <option value="Z-A">Sort: Z - A</option>
+                    <option value="CATEGORY">Sort: Category</option>
+                </select>
+            </div>
+            
+            <div class="category-tabs" id="category-tabs">
+                </div>
+        </header>
+
+        <main class="content-area">
+            <aside class="perk-list-container" id="perk-list">
+                </aside>
+
+            <section class="perk-display-container">
+                <div class="display-header">
+                    <div class="display-icon-wrapper">
+                        <img id="display-icon" src="" alt="Perk Icon">
+                    </div>
+                    <div class="display-title-group">
+                        <h1 id="display-title">Awaiting Input</h1>
+                        <div class="meta-tags">
+                            <span class="meta-tag" id="meta-cat">CLASS: --</span>
+                            <span class="meta-tag" id="meta-char">ORIGIN: --</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="display-desc" id="display-desc">System standing by. Select a perk to initialize neural link.</div>
+                
+                <div class="scenario-box">
+                    <div id="display-scenario">...</div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+
+
+<script>
+        // Exact Datasets provided
+        const survivorPerks = [
+            { name:"Sprint Burst", category:"SPEED", desc:"Grants +50% Haste for 3 sec when starting to run. Causes Exhaustion.", character:"Meg Thomas", tier:"30" },
+            { name:"Lithe", category:"SPEED", desc:"After a rushed vault, +50% Haste for 3 sec. Exhaustion.", character:"Feng Min", tier:"30" },
+            { name:"Balanced Landing", category:"SPEED", desc:"Falling from height: stagger -75%, silent, +50% Haste 3s. Exhaustion.", character:"Nea Karlsson", tier:"30" },
+            { name:"Smash Hit", category:"SPEED", desc:"Stun Killer with pallet → +50% Haste 4s. Exhaustion.", character:"Yun-Jin Lee", tier:"30" },
+            { name:"Dramaturgy", category:"SPEED", desc:"Healthy & running: active for +25% Haste 2s + random effect (exposed/extra haste/scream/item).", character:"Nicolas Cage", tier:"30" },
+            { name:"Background Player", category:"SPEED", desc:"When someone picked up, run for 50% Haste 5s. Exhaustion.", character:"Renato Lyra", tier:"30" },
+            { name:"Blood Rush", category:"SPEED", desc:"After unhook, active 40-60s: press to recover from Exhaustion instantly.", character:"Renato Lyra", tier:"30" },
+            { name:"Hope", category:"SPEED", desc:"Exit gates powered: permanent 5/6/7% Haste.", character:"All", tier:"30" },
+            { name:"Dark Theory", category:"SPEED", desc:"Boon: 2% Haste inside radius, lingers 2-4s.", character:"Yoichi Asakawa", tier:"30" },
+            { name:"Blood Pact", category:"SPEED", desc:"You or obsession injured: auras revealed, heal grants both 5-7% Haste when close.", character:"Cheryl Mason", tier:"30" },
+            { name:"Teamwork: Power of Two", category:"SPEED", desc:"After healing another, both get +5% Haste while within 8-16m.", character:"Thalita Lyra", tier:"30" },
+            { name:"Breakout", category:"SPEED", desc:"Within 5m of carried surv: 5-7% Haste, wiggle speed +25%.", character:"Yui Kimura", tier:"30" },
+            { name:"Made for This", category:"SPEED", desc:"Injured: after healing another gain Endurance 6-10s, and 1-3% Haste while deep wounded.", character:"Gabriel Soma", tier:"30" },
+            { name:"Fixated", category:"SPEED", desc:"Walk 10-20% faster, see own scratch marks.", character:"Nancy Wheeler", tier:"30" },
+            { name:"Urban Evasion", category:"SPEED", desc:"Crouch speed +90/95/100%.", character:"Nea Karlsson", tier:"30" },
+            { name:"Tenacity", category:"SPEED", desc:"Crawl 30-50% faster, recover while crawling, quieter.", character:"David Tapp", tier:"30" },
+            { name:"Adrenaline", category:"SPEED", desc:"Exit powered: heal 1 state, +50% Haste 3s, ignores exhausted.", character:"Meg Thomas", tier:"30" },
+            { name:"Overcome", category:"SPEED", desc:"Injured: on-hit speed boost +2s. Exhaustion.", character:"Jonah Vasquez", tier:"30" },
+            { name:"Alert", category:"INFO", desc:"Killer breaks/damages → aura revealed 3-5s.", character:"Feng Min", tier:"30" },
+            { name:"Dark Sense", category:"INFO", desc:"Gen complete: killer aura within 24m for 5-10s.", character:"All", tier:"30" },
+            { name:"Fogwise", category:"INFO", desc:"Great skill check on gen reveals killer aura 4-6s.", character:"Vittorio Toscano", tier:"30" },
+            { name:"Eyes of Belmont", category:"INFO", desc:"Gen complete: killer aura 1-3s, +2s to all aura reveals.", character:"Trevor Belmont", tier:"30" },
+            { name:"Wiretap", category:"INFO", desc:"Trap gen: reveals killer aura within 14m.", character:"Ada Wong", tier:"30" },
+            { name:"Troubleshooter", category:"INFO", desc:"Chased: see most progressed gen, drop pallet reveals killer 4-6s.", character:"Gabriel Soma", tier:"30" },
+            { name:"Scene Partner", category:"INFO", desc:"In terror radius, look at killer → scream, aura 3-5s.", character:"Nicolas Cage", tier:"30" },
+            { name:"Premonition", category:"INFO", desc:"Auditory warning looking at killer 36m, cd 60-30s.", character:"All", tier:"30" },
+            { name:"Spine Chill", category:"INFO", desc:"Killer looking within 36m: speed boost 2-6%", character:"All", tier:"30" },
+            { name:"Kindred", category:"INFO", desc:"Hooked: killer aura within 8-16m; if you hooked all see each other.", character:"All", tier:"30" },
+            { name:"Bond", category:"INFO", desc:"See survivor auras within 20-36m.", character:"Dwight", tier:"30" },
+            { name:"Empathy", category:"INFO", desc:"Injured/dying auras within 64-128m.", character:"Claudette", tier:"30" },
+            { name:"Aftercare", category:"INFO", desc:"Mutual aura with last 1-3 survivors after unhook/heal.", character:"Jeff", tier:"30" },
+            { name:"Better Together", category:"INFO", desc:"Gen aura yellow to allies 32m; killer downs someone reveals others.", character:"Nancy", tier:"30" },
+            { name:"Windows of Opportunity", category:"INFO", desc:"Auras of pallets/windows/breakable walls 24-32m.", character:"Kate", tier:"30" },
+            { name:"Déjà Vu", category:"INFO", desc:"Reveal 3 closest gens, repair speed +4-6%.", character:"All", tier:"30" },
+            { name:"Detective's Hunch", category:"INFO", desc:"Gen complete reveals gens/chests/totems 32-64m.", character:"Tapp", tier:"30" },
+            { name:"Clairvoyance", category:"INFO", desc:"After cleanse totem, empty-handed see objectives 64m.", character:"Mikaela", tier:"30" },
+            { name:"Rookie Spirit", category:"INFO", desc:"After 5-3 good/great checks, see regressing gens.", character:"Leon", tier:"30" },
+            { name:"Left Behind", category:"INFO", desc:"Last survivor: hatch aura 24-32m.", character:"Bill", tier:"30" },
+            { name:"Plunderer's Instinct", category:"INFO", desc:"Chest auras + better items.", character:"All", tier:"30" },
+            { name:"Distortion", category:"INFO", desc:"Block aura reading, hide scratches, recharge in chase.", character:"Jeff", tier:"30" },
+            { name:"Off the Record", category:"INFO", desc:"After unhook: hide aura, suppress grunts, endurance 60-80s.", character:"Zarina", tier:"30" },
+            { name:"Sole Survivor", category:"INFO", desc:"Dead allies give immunity to aura reading radius.", character:"Laurie", tier:"30" },
+            { name:"Object of Obsession", category:"INFO", desc:"Mutual aura if killer reads yours; speed bonus.", character:"Laurie", tier:"30" },
+            { name:"Open-Handed", category:"INFO", desc:"Aura reading range +8-16m for all.", character:"Ace", tier:"30" },
+            { name:"Self-Care", category:"HEAL", desc:"Self-heal at 25-35% speed.", character:"Claudette", tier:"30" },
+            { name:"Inner Strength", category:"HEAL", desc:"Cleanse totem → locker heal 1 state.", character:"Nancy", tier:"30" },
+            { name:"Strength in Shadows", category:"HEAL", desc:"Basement self-heal 70% speed, reveals killer.", character:"Sable", tier:"30" },
+            { name:"Second Wind", category:"HEAL", desc:"Heal others → next unhook auto-heal after 28-20s.", character:"Steve", tier:"30" },
+            { name:"Moment of Glory", category:"HEAL", desc:"Open chests 2x → injured becomes broken, auto-heal 60-80s.", character:"Trevor", tier:"30" },
+            { name:"Clean Break", category:"HEAL", desc:"Heal another → press ability while being healed: broken, auto-heal 60-80s.", character:"Taurie", tier:"30" },
+            { name:"Botany Knowledge", category:"HEAL", desc:"Heal speed +30-50%, medkit efficiency -20%.", character:"Claudette", tier:"30" },
+            { name:"We'll Make It", category:"HEAL", desc:"Unhook → +100% altruistic heal 30-90s.", character:"All", tier:"30" },
+            { name:"Autodidact", category:"HEAL", desc:"Skill checks build tokens, great suppressed, good bonuses.", character:"Adam", tier:"30" },
+            { name:"Empathic Connection", category:"HEAL", desc:"Injured see your aura, you heal others 30% faster.", character:"Yoichi", tier:"30" },
+            { name:"Better than New", category:"HEAL", desc:"Healed survivor gets 12-16% action speed until hit.", character:"Rebecca", tier:"30" },
+            { name:"Circle of Healing", category:"HEAL", desc:"Boon: 50-100% altruistic heal speed, injured auras.", character:"Mikaela", tier:"30" },
+            { name:"For the People", category:"HEAL", desc:"Trade health state: insta-heal ally, you broken 60-80s.", character:"Zarina", tier:"30" },
+            { name:"Resurgence", category:"HEAL", desc:"Unhook grants 50-70% heal progress.", character:"Jill", tier:"30" },
+            { name:"Solidarity", category:"HEAL", desc:"Heal others while injured: self-heal 50-70% conversion.", character:"Jane", tier:"30" },
+            { name:"Reactive Healing", category:"HEAL", desc:"Nearby survivor injured → you gain missing heal 40-50%.", character:"Ada", tier:"30" },
+            { name:"No Mither", category:"HEAL", desc:"Broken whole trial, no blood, quieter, self-recover.", character:"David", tier:"30" },
+            { name:"Unbreakable", category:"HEAL", desc:"Recover from dying once, +25-35% recovery.", character:"Bill", tier:"30" },
+            { name:"Exponential", category:"HEAL", desc:"Boon: 90-100% recovery speed, self-recovery.", character:"Jonah", tier:"30" },
+            { name:"Soul Guard", category:"HEAL", desc:"After recover: endurance 4-8s; cursed→ self-recover.", character:"Cheryl", tier:"30" },
+            { name:"Wicked", category:"HEAL", desc:"Unhook: killer aura 16-20s; basement self-unhook.", character:"Sable", tier:"30" },
+            { name:"Deliverance", category:"HEAL", desc:"Safe unhook → self-unhook first stage, broken 60-100s.", character:"Adam", tier:"30" },
+            { name:"Shoulder the Burden", category:"HEAL", desc:"Trade hook state, exposed 40-60s.", character:"Taurie", tier:"30" },
+            { name:"Dead Hard", category:"PROTECT", desc:"Press active for 0.5s endurance when injured, exhausted.", character:"David", tier:"30" },
+            { name:"Borrowed Time", category:"PROTECT", desc:"Unhooked surv gets +6-10s endurance & haste.", character:"Bill", tier:"30" },
+            { name:"Mettle of Man", category:"PROTECT", desc:"3 protection hits → next damage ignored.", character:"Ash", tier:"30" },
+            { name:"We're Gonna Live Forever", category:"PROTECT", desc:"Heal dying +100%, they get endurance 6-10s.", character:"David", tier:"30" },
+            { name:"Babysitter", category:"PROTECT", desc:"Unhook: killer aura 8s, unhooked hides scratch/blood + haste.", character:"Steve", tier:"30" },
+            { name:"Camaraderie", category:"PROTECT", desc:"Hook struggle pauses 26-34s when survivor near.", character:"Steve", tier:"30" },
+            { name:"Reassurance", category:"PROTECT", desc:"Pause sacrifice 20-30s near hook.", character:"Rebecca", tier:"30" },
+            { name:"Boil Over", category:"PROTECT", desc:"Wiggle intensity +60-80%, hide hook auras 16m, drop bonus.", character:"Kate", tier:"30" },
+            { name:"Flip-Flop", category:"PROTECT", desc:"Recovery charges wiggle up to 40-50%.", character:"Ash", tier:"30" },
+            { name:"Power Struggle", category:"PROTECT", desc:"Wiggle 15-25% → drop pallet stun.", character:"Élodie", tier:"30" },
+            { name:"Decisive Strike", category:"PROTECT", desc:"After unhook, skill check to escape grasp, stun 4s.", character:"Laurie", tier:"30" },
+            { name:"Lucky Break", category:"STEALTH", desc:"Injured: suppress blood/scratch 40-60s, recharge by healing.", character:"Yui", tier:"30" },
+            { name:"Dance With Me", category:"STEALTH", desc:"Rush vault: no scratch marks 3s, cd 20-30s.", character:"Kate", tier:"30" },
+            { name:"Lightweight", category:"STEALTH", desc:"Scratch marks fade 3-5s faster, inconsistent.", character:"All", tier:"30" },
+            { name:"Self-Preservation", category:"STEALTH", desc:"Nearby hit → hide scratch/blood/grunts 6-10s.", character:"Yun-Jin", tier:"30" },
+            { name:"Parental Guidance", category:"STEALTH", desc:"Stun killer → hide scratch/blood/grunts 5-7s.", character:"Yoichi", tier:"30" },
+            { name:"Teamwork: Collective Stealth", category:"STEALTH", desc:"Healed: both hide scratches when close.", character:"Renato", tier:"30" },
+            { name:"Iron Will", category:"STEALTH", desc:"Grunts volume -80-100% injured.", character:"Jake", tier:"30" },
+            { name:"Bite the Bullet", category:"STEALTH", desc:"Healing: silent, no loud noise on fail.", character:"Leon", tier:"30" },
+            { name:"Quick & Quiet", category:"STEALTH", desc:"No noise on rushed vault/locker, cd 20-30s.", character:"Meg", tier:"30" },
+            { name:"Deception", category:"STEALTH", desc:"Sprint at locker: fake entry, scratch/blood hidden 3s.", character:"Élodie", tier:"30" },
+            { name:"Light-Footed", category:"STEALTH", desc:"Healthy: suppress footstep sounds.", character:"Ellen", tier:"30" },
+            { name:"Calm Spirit", category:"STEALTH", desc:"No crows, no screams, quiet chest/totem, slower.", character:"Jake", tier:"30" },
+            { name:"Hardened", category:"STEALTH", desc:"After chest & totem, scream → killer aura 3-5s.", character:"Lara", tier:"30" },
+            { name:"Cut Loose", category:"STEALTH", desc:"Rush vault in chase: no noise 4-6s, reset on vault.", character:"Thalita", tier:"30" },
+            { name:"Low Profile", category:"STEALTH", desc:"Last standing: hide grunts/blood/scratch 70-90s.", character:"Ada", tier:"30" },
+            { name:"Prove Thyself", category:"OBJECTIVE", desc:"+6-10% repair per nearby surv.", character:"Dwight", tier:"30" },
+            { name:"Hyperfocus", category:"OBJECTIVE", desc:"Great skill check tokens boost bonus & speed.", character:"Rebecca", tier:"30" },
+            { name:"Stake Out", category:"OBJECTIVE", desc:"Terror radius tokens turn good to great.", character:"Tapp", tier:"30" },
+            { name:"Technician", category:"OBJECTIVE", desc:"Quieter repair, no explosion, regression penalty.", character:"Feng", tier:"30" },
+            { name:"Potential Energy", category:"OBJECTIVE", desc:"Store repair as tokens, release later.", character:"Vittorio", tier:"30" },
+            { name:"Fast Track", category:"OBJECTIVE", desc:"Hooks grant tokens, great check consumes for +1% each.", character:"Yun-Jin", tier:"30" },
+            { name:"Friendly Competition", category:"OBJECTIVE", desc:"Co-op repair: +5% repair speed 45-75s.", character:"Thalita", tier:"30" },
+            { name:"Corrective Action", category:"OBJECTIVE", desc:"Tokens convert failed skill checks of others.", character:"Jonah", tier:"30" },
+            { name:"Invocation: Weaving Spiders", category:"OBJECTIVE", desc:"Basement ritual: reduce gen charges 8-10, broken rest.", character:"Sable", tier:"30" },
+            { name:"Overzealous", category:"OBJECTIVE", desc:"Cleanse totem: repair speed +8-20% until hit.", character:"Haddie", tier:"30" },
+            { name:"Resilience", category:"OBJECTIVE", desc:"Injured: +3-9% action speed.", character:"All", tier:"30" },
+            { name:"This Is Not Happening", category:"OBJECTIVE", desc:"Injured: great skill check zone +10-30%.", character:"All", tier:"30" },
+            { name:"Deadline", category:"OBJECTIVE", desc:"Injured: more skill checks, random, penalty -50%.", character:"Alan", tier:"30" },
+            { name:"Bardic Inspiration", category:"OBJECTIVE", desc:"Performance roll d20, gen skill checks +1-3%.", character:"Aestri", tier:"30" },
+            { name:"Counterforce", category:"MAGIC", desc:"Cleanse 20% faster, stackable, reveal farthest totem.", character:"Jill", tier:"30" },
+            { name:"Small Game", category:"MAGIC", desc:"Auditory warning toward totems.", character:"All", tier:"30" },
+            { name:"Boon: Shadow Step", category:"MAGIC", desc:"Hide scratch/aura inside boon.", character:"Mikaela", tier:"30" },
+            { name:"Boon: Illumination", category:"MAGIC", desc:"Reveal chests/gens, bless speed +6-10%.", character:"Alan", tier:"30" },
+            { name:"Invocation: Treacherous Crows", category:"MAGIC", desc:"Killer scares crow → aura revealed.", character:"Taurie", tier:"30" },
+            { name:"Ace in the Hole", category:"UTILITY", desc:"Chest items get add-ons, keep add-ons on escape.", character:"Ace", tier:"30" },
+            { name:"Appraisal", category:"UTILITY", desc:"Rummage opened chest for second item.", character:"Élodie", tier:"30" },
+            { name:"Built to Last", category:"UTILITY", desc:"Locker recharges item 99/66/33%.", character:"Felix", tier:"30" },
+            { name:"Scavenger", category:"UTILITY", desc:"Great checks recharge toolbox, rummage toolbox.", character:"Gabriel", tier:"30" },
+            { name:"Pharmacy", category:"UTILITY", desc:"Faster chest, quieter, emergency medkit.", character:"Quentin", tier:"30" },
+            { name:"Exultation", category:"UTILITY", desc:"Pallet stun upgrades item rarity & recharge 25%.", character:"Trevor", tier:"30" },
+            { name:"Specialist", category:"UTILITY", desc:"Chest actions give tokens, great check reduces gen charges.", character:"Lara", tier:"30" },
+            { name:"Residual Manifest", category:"UTILITY", desc:"Blind killer → blindness 20-30s, rummage flashlight.", character:"Haddie", tier:"30" },
+            { name:"Flashbang", category:"UTILITY", desc:"Craft flash grenade in locker after gen repair.", character:"Leon", tier:"30" },
+            { name:"Champion of Light", category:"UTILITY", desc:"Shine flashlight +50% haste, blind → hinder killer.", character:"Alan", tier:"30" },
+            { name:"Blast Mine", category:"UTILITY", desc:"Trap gen: stun & blind when kicked.", character:"Jill", tier:"30" },
+            { name:"Chemical Trap", category:"UTILITY", desc:"Trapped pallet: hinder killer 50% 4s.", character:"Ellen", tier:"30" },
+            { name:"Mirrored Illusion", category:"UTILITY", desc:"Spawn static illusion near objectives.", character:"Aestri", tier:"30" },
+            { name:"Any Means Necessary", category:"UTILITY", desc:"Reset dropped pallet, see pallet auras.", character:"Yui", tier:"30" },
+            { name:"Saboteur", category:"UTILITY", desc:"See hook auras, sabotage without toolbox.", character:"Jake", tier:"30" },
+            { name:"Breakdown", category:"UTILITY", desc:"Unhook breaks hook 180s, killer aura.", character:"Jeff", tier:"30" },
+            { name:"Vigil", category:"UTILITY", desc:"Recover from status effects 20-30% faster.", character:"Quentin", tier:"30" },
+            { name:"Streetwise", category:"UTILITY", desc:"Item efficiency +15-25%, team aura.", character:"Nea", tier:"30" },
+            { name:"Up the Ante", category:"UTILITY", desc:"Luck for self-unhook per survivor.", character:"Ace", tier:"30" },
+            { name:"Slippery Meat", category:"UTILITY", desc:"+3 unhook attempts, +2-4% odds.", character:"All", tier:"30" },
+            { name:"No One Left Behind", category:"UTILITY", desc:"Endgame: heal/unhook speed, haste boost, auras.", character:"All", tier:"30" },
+            { name:"Wake Up!", category:"UTILITY", desc:"Exit gate auras, opening speed 15-25%.", character:"Quentin", tier:"30" },
+            { name:"Plot Twist", category:"UTILITY", desc:"Injured: silently go dying, full recover + haste.", character:"Nicolas", tier:"30" },
+            { name:"Diversion", category:"UTILITY", desc:"Throw pebble distraction.", character:"Adam", tier:"30" },
+            { name:"Red Herring", category:"UTILITY", desc:"Locker triggers noise at highlighted gen.", character:"Zarina", tier:"30" },
+            { name:"Repressed Alliance", category:"UTILITY", desc:"Block gen for 30s.", character:"Cheryl", tier:"30" },
+            { name:"Head On", category:"UTILITY", desc:"Locker rush exit stuns killer 3s.", character:"Jane", tier:"30" },
+            { name:"Quick Gambit", category:"UTILITY", desc:"Chase: see others, +3-5% repair speed.", character:"Vittorio", tier:"30" },
+            { name:"Inner Focus", category:"UTILITY", desc:"See scratch marks, injured reveals killer.", character:"Haddie", tier:"30" },
+            { name:"Lucky Star", category:"UTILITY", desc:"Locker suppress grunts, exit reveals auras.", character:"Ellen", tier:"30" },
+            { name:"Finesse", category:"UTILITY", desc:"Healthy: fast vault +20% speed.", character:"Lara", tier:"30" }
+        ];
+
+        const killerPerks = [
+            { name:"A Nurse's Calling", category:"INFO", desc:"Auras of healing Survivors within 20-28m.", character:"Nurse", tier:"30" },
+            { name:"Agitation", category:"SPEED", desc:"Carry speed +6-18%, terror radius +12m.", character:"Trapper", tier:"30" },
+            { name:"Alien Instinct", category:"INFO", desc:"Hook: farthest injured aura 5s + Oblivious 16-20s.", character:"Xenomorph", tier:"30" },
+            { name:"All-Shaking Thunder", category:"CHASE", desc:"Fall from height: Lunge range +75% for 8-16s.", character:"Houndmaster", tier:"30" },
+            { name:"Awakened Awareness", category:"INFO", desc:"Carrying: Auras of Survivors within 16-20m.", character:"Mastermind", tier:"30" },
+            { name:"Bamboozle", category:"CHASE", desc:"Vault speed +5-15%, block window 8-16s.", character:"Clown", tier:"30" },
+            { name:"Barbecue & Chilli", category:"INFO", desc:"Hook: far survivors (40-60m+) aura 5s.", character:"Cannibal", tier:"30" },
+            { name:"Batteries Included", category:"SPEED", desc:"Near completed gen: +5% Haste for 1-5s.", character:"Good Guy", tier:"30" },
+            { name:"Beast of Prey", category:"STEALTH", desc:"Bloodlust grants Undetectable.", character:"Huntress", tier:"30" },
+            { name:"Bitter Murmur", category:"INFO", desc:"Gen complete: Auras near gen 5s, endgame: all 5-10s.", character:"All", tier:"30" },
+            { name:"Blood Echo", category:"SLOWDOWN", desc:"Hook: Injured suffer Exhausted + Hemorrhage 20-30s.", character:"Oni", tier:"30" },
+            { name:"Blood Warden", category:"ENDGAME", desc:"Gate open + hook: Block exits 40-60s.", character:"Nightmare", tier:"30" },
+            { name:"Bloodhound", category:"TRACKING", desc:"Pools of Blood stay visible 2-4s longer.", character:"Wraith", tier:"30" },
+            { name:"Brutal Strength", category:"CHASE", desc:"Break speed +10-20% (pallets, gens, walls).", character:"Trapper", tier:"30" },
+            { name:"Call of Brine", category:"GEN", desc:"Kick gen: Regress 115-125%, Skill Check notifications.", character:"Onryō", tier:"30" },
+            { name:"Corrupt Intervention", category:"GEN", desc:"Block 3 farthest gens 80-120s.", character:"Plague", tier:"30" },
+            { name:"Coulrophobia", category:"TERROR", desc:"Healing speed -30-50% in TR, faster skill checks.", character:"Clown", tier:"30" },
+            { name:"Coup de Grâce", category:"CHASE", desc:"Tokens on gen complete: Lunge range +70-80%.", character:"Twins", tier:"30" },
+            { name:"Cruel Limits", category:"CHASE", desc:"Gen complete: Block vaults 20-30s.", character:"Demogorgon", tier:"30" },
+            { name:"Dark Arrogance", category:"CHASE", desc:"Vault speed +15-25%, Blind/Stun duration +25%.", character:"Lich", tier:"30" },
+            { name:"Dark Devotion", category:"TERROR", desc:"Obsession injured: Transfer TR, gain Undetectable 20-30s.", character:"Plague", tier:"30" },
+            { name:"Darkness Revealed", category:"INFO", desc:"Search locker: Aura near any locker 6-8s.", character:"Dredge", tier:"30" },
+            { name:"Dead Man's Switch", category:"GEN", desc:"Hook: block gen 40-50s if repair stops.", character:"Deathslinger", tier:"30" },
+            { name:"Deathbound", category:"INFO", desc:"Heal finish: Healer screams + Oblivious if far 16-8m.", character:"Executioner", tier:"30" },
+            { name:"Deerstalker", category:"INFO", desc:"Auras of dying Survivors within 20-36m.", character:"All", tier:"30" },
+            { name:"Discordance", category:"INFO", desc:"Gen repaired by 2+ highlighted 64-128m.", character:"Legion", tier:"30" },
+            { name:"Dissolution", category:"CHASE", desc:"Injure: Next fast vault pallet breaks in TR 12-20s.", character:"Dredge", tier:"30" },
+            { name:"Distressing", category:"TERROR", desc:"Terror Radius +22-26%, Deviousness BP +100%.", character:"All", tier:"30" },
+            { name:"Dominance", category:"UTILITY", desc:"First interaction: Block Chest/Totem 8-16s.", character:"Dark Lord", tier:"30" },
+            { name:"Dragon's Grip", category:"EXPOSE", desc:"Kick gen: Next interaction screams + Exposed 60s.", character:"Blight", tier:"30" },
+            { name:"Dying Light", category:"SLOWDOWN", desc:"Non-Obs hook: -2-3% repair speed penalty.", character:"Shape", tier:"30" },
+            { name:"Enduring", category:"CHASE", desc:"Pallet stun duration -40-50%.", character:"Hillbilly", tier:"30" },
+            { name:"Eruption", category:"GEN", desc:"Kick gen → down explodes for -10% and scream.", character:"Nemesis", tier:"30" },
+            { name:"Fire Up", category:"CHASE", desc:"Gen complete: Action speed +3-4% per token.", character:"Nightmare", tier:"30" },
+            { name:"Forced Hesitation", category:"SLOWDOWN", desc:"Down: Nearby survivors Hindered -20% for 10s.", character:"Singularity", tier:"30" },
+            { name:"Forced Penance", category:"UTILITY", desc:"Protection hits inflict Broken 60-80s.", character:"Executioner", tier:"30" },
+            { name:"Franklin's Demise", category:"UTILITY", desc:"Basic attack makes survivors drop and deplete items.", character:"Cannibal", tier:"30" },
+            { name:"Friends 'til the End", category:"EXPOSE", desc:"Non-Obs hook: Obsession exposed 20s, aura 6-10s.", character:"Good Guy", tier:"30" },
+            { name:"Furtive Chase", category:"STEALTH", desc:"Hook Obsession: Undetectable + Haste 14-18s.", character:"Ghost Face", tier:"30" },
+            { name:"Game Afoot", category:"SPEED", desc:"Chase Obsession: Haste 5% for 8-10s after breaking.", character:"Skull Merchant", tier:"30" },
+            { name:"Gearhead", category:"INFO", desc:"Injure: Good Skill Check aura 6-8s for 30s.", character:"Deathslinger", tier:"30" },
+            { name:"Genetic Limits", category:"SLOWDOWN", desc:"Lose health state: Exhausted 6-8s.", character:"Singularity", tier:"30" },
+            { name:"Grim Embrace", category:"GEN", desc:"Tokens on unique hooks: Block gens 6-10s (40s at 4).", character:"Artist", tier:"30" },
+            { name:"Hex: Blood Favour", category:"HEX", desc:"Injure: Block pallets within 24-32m for 15s.", character:"Blight", tier:"30" },
+            { name:"Hex: Crowd Control", category:"HEX", desc:"Rushed vault: Block window permanently (rotating 3-5).", character:"Trickster", tier:"30" },
+            { name:"Hex: Devour Hope", category:"HEX", desc:"Tokens: 2=Haste, 3=Exposed, 5=Kill.", character:"Hag", tier:"30" },
+            { name:"Hex: Face the Darkness", category:"HEX", desc:"Injure: Scream outside TR every 25-35s.", character:"Knight", tier:"30" },
+            { name:"Hex: Haunted Ground", category:"HEX", desc:"Cleanse: All Exposed 40-60s (two totems).", character:"Spirit", tier:"30" },
+            { name:"Hex: Huntress Lullaby", category:"HEX", desc:"Tokens: Skill check warning shorter/fail penalty 2-6%.", character:"Huntress", tier:"30" },
+            { name:"Hex: No One Escapes Death", category:"HEX", desc:"Endgame: Haste 2-4% + Exposed.", character:"All", tier:"30" },
+            { name:"Hex: Pentimento", category:"HEX", desc:"Rekindle totems: Stacking slowdown effects.", character:"Artist", tier:"30" },
+            { name:"Hex: Retribution", category:"HEX", desc:"Totem cleanse: Oblivious 35-45s. Hex cleanse: All auras 15s.", character:"Deathslinger", tier:"30" },
+            { name:"Hex: Ruin", category:"HEX", desc:"Gens regress at 50-100% speed when not repaired.", character:"Hag", tier:"30" },
+            { name:"Hex: The Third Seal", category:"HEX", desc:"Hit inflicts Blindness on last 2-4 survivors.", character:"Hag", tier:"30" },
+            { name:"Hex: Thrill of the Hunt", category:"HEX", desc:"Totem token: Slower cleanse/bless speed 10-14% per.", character:"All", tier:"30" },
+            { name:"Hex: Two Can Play", category:"HEX", desc:"Stunned 4-2 times: Blind stunners 1.5s.", character:"Good Guy", tier:"30" },
+            { name:"Hex: Undying", category:"HEX", desc:"Aura near dull totems 2-4m, Hex transfer.", character:"Blight", tier:"30" },
+            { name:"Hex: Wretched Fate", category:"HEX", desc:"Gen complete: Obsession repair speed -27-33%.", character:"Dark Lord", tier:"30" },
+            { name:"Hoarder", category:"INFO", desc:"Loud noise on chest/item pick up 32-64m.", character:"Twins", tier:"30" },
+            { name:"Hubris", category:"EXPOSE", desc:"Stunned: That survivor Exposed 10-20s.", character:"Knight", tier:"30" },
+            { name:"Human Greed", category:"INFO", desc:"Kick chests closed, aura near unopened 8m.", character:"Dark Lord", tier:"30" },
+            { name:"Hysteria", category:"UTILITY", desc:"Injure healthy: All injured Oblivious 20-30s.", character:"Nemesis", tier:"30" },
+            { name:"I'm All Ears", category:"INFO", desc:"Rushed vault within 48m: Aura 6s.", character:"Ghost Face", tier:"30" },
+            { name:"Infectious Fright", category:"INFO", desc:"Down → survivors in TR scream 4-6s.", character:"Plague", tier:"30" },
+            { name:"Insidious", category:"STEALTH", desc:"Stand still 4-2s: Gain Undetectable.", character:"All", tier:"30" },
+            { name:"Iron Grasp", category:"CARRY", desc:"Wiggle effects -75%, time +4-12%.", character:"All", tier:"30" },
+            { name:"Iron Maiden", category:"EXPOSE", desc:"Exit locker: Scream + Exposed 30s.", character:"Legion", tier:"30" },
+            { name:"Knock Out", category:"SLOWDOWN", desc:"Dying state: Blindness, slow crawl, hidden aura.", character:"Cannibal", tier:"30" },
+            { name:"Languid Touch", category:"SLOWDOWN", desc:"Scare crow: Exhausted 6-10s.", character:"Lich", tier:"30" },
+            { name:"Lethal Pursuer", category:"INFO", desc:"Start: all auras 7-9s, +2s to all aura reads.", character:"Nemesis", tier:"30" },
+            { name:"Leverage", category:"SLOWDOWN", desc:"Unhook: Healer healing speed -30-50% for 30s.", character:"Skull Merchant", tier:"30" },
+            { name:"Lightborn", category:"UTILITY", desc:"Immune to blinds, aura of blinders 6-10s.", character:"Hillbilly", tier:"30" },
+            { name:"Machine Learning", category:"STEALTH", desc:"Kick gen: Completed gen grants Undetectable + Haste 35-45s.", character:"Singularity", tier:"30" },
+            { name:"Mad Grit", category:"CARRY", desc:"Carry: Miss attack no CD, pause wiggle 2-4s on hit.", character:"Legion", tier:"30" },
+            { name:"Make Your Choice", category:"EXPOSE", desc:"Far unhook (32m+): Unhooker Exposed 40-60s.", character:"Pig", tier:"30" },
+            { name:"Merciless Storm", category:"GEN", desc:"90% repair: Continuous skill checks, fail blocks 16-20s.", character:"Onryō", tier:"30" },
+            { name:"Mindbreaker", category:"SLOWDOWN", desc:"Repair gen: Blindness + Exhausted.", character:"Demogorgon", tier:"30" },
+            { name:"Monitor & Abuse", category:"TERROR", desc:"TR +6-8m. Out of chase: TR -12-16m.", character:"Doctor", tier:"30" },
+            { name:"Nemesis", category:"INFO", desc:"Stunned/Blinded: New Obsession Oblivious 40-60s + Aura 4s.", character:"Oni", tier:"30" },
+            { name:"No Quarter", category:"SLOWDOWN", desc:"Self-heal 75%: Continuous checks, fail = Broken 20-30s.", character:"Houndmaster", tier:"30" },
+            { name:"No Way Out", category:"ENDGAME", desc:"Tokens per unique hook: Block gates 12+6-12s per token.", character:"Trickster", tier:"30" },
+            { name:"Nowhere to Hide", category:"INFO", desc:"Kick gen: Aura of survivors within 24m for 3-5s.", character:"Knight", tier:"30" },
+            { name:"Oppression", category:"GEN", desc:"Kick gen: 3 other gens regress + difficult skill check.", character:"Twins", tier:"30" },
+            { name:"Overcharge", category:"GEN", desc:"Kick gen: Difficult skill check, fail = -2-4% extra.", character:"Doctor", tier:"30" },
+            { name:"Overwhelming Presence", category:"TERROR", desc:"Item depletion rate +80-100% in TR.", character:"Doctor", tier:"30" },
+            { name:"Play with Your Food", category:"SPEED", desc:"Let Obsession go: 3-5% Haste per token (max 3).", character:"Shape", tier:"30" },
+            { name:"Pop Goes the Weasel", category:"GEN", desc:"Hook: Kick gen = -20% current progress.", character:"Clown", tier:"30" },
+            { name:"Predator", category:"TRACKING", desc:"Lose chase: Aura of survivor 4s.", character:"Wraith", tier:"30" },
+            { name:"Rancor", category:"INFO", desc:"Gen complete: All locations revealed, endgame: Kill Obsession.", character:"Spirit", tier:"30" },
+            { name:"Rapid Brutality", category:"SPEED", desc:"No Bloodlust. Hit = +5% Haste 8-10s.", character:"Xenomorph", tier:"30" },
+            { name:"Remember Me", category:"ENDGAME", desc:"Obs hit: Gate opening +6s per token (max 12-24s).", character:"Nightmare", tier:"30" },
+            { name:"Save the Best for Last", category:"CHASE", desc:"Hit non-Obs: -4% attack CD per token (max 24-32%).", character:"Shape", tier:"30" },
+            { name:"Scourge Hook: Floods of Rage", category:"SCOURGE", desc:"Unhook: All other auras 5-7s.", character:"Onryō", tier:"30" },
+            { name:"Scourge Hook: Hangman's Trick", category:"SCOURGE", desc:"Sabotage notification, carry: aura near hook 8-12m.", character:"Pig", tier:"30" },
+            { name:"Scourge Hook: Jagged Compass", category:"SCOURGE", desc:"Unhook normal: becomes Scourge. Hook Scourge: Gen aura 6-10s.", character:"Houndmaster", tier:"30" },
+            { name:"Scourge Hook: Monstrous Shrine", category:"SCOURGE", desc:"Basement hook: Sacrifice speed +10-20%.", character:"All", tier:"30" },
+            { name:"Scourge Hook: Pain Resonance", category:"SCOURGE", desc:"First hook: Most progressed gen -10-20%.", character:"Artist", tier:"30" },
+            { name:"Septic Touch", category:"TERROR", desc:"Heal in TR: Blindness + Exhausted 6-10s linger.", character:"Dredge", tier:"30" },
+            { name:"Shadowborn", category:"UTILITY", desc:"Blinded: +6-10% Haste for 10s.", character:"Wraith", tier:"30" },
+            { name:"Shattered Hope", category:"UTILITY", desc:"Destroy Boon: Aura reveal within range 6-8s.", character:"All", tier:"30" },
+            { name:"Sloppy Butcher", category:"SLOWDOWN", desc:"Mangled + Hemorrhage 70-90s, faster bleeding.", character:"All", tier:"30" },
+            { name:"Spies from the Shadows", category:"INFO", desc:"Crow alert within 20-36m.", character:"All", tier:"30" },
+            { name:"Spirit Fury", category:"CHASE", desc:"Break 4-2 pallets: Next stun auto-breaks pallet.", character:"Spirit", tier:"30" },
+            { name:"Starstruck", category:"EXPOSE", desc:"Carry: Survivors in TR Exposed, lingers 26-30s.", character:"Trickster", tier:"30" },
+            { name:"Stridor", category:"TRACKING", desc:"Grunt volume +30-50%, breathing +15-25%.", character:"Nurse", tier:"30" },
+            { name:"Superior Anatomy", category:"CHASE", desc:"Rushed vault near you: Vault speed +30-40%.", character:"Mastermind", tier:"30" },
+            { name:"Surge", category:"GEN", desc:"Down basic: Gens within 32m explode -6-8%.", character:"Demogorgon", tier:"30" },
+            { name:"Surveillance", category:"INFO", desc:"Regressing gen white. Interrupted regress yellow 8-16s.", character:"Pig", tier:"30" },
+            { name:"THWACK!", category:"INFO", desc:"Break pallet/wall: Survivors within 24m scream 3-5s.", character:"Skull Merchant", tier:"30" },
+            { name:"Terminus", category:"ENDGAME", desc:"Gates powered: Injured/hooked Broken 20-30s.", character:"Mastermind", tier:"30" },
+            { name:"Territorial Imperative", category:"INFO", desc:"Survivor enters basement 24m+ away: Aura 4-6s.", character:"Huntress", tier:"30" },
+            { name:"Thanatophobia", category:"SLOWDOWN", desc:"Injured/Dying/Hooked: Action speed -1-2% per (max 4-8%).", character:"Nurse", tier:"30" },
+            { name:"Thrilling Tremors", category:"GEN", desc:"Pick up: Block non-repaired gens 16s.", character:"Ghost Face", tier:"30" },
+            { name:"Tinkerer", category:"INFO", desc:"Gen 70%: Loud noise + Undetectable 12-16s.", character:"Hillbilly", tier:"30" },
+            { name:"Trail of Torment", category:"STEALTH", desc:"Kick gen → Undetectable until regress stops.", character:"Executioner", tier:"30" },
+            { name:"Ultimate Weapon", category:"INFO", desc:"Open locker: Survivors in 32m scream + Blind 30s.", character:"Xenomorph", tier:"30" },
+            { name:"Unbound", category:"SPEED", desc:"Injure: Haste 5% for 10s after vault (active 24-30s).", character:"Unknown", tier:"30" },
+            { name:"Undone", category:"GEN", desc:"Skill check fail token: Kick gen regress -1% per token.", character:"Unknown", tier:"30" },
+            { name:"Unforeseen", category:"STEALTH", desc:"Kick gen: Transfer TR to gen, Undetectable 22-30s.", character:"Unknown", tier:"30" },
+            { name:"Unnerving Presence", category:"TERROR", desc:"In TR: Skill check odds +10%, success zone -40-60%.", character:"Trapper", tier:"30" },
+            { name:"Unrelenting", category:"CHASE", desc:"Missed attack cooldown -20-30%.", character:"All", tier:"30" },
+            { name:"Weave Attunement", category:"INFO", desc:"Depleted item: Aura of item + Survivor within 8m.", character:"Lich", tier:"30" },
+            { name:"Whispers", category:"INFO", desc:"Entity whispers when survivor within 48-32m.", character:"All", tier:"30" },
+            { name:"Zanshin Tactics", category:"INFO", desc:"Auras of pallets/windows 32m. Drop reveals aura 3-5s.", character:"Oni", tier:"30" },
+            { name:"Turn Back The Clock", category:"GEN", desc:"Hook Survivors and damage Generators simultaneously, stalling progress with ruthless efficiency.", character:"The First", tier:"30" },
+            { name:"Secret Project", category:"HEX", desc:"Survivors interacting with Totems unknowingly accelerate their own downfall.", character:"The First", tier:"30" },
+            { name:"Hex: Hive Mind", category:"HEX", desc:"Survivors' progress regresses as their success turns against them under a shared curse.", character:"The First", tier:"30" },
+            { name:"Help Wanted", category:"GEN", desc:"Damaging a Generator compromises it. Once repaired, your Basic Attack cooldown is reduced for a duration.", character:"The Animatronic", tier:"30" },
+            { name:"Phantom Fear", category:"INFO", desc:"Survivors who look at you within your Terror Radius scream and briefly reveal their Aura.", character:"The Animatronic", tier:"30" },
+            { name:"Haywire", category:"SLOWDOWN", desc:"Exit Gates regress over time, with flickering lights disrupting Survivor focus.", character:"The Animatronic", tier:"30" },
+            { name:"Hex: Nothing But Misery", category:"HEX", desc:"After damaging Survivors, a Dull Totem becomes a Hex Totem that causes Hindered on Basic Attacks.", character:"The Ghoul", tier:"30" },
+            { name:"Forever Entwined", category:"SPEED", desc:"Gain Tokens when Survivors take damage, increasing pick-up, drop, and hook speeds per Token.", character:"The Ghoul", tier:"30" },
+            { name:"None Are Free", category:"SLOWDOWN", desc:"Hooking Survivors grants Tokens. Once all Generators are completed, Windows and Pallets are blocked based on Tokens.", character:"The Ghoul", tier:"30" },
+            { name:"Hex: Overture of Doom", category:"HEX", desc:"A Hex Totem curses distant Generators, transferring your Terror Radius and granting Undetectable while Survivors repair them.", character:"The Krasue", tier:"30" },
+            { name:"Ravenous", category:"EXPOSE", desc:"After all Survivors are Hooked once, they scream and become Exposed for a duration.", character:"The Krasue", tier:"30" },
+            { name:"Wandering Eye", category:"INFO", desc:"While chasing a Survivor, nearby injured Survivors have their Auras revealed.", character:"The Krasue", tier:"30" },
+        ];
+        const validFilenamesStr = `IconPerks_aceInTheHole.webp IconPerks_adrenaline.webp IconPerks_aftercare.webp IconPerks_agitation.webp IconPerks_alert.webp IconPerks_alienInstinct.webp IconPerks_allShakingThunder.webp IconPerks_aNursesCalling.webp IconPerks_anyMeansNecessary.webp IconPerks_appraisal.webp IconPerks_autodidact.webp IconPerks_awakenedAwareness.webp IconPerks_babysitter.webp IconPerks_backgroundPlayer.webp IconPerks_balancedLanding.webp IconPerks_bamboozle.webp IconPerks_barbecueAndChilli.webp IconPerks_bardicInspiration.webp IconPerks_batteriesIncluded.webp IconPerks_beastOfPrey.webp IconPerks_betterThanNew.webp IconPerks_betterTogether.webp IconPerks_biteTheBullet.webp IconPerks_bitterMurmur.webp IconPerks_blastMine.webp IconPerks_bloodEcho.webp IconPerks_bloodhound.webp IconPerks_bloodPact.webp IconPerks_bloodRush.webp IconPerks_bloodWarden.webp IconPerks_boilOver.webp IconPerks_bond.webp IconPerks_boonCircleOfHealing.webp IconPerks_boonDarkTheory.webp IconPerks_boonExponential.webp IconPerks_boonIllumination.webp IconPerks_boonShadowStep.webp IconPerks_borrowedTime.webp IconPerks_botanyKnowledge.webp IconPerks_breakdown.webp IconPerks_breakout.webp IconPerks_brutalStrength.webp IconPerks_buckleUp.webp IconPerks_builtToLast.webp IconPerks_callOfBrine.webp IconPerks_calmSpirit.webp IconPerks_camaraderie.webp IconPerks_championOfLight.webp IconPerks_chemicalTrap.webp IconPerks_clairvoyance.webp IconPerks_cleanBreak.webp IconPerks_correctiveAction.webp IconPerks_corruptIntervention.webp IconPerks_coulrophobia.webp IconPerks_counterforce.webp IconPerks_coupDeGrace.webp IconPerks_cruelLimits.webp IconPerks_cutLoose.webp IconPerks_danceWithMe.webp IconPerks_darkArrogance.webp IconPerks_darkDevotion.webp IconPerks_darknessRevealed.webp IconPerks_darkSense.webp IconPerks_deadHard.webp IconPerks_deadline.webp IconPerks_deadMansSwitch.webp IconPerks_deathbound.webp IconPerks_deception.webp IconPerks_decisiveStrike.webp IconPerks_deerstalker.webp IconPerks_dejaVu.webp IconPerks_deliverance.webp IconPerks_desperateMeasures.webp IconPerks_detectivesHunch.webp IconPerks_discordance.webp IconPerks_dissolution.webp IconPerks_distortion.webp IconPerks_distressing.webp IconPerks_diversion.webp IconPerks_Dominance.webp IconPerks_dragonsGrip.webp IconPerks_dramaturgy.webp IconPerks_dyingLight.webp IconPerks_empathicConnection.webp IconPerks_empathy.webp IconPerks_enduring.webp IconPerks_eruption.webp IconPerks_Exultation.webp IconPerks_EyesOfBelmont.webp IconPerks_fastTrack.webp IconPerks_finesse.webp IconPerks_fireUp.webp IconPerks_fixated.webp IconPerks_flashbang.webp IconPerks_flipFlop.webp IconPerks_fogwise.webp IconPerks_forcedHesitation.webp IconPerks_forcedPenance.webp IconPerks_foreverEntwined.webp IconPerks_forThePeople.webp IconPerks_franklinsDemise.webp IconPerks_friendlyCompetition.webp IconPerks_friendsTilTheEnd.webp IconPerks_furtiveChase.webp IconPerks_gameAfoot.webp IconPerks_gearhead.webp IconPerks_geneticLimits.webp IconPerks_grimEmbrace.webp IconPerks_hardened.webp IconPerks_haywire.webp IconPerks_headOn.webp IconPerks_helpWanted.webp IconPerks_hexBloodFavour.webp IconPerks_hexCrowdControl.webp IconPerks_hexDevourHope.webp IconPerks_hexFaceTheDarkness.webp IconPerks_hexHauntedGround.webp IconPerks_hexHiveMind.webp IconPerks_hexHuntressLullaby.webp IconPerks_hexNoOneEscapesDeath.webp IconPerks_hexNothingButMisery.webp IconPerks_hexOvertureOfDoom.webp IconPerks_hexPentimento.webp IconPerks_hexRetribution.webp IconPerks_hexRuin.webp IconPerks_hexTheThirdSeal.webp IconPerks_hexThrillOfTheHunt.webp IconPerks_hexTwoCanPlay.webp IconPerks_hexUndying.webp IconPerks_HexWretchedFate.webp IconPerks_hoarder.webp IconPerks_hope.webp IconPerks_hubris.webp IconPerks_HumanGreed.webp IconPerks_hyperfocus.webp IconPerks_hysteria.webp IconPerks_imAllEars.webp IconPerks_infectiousFright.webp IconPerks_innerFocus.webp IconPerks_innerStrength.webp IconPerks_insidious.webp IconPerks_invocationTreacherousCrows.webp IconPerks_invocationWeavingSpiders.webp IconPerks_ironGrasp.webp IconPerks_ironMaiden.webp IconPerks_ironWill.webp IconPerks_kindred.webp IconPerks_knockOut.webp IconPerks_languidTouch.webp IconPerks_leader.webp IconPerks_leftBehind.webp IconPerks_lethalPursuer.webp IconPerks_leverage.webp IconPerks_lightborn.webp IconPerks_lightFooted.webp IconPerks_lightweight.webp IconPerks_lithe.webp IconPerks_lowProfile.webp IconPerks_luckyBreak.webp IconPerks_luckyStar.webp IconPerks_machineLearning.webp IconPerks_madeForThis.webp IconPerks_madGrit.webp IconPerks_makeYourChoice.webp IconPerks_mercilessStorm.webp IconPerks_mettleOfMan.webp IconPerks_mindbreaker.webp IconPerks_mirroredIllusion.webp IconPerks_MomentOfGlory.webp IconPerks_monitorAndAbuse.webp IconPerks_nemesis.webp IconPerks_noMither.webp IconPerks_noneAreFree.webp IconPerks_noOneLeftBehind.webp IconPerks_noQuarter.webp IconPerks_noWayOut.webp IconPerks_nowhereToHide.webp IconPerks_objectOfObsession.webp IconPerks_offTheRecord.webp IconPerks_openHanded.webp IconPerks_oppression.webp IconPerks_overcharge.webp IconPerks_overcome.webp IconPerks_overwhelmingPresence.webp IconPerks_overzealous.webp IconPerks_parentalGuidance.webp IconPerks_phantomFear.webp IconPerks_pharmacy.webp IconPerks_playWithYourFood.webp IconPerks_plotTwist.webp IconPerks_plunderersInstinct.webp IconPerks_poised.webp IconPerks_popGoesTheWeasel.webp IconPerks_potentialEnergy.webp IconPerks_powerStruggle.webp IconPerks_predator.webp IconPerks_premonition.webp IconPerks_proveThyself.webp IconPerks_quickAndQuiet.webp IconPerks_quickGambit.webp IconPerks_rancor.webp IconPerks_rapidBrutality.webp IconPerks_ravenous.webp IconPerks_reactiveHealing.webp IconPerks_reassurance.webp IconPerks_redHerring.webp IconPerks_rememberMe.webp IconPerks_repressedAlliance.webp IconPerks_residualManifest.webp IconPerks_resilience.webp IconPerks_resurgence.webp IconPerks_rookieSpirit.webp IconPerks_saboteur.webp IconPerks_saveTheBestForLast.webp IconPerks_scavenger.webp IconPerks_scenePartner.webp IconPerks_scourgeHookFloodsOfRage.webp IconPerks_scourgeHookHangmansTrick.webp IconPerks_scourgeHookJaggedCompass.webp IconPerks_scourgeHookMonstrousShrine.webp IconPerks_scourgeHookPainResonance.webp IconPerks_secondWind.webp IconPerks_secretProject.webp IconPerks_selfCare.webp IconPerks_selfPreservation.webp IconPerks_septicTouch.webp IconPerks_shadowborn.webp IconPerks_shatteredHope.webp IconPerks_shoulderTheBurden.webp IconPerks_slipperyMeat.webp IconPerks_sloppyButcher.webp IconPerks_smallGame.webp IconPerks_smashHit.webp IconPerks_soleSurvivor.webp IconPerks_solidarity.webp IconPerks_soulGuard.webp IconPerks_specialist.webp IconPerks_spiesFromTheShadows.webp IconPerks_spineChill.webp IconPerks_spiritFury.webp IconPerks_sprintBurst.webp IconPerks_stakeOut.webp IconPerks_starstruck.webp IconPerks_stillSight.webp IconPerks_streetwise.webp IconPerks_strengthInShadows.webp IconPerks_stridor.webp IconPerks_superiorAnatomy.webp IconPerks_surge.webp IconPerks_surveillance.webp IconPerks_teamworkCollectiveStealth.webp IconPerks_teamworkPowerOfTwo.webp IconPerks_technician.webp IconPerks_tenacity.webp IconPerks_terminus.webp IconPerks_territorialImperative.webp IconPerks_thanatophobia.webp IconPerks_thisIsNotHappening.webp IconPerks_thrillingTremors.webp IconPerks_thwack.webp IconPerks_tinkerer.webp IconPerks_trailOfTorment.webp IconPerks_troubleshooter.webp IconPerks_turnBackTheClock.webp IconPerks_ultimateWeapon.webp IconPerks_unbound.webp IconPerks_unbreakable.webp IconPerks_undone.webp IconPerks_unforeseen.webp IconPerks_unnervingPresence.webp IconPerks_unrelenting.webp IconPerks_upTheAnte.webp IconPerks_urbanEvasion.webp IconPerks_vigil.webp IconPerks_visionary.webp IconPerks_wakeUp.webp IconPerks_wanderingEye.webp IconPerks_weaveAttunement.webp IconPerks_wellMakeIt.webp IconPerks_wereGonnaLiveForever.webp IconPerks_whispers.webp IconPerks_wicked.webp IconPerks_windowsOfOpportunity.webp IconPerks_wiretap.webp IconPerks_zanshinTactics.webp`;
+        const fileArray = validFilenamesStr.split(/\s+/);
+
+        // System State
+        let currentMode = 'survivor';
+        let currentDataset = survivorPerks;
+        let activeCategory = 'ALL';
+        
+        // --- Core Functions ---
+function normalizeString(str) {
+    return str.toLowerCase()
+        .replace(/[éèêë]/g, 'e')
+        .replace(/[üùû]/g, 'u')
+        .replace(/[àâä]/g, 'a')
+        .replace(/[ôö]/g, 'o')
+        .replace(/[^a-z0-9]/g, '');
+}
+
+function fuzzyMatchFilename(perkName) {
+    let normalized = normalizeString(perkName);
+    
+    // Special case mappings for known problematic names (check FIRST)
+    const specialCases = {
+        'dejavu': 'IconPerks_dejaVu.webp',
+        'coupdegrace': 'IconPerks_coupDeGrace.webp',
+        'hexovertureofdoom': 'IconPerks_hexOvertureOfDoom.webp',
+        'ravenous': 'IconPerks_ravenous.webp',
+        'wanderingeye': 'IconPerks_wanderingEye.webp',
+        'barbecuechilli': 'IconPerks_barbecueAndChilli.webp',
+        'monitorabuse': 'IconPerks_monitorAndAbuse.webp',
+        'quickquiet': 'IconPerks_quick&Quiet.webp'  // Add this line
+    };
+    
+    // Check special cases first
+    if (specialCases[normalized]) {
+        return specialCases[normalized];
+    }
+    
+    // Direct match using normalized comparison
+    let match = fileArray.find(f => {
+        let fNorm = f.replace('IconPerks_', '').replace('.webp', '').toLowerCase();
+        return normalizeString(fNorm) === normalized;
+    });
+    
+    // If no direct match, try partial match
+    if (!match) {
+        match = fileArray.find(f => {
+            let fNorm = normalizeString(f.replace('IconPerks_', '').replace('.webp', ''));
+            return fNorm.includes(normalized) || normalized.includes(fNorm);
+        });
+    }
+    
+    return match ? match : `IconPerks_default.webp`;
+}
+        function generateScenario(perk, mode) {
+            const isSurv = mode === 'survivor';
+            const cat = perk.category;
+            const name = perk.name;
+
+            if (isSurv) {
+                switch(cat) {
+                    case 'SPEED': return `The Killer closes in fast. Just as you are about to take a hit, ${name} activates, giving you the crucial burst of distance needed to reach the next loop safely.`;
+                    case 'INFO': return `You are unsure of the enemy's location. Suddenly, ${name} triggers, feeding you tactical telemetry to plan your next rotation entirely undetected.`;
+                    case 'HEAL': return `Your team is battered and morale is low. Leveraging ${name}, you rapidly stabilize the situation, turning a near-wipe into a complete reset.`;
+                    case 'PROTECT': return `The Killer commits to a deadly lunge. Relying on ${name}, you take the hit, protecting your objective and turning the Killer's aggression into a waste of time.`;
+                    case 'STEALTH': return `The terror radius swells. The Killer is actively searching your sector. Thanks to ${name}, your presence is masked, allowing the threat to pass by oblivious.`;
+                    case 'OBJECTIVE': return `The trial is at a standstill. You utilize ${name} to break the deadlock, drastically accelerating repair progress and applying immense pressure.`;
+                    case 'UTILITY': return `You find yourself in an unpredictable scenario. You adapt on the fly using ${name}, utilizing your environment to gain a distinct mechanical advantage over the trial.`;
+                    default: return `In the heat of the trial, utilizing ${name} provides the tactical edge required to outlast the Entity's game.`;
+                }
+            } else {
+                switch(cat) {
+                    case 'INFO': return `The prey thinks they are hidden. ${name} reveals their exact position, allowing you to cut off their escape route before they even know you are there.`;
+                    case 'SPEED': return `They try to create distance, but ${name} surges your momentum. You close the gap with terrifying speed, leaving them no time to react.`;
+                    case 'CHASE': return `A survivor attempts to drop a pallet and buy time. You utilize ${name} to completely negate their defense, ensuring the chase ends swiftly and violently.`;
+                    case 'SLOWDOWN': return `The generators are popping too fast. You trigger ${name}, severely crippling the survivors' hope and dragging the trial to a grueling halt.`;
+                    case 'GEN': return `You patrol your territory. Finding a progressing generator, ${name} allows you to punish their objective progress and force them into a compromised position.`;
+                    case 'TERROR': return `You weaponize fear. Using ${name}, you instill overwhelming panic across the map, forcing the survivors into fatal mistakes.`;
+                    case 'EXPOSE': return `A survivor makes a bold play, underestimating your lethality. ${name} triggers, allowing you to instantly down them with a single, devastating blow.`;
+                    case 'HEX': return `The survivors remain ignorant of the cursed ground they walk on. The power of ${name} heavily tips the scales in your favor—until they find the totem.`;
+                    default: return `You dominate the trial, utilizing ${name} to impose your will and ensure none escape the Entity's grasp.`;
+                }
+            }
+        }
+
+        // --- Render Functions ---
+
+        function renderTabs() {
+            const tabContainer = document.getElementById('category-tabs');
+            const categories = ['ALL', ...new Set(currentDataset.map(p => p.category))];
+            
+            tabContainer.innerHTML = '';
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = `cat-tab ${cat === activeCategory ? 'active' : ''}`;
+                btn.innerText = cat;
+                btn.onclick = () => {
+                    activeCategory = cat;
+                    renderTabs(); // update active class
+                    applyFilters();
+                };
+                tabContainer.appendChild(btn);
+            });
+        }
+
+        function applyFilters() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const sortVal = document.getElementById('sort-select').value;
+            
+            let filtered = currentDataset.filter(p => {
+                const matchSearch = p.name.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query);
+                const matchCat = activeCategory === 'ALL' || p.category === activeCategory;
+                return matchSearch && matchCat;
+            });
+
+            if (sortVal === 'A-Z') {
+                filtered.sort((a,b) => a.name.localeCompare(b.name));
+            } else if (sortVal === 'Z-A') {
+                filtered.sort((a,b) => b.name.localeCompare(a.name));
+            } else if (sortVal === 'CATEGORY') {
+                filtered.sort((a,b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
+            }
+
+            renderList(filtered);
+        }
+
+        function renderList(perkArray) {
+            const listEl = document.getElementById('perk-list');
+            listEl.innerHTML = '';
+
+            if(perkArray.length === 0) {
+                listEl.innerHTML = '<div style="padding: 2rem; color: var(--text-dim); text-align: center;">No matching data found in current parameters.</div>';
+                return;
+            }
+
+            perkArray.forEach((perk, index) => {
+                const imgName = fuzzyMatchFilename(perk.name);
+                const card = document.createElement('div');
+                card.className = 'perk-card';
+                card.innerHTML = `
+                    <img class="perk-card-icon" src="../assets/images/perks/${imgName}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\'><circle cx=\\'50\\' cy=\\'50\\' r=\\'40\\' fill=\\'none\\' stroke=\\'red\\' stroke-width=\\'2\\'/></svg>'">
+                    <div class="perk-card-info">
+                        <h3>${perk.name}</h3>
+                        <span>[${perk.category}]</span>
+                    </div>
+                `;
+                card.onclick = () => activatePerk(perk, imgName, card);
+                listEl.appendChild(card);
+
+                // Auto select first entry on load
+                if(index === 0) activatePerk(perk, imgName, card);
+            });
+        }
+
+        function activatePerk(perk, imgName, element) {
+            // UI Update
+            document.querySelectorAll('.perk-card').forEach(c => c.classList.remove('active'));
+            if(element) element.classList.add('active');
+
+            // Glitch Title Effect
+            const titleEl = document.getElementById('display-title');
+            titleEl.classList.remove('glitch-text');
+            void titleEl.offsetWidth; // trigger reflow
+            titleEl.classList.add('glitch-text');
+
+            // Populate Panel Data
+            document.getElementById('display-icon').src = `../assets/images/perks/${imgName}`;
+            titleEl.innerText = perk.name;
+            document.getElementById('meta-cat').innerText = `CLASS: ${perk.category}`;
+            document.getElementById('meta-char').innerText = `ORIGIN: ${perk.character}`;
+            document.getElementById('display-desc').innerText = perk.desc;
+            
+            // Generate Scenario
+            document.getElementById('display-scenario').innerText = generateScenario(perk, currentMode);
+        }
+
+        // --- Event Handlers ---
+        
+        function setFaction(mode) {
+            currentMode = mode;
+            currentDataset = mode === 'survivor' ? survivorPerks : killerPerks;
+            activeCategory = 'ALL';
+            
+            // Toggle Body Class for CSS Theme change
+            if(mode === 'killer') document.body.classList.add('killer-mode');
+            else document.body.classList.remove('killer-mode');
+
+            // Toggle Buttons
+            document.getElementById('btn-survivor').classList.toggle('active', mode === 'survivor');
+            document.getElementById('btn-killer').classList.toggle('active', mode === 'killer');
+
+            // Reset Inputs
+            document.getElementById('search-input').value = '';
+            document.getElementById('sort-select').value = 'A-Z';
+
+            renderTabs();
+            applyFilters();
+        }
+
+        function handleSearch() { applyFilters(); }
+        function handleSort() { applyFilters(); }
+
+        // --- Initialization ---
+        setFaction('survivor');
+</script>
+<script src="../assets/js/ai-widget.js"></script>
+<script src="../assets/js/session.js"></script>
+</body>
+</html>

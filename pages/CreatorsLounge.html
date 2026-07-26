@@ -359,6 +359,7 @@
                             style="display:none;">
                             Build Requests
                         </a>
+
                     </div>
                 </div>
 
@@ -380,13 +381,10 @@
             document.getElementById("modalNote").innerText = note;
 
             const profileButton = document.getElementById("modalProfileButton");
-            const challengeButton = document.getElementById("modalChallengeButton");
-
             const showcaseContainer = document.getElementById("modalShowcaseContainer");
             const showcaseGif = document.getElementById("modalShowcaseGif");
 
             profileButton.style.display = "none";
-            challengeButton.style.display = "none";
             showcaseContainer.style.display = "none";
             showcaseGif.src = "";
 
@@ -409,48 +407,28 @@
                 profileButton.href = "request.html";
                 profileButton.textContent = "Build Requests";
 
-                challengeButton.style.display = "inline-flex";
-                challengeButton.href = "progress.html";
-                challengeButton.textContent = "Challenge Progress";
-
                 showcaseContainer.style.display = "block";
                 showcaseGif.src = "../assets/images/creators/yato.gif";
             }
 
             if (name === "itswhitesugar") {
-
                 showcaseContainer.style.display = "block";
                 showcaseGif.src = "../assets/images/creators/sugar.gif";
-
-                challengeButton.style.display = "inline-flex";
-                challengeButton.href = "whitesugar.html";
-                challengeButton.textContent = "Challenge Progress";
-
             }
 
             if (name === "Kala-aKaar Gaming") {
-
                 showcaseContainer.style.display = "block";
-                showcaseGif.src = "../assets/images/creators/KK.gif"; // Change this to your actual GIF filename
-
-                challengeButton.style.display = "inline-flex";
-                challengeButton.href = "newprogress.html";
-                challengeButton.textContent = "Challenge Progress";
-
+                showcaseGif.src = "../assets/images/creators/KK.gif"; 
             }
+            
             if (name === "leongrayj") {
-
                 showcaseContainer.style.display = "block";
-                showcaseGif.src = "../assets/images/creators/leongrayj.gif"; // Change this to your actual GIF filename
-
-
+                showcaseGif.src = "../assets/images/creators/leongrayj.gif"; 
             }
+            
             if (name === "BitzTheToaster") {
-
                 showcaseContainer.style.display = "block";
-                showcaseGif.src = "../assets/images/creators/Bitz.gif"; // Change this to your actual GIF filename
-
-
+                showcaseGif.src = "../assets/images/creators/Bitz.gif"; 
             }
         }
 

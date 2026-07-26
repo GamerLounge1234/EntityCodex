@@ -1,0 +1,343 @@
+/* ==========================================================================
+   ROOT VARIABLES
+   ========================================================================== */
+:root {
+    /* Login Page Specific Colors */
+    --dried-blood: #8b0000;
+    --arterial-spray: #ff3333;
+    --muted-bone: #e0e0e0;
+    --bone-white: #ffffff;
+    --font-ui: 'Courier New', Courier, monospace;
+    --smooth-curve: ease-in-out;
+}
+
+/* ==========================================================================
+   GLOBAL RESET & PERFECT ONE-FRAME LOCK
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    max-width: 100vw;
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for flawless mobile address bars */
+    overflow: hidden; /* Prevent full-page scroll */
+    background-color: #0a0a0a;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    /* padding-top removed: Sticky navbar now pushes content naturally */
+    color: var(--muted-bone);
+    font-family: var(--font-ui);
+    position: relative;
+    z-index: 1;
+}
+
+/* ==========================================================================
+   PREMIUM MAIN NAVBAR - STICKY FIX
+   ========================================================================== */
+.navbar {
+    /* THE FIX: Sticky keeps it at the top but inside document flow */
+    position: sticky; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 70px;
+    height: auto;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(180deg, rgba(0, 0, 0, .98) 0%, rgba(12, 0, 0, .92) 60%, rgba(22, 0, 0, .96) 100%);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 2px solid rgba(110, 25, 25, .7);
+    z-index: 1000;
+    animation: organicHeartbeatBorderNav 4s ease-in-out infinite;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, .55);
+}
+
+.nav-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(10px, 3vw, 42px);
+    flex-wrap: wrap; /* Wraps cleanly on mobile so all links stay on screen */
+    margin: 0;
+    padding: 5px 0;
+    list-style: none;
+}
+
+.navbar li a {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(5px, 1.5vw, 8px) clamp(10px, 2vw, 16px);
+    font-family: 'Teko', 'Segoe UI', sans-serif; /* Hardcoded to match main site */
+    font-size: clamp(0.9rem, 2.5vw, 1.15rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: clamp(1px, 1vw, 3px);
+    text-decoration: none;
+    color: #b8a5a5;
+    transition: color .35s ease, text-shadow .35s ease, transform .35s ease;
+    white-space: nowrap;
+}
+
+/* Blood Slash */
+.navbar li a::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0%;
+    height: 3px;
+    background: #ff0505;
+    transform: translate(-50%, -50%) rotate(-4deg);
+    opacity: 0;
+    border-radius: 20px;
+    box-shadow: 0 0 10px #ff0505, 0 0 20px rgba(255, 30, 30, .5);
+    transition: width .45s cubic-bezier(.22, 1, .36, 1), opacity .3s ease;
+}
+
+.navbar li a:hover {
+    color: #ffffff;
+    transform: translateY(-2px);
+    text-shadow: 0 0 8px rgba(255, 255, 255, .3), 0 0 18px rgba(255, 40, 40, .7);
+}
+.navbar li a:hover::before { width: 110%; opacity: 1; }
+.navbar li a:active { transform: scale(.96); }
+
+.navbar li a.active {
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, .35), 0 0 18px rgba(255, 0, 0, .75);
+}
+.navbar li a.active::before { width: 110%; opacity: 1; }
+
+@keyframes organicHeartbeatBorderNav {
+    0% { border-bottom-color: #4d1111; box-shadow: 0 4px 18px rgba(0, 0, 0, .55); }
+    10% { border-bottom-color: #ff2d2d; box-shadow: 0 4px 18px rgba(0, 0, 0, .55), 0 0 12px rgba(255, 40, 40, .35); }
+    20% { border-bottom-color: #6e1616; }
+    45% { border-bottom-color: #5a1414; }
+    50% { border-bottom-color: #ff4545; box-shadow: 0 4px 18px rgba(0, 0, 0, .55), 0 0 20px rgba(255, 40, 40, .55); }
+    60% { border-bottom-color: #6e1616; }
+    100% { border-bottom-color: #4d1111; box-shadow: 0 4px 18px rgba(0, 0, 0, .55); }
+}
+
+/* ==========================================================================
+   MAIN CONTAINER (LOGIN/REGISTRATION BOX)
+   ========================================================================== */
+.blood-web-container {
+    background: rgba(20, 20, 20, 0.9);
+    border: 2px solid var(--dried-blood);
+    padding: clamp(15px, 4vw, 25px) clamp(20px, 5vw, 30px);
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(139, 0, 0, 0.5);
+    width: 92%;
+    max-width: 550px;
+    position: relative;
+    z-index: 1;
+    
+    /* Dynamically centers the box in the remaining space below the navbar */
+    margin: auto 15px; 
+    
+    /* Crucial for 1-Frame Layout: Calculates safe space minus margins */
+    max-height: calc(100dvh - 100px); 
+    overflow-y: auto; 
+}
+
+/* Custom Scrollbar for the container itself */
+.blood-web-container::-webkit-scrollbar { width: 6px; }
+.blood-web-container::-webkit-scrollbar-track { background: #0a0a0a; border-radius: 8px; }
+.blood-web-container::-webkit-scrollbar-thumb { background: var(--dried-blood); border-radius: 8px; }
+
+h1 {
+    text-align: center;
+    color: var(--arterial-spray);
+    text-transform: uppercase;
+    letter-spacing: clamp(1px, 1vw, 2px);
+    margin-top: 0;
+    font-size: clamp(1.4rem, 5vw, 1.8rem);
+    margin-bottom: clamp(10px, 3vw, 15px);
+}
+
+.form-group {
+    margin-bottom: clamp(10px, 3vw, 15px);
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    color: #ff6666;
+    font-weight: bold;
+    font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+}
+
+input[type="text"], select {
+    width: 100%;
+    padding: clamp(8px, 2.5vw, 10px);
+    background-color: #1a1a1a;
+    border: 1px solid #444;
+    color: #fff;
+    border-radius: 4px;
+    font-family: var(--font-ui);
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
+}
+
+input[type="text"]:focus, select:focus {
+    border-color: var(--arterial-spray);
+    outline: none;
+    box-shadow: 0 0 8px rgba(255, 51, 51, 0.3);
+}
+
+/* ==========================================================================
+   COMBINATION LOCK STYLES (FLUID)
+   ========================================================================== */
+.combination-lock {
+    display: flex;
+    justify-content: space-between;
+    gap: clamp(10px, 3vw, 15px);
+}
+
+.scroll-slot {
+    width: 48%; /* Flex handles spacing via gap */
+    height: clamp(130px, 25vh, 180px); /* Dynamically shrinks to prevent overflow on mobile */
+    overflow-y: auto;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0;
+    gap: 10px;
+}
+
+/* Custom Blood-red Scrollbar for slots */
+.scroll-slot::-webkit-scrollbar { width: 6px; }
+.scroll-slot::-webkit-scrollbar-track { background: #0a0a0a; border-radius: 8px; }
+.scroll-slot::-webkit-scrollbar-thumb { background: var(--dried-blood); border-radius: 8px; }
+.scroll-slot::-webkit-scrollbar-thumb:hover { background: var(--arterial-spray); }
+
+.perk-option {
+    width: clamp(45px, 12vw, 60px); 
+    height: clamp(45px, 12vw, 60px);
+    object-fit: contain;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: all 0.2s var(--smooth-curve);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.perk-option:hover {
+    opacity: 0.8;
+}
+
+.perk-option.selected {
+    opacity: 1;
+    border-color: var(--arterial-spray);
+    background: rgba(255, 51, 51, 0.1);
+    box-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
+    filter: drop-shadow(0 0 5px var(--dried-blood));
+}
+
+/* ==========================================================================
+   BUTTONS & LINKS
+   ========================================================================== */
+.submit-btn {
+    width: 100%;
+    padding: clamp(10px, 3vw, 12px);
+    background-color: var(--dried-blood);
+    color: var(--bone-white);
+    border: none;
+    font-size: clamp(0.95rem, 3vw, 1.1rem);
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background 0.3s var(--smooth-curve);
+    border-radius: 4px;
+    margin-top: clamp(8px, 2vw, 10px);
+}
+
+.submit-btn:hover {
+    background-color: #cc0000;
+    box-shadow: 0 0 15px rgba(255, 51, 51, 0.4);
+}
+
+.secondary-btn {
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+    padding: clamp(6px, 2vw, 8px) clamp(12px, 4vw, 16px);
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: 0.3s;
+    font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+}
+
+.secondary-btn:hover {
+    background-color: #555;
+    border-color: var(--arterial-spray);
+}
+
+#statusMessage {
+    margin-top: clamp(10px, 3vw, 15px);
+    text-align: center;
+    font-weight: bold;
+    font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+}
+
+.login-link {
+    text-align: center;
+    margin-bottom: clamp(15px, 4vw, 20px);
+    font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+}
+
+.login-link a {
+    color: var(--arterial-spray);
+    text-decoration: none;
+    font-weight: bold;
+    border-bottom: 1px solid transparent;
+    transition: 0.3s;
+}
+
+.login-link a:hover {
+    border-bottom: 1px solid var(--arterial-spray);
+    text-shadow: 0 0 5px var(--arterial-spray);
+}
+
+.question-display {
+    background: #0a0a0a;
+    border: 1px solid var(--arterial-spray);
+    padding: clamp(8px, 3vw, 12px);
+    color: #ff9999;
+    font-style: italic;
+    border-radius: 4px;
+    margin-bottom: clamp(8px, 2vw, 10px);
+    font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+}
+
+/* ==========================================================================
+   BACKGROUND MEDIA & ANIMATIONS (UNTOUCHED)
+   ========================================================================== */
+.bg-gif {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+}

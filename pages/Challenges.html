@@ -1480,7 +1480,7 @@
             <p style="margin-top: 1rem; color: #888; font-family: var(--font-journal);">Time to finish: 15–25 Hours
                 (Over 30 Hours if you dare to try the hardest modes)</p>
 
-            <button class="open-tracker-btn" onclick="TrackerApp.open()">Access Personal Tracker</button>
+            <button class="open-tracker-btn" onclick="checkAuthAndOpenTracker()">Access Personal Tracker</button>
 
             <p
                 style="color: #eee; font-size: 1.1rem; max-width: 800px; margin: 1rem auto; line-height: 1.6; font-family: var(--font-journal);">
@@ -2484,6 +2484,15 @@
                 }
             }
         }
+        window.checkAuthAndOpenTracker = function() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
+                TrackerApp.open();
+            } else {
+                alert("The Entity requires your soul first. Please login or register to access the tracker.");
+                window.location.href = '../pages/login.html';
+            }
+        };
 
         window.TrackerApp = TrackerApp;
         window.RosterUI = RosterUI;

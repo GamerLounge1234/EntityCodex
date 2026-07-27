@@ -250,6 +250,165 @@ body, html {
     color: #ff7070;
     z-index: 2;
 }
+/* ==========================================================================
+   PREMIUM BRAND AMBASSADORS SECTION
+   ========================================================================== */
+.ambassador-wall {
+    width: 100%;
+    padding: clamp(40px, 8vw, 60px) clamp(15px, 4vw, 40px) 20px;
+    position: relative;
+    max-width: 1800px;
+    margin: 0 auto;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.15); /* Subtle gold separator */
+    background: radial-gradient(ellipse at top, rgba(255, 215, 0, 0.03), transparent 70%);
+}
+
+.ambassador-title {
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-bottom: clamp(40px, 8vw, 80px);
+    text-transform: uppercase;
+    letter-spacing: clamp(2px, 1.5vw, 4px);
+    color: white;
+}
+
+/* Premium Gold Shimmer Text */
+.ambassador-title span { 
+    background: linear-gradient(90deg, #D4AF37, #FFF5A3, #D4AF37);
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: goldShimmer 3s linear infinite;
+    text-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+}
+
+@keyframes goldShimmer {
+    to { background-position: 200% center; }
+}
+
+/* Horizontal Grid Setup */
+.ambassador-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+    gap: clamp(30px, 5vw, 50px);
+    width: 100%;
+    justify-content: center;
+}
+
+.ambassador-card {
+    position: relative;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    padding: 15px;
+}
+
+/* Levitating Animation on Hover */
+.ambassador-card:hover { 
+    transform: translateY(-15px) scale(1.03); 
+}
+
+/* Premium Rotating Gold Halo */
+.ambassador-card::before {
+    content: "";
+    position: absolute;
+    top: 5px; bottom: 5px; left: 5px; right: 5px;
+    max-width: 280px;
+    max-height: 280px;
+    margin: 0 auto;
+    border-radius: 50%;
+    border: 2px dashed rgba(255, 215, 0, 0.6);
+    box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.1);
+    animation: rotateGoldHalo 15s linear infinite;
+    pointer-events: none;
+    opacity: 0.6;
+    transition: opacity 0.4s ease, border-color 0.4s ease;
+}
+
+.ambassador-card:hover::before {
+    opacity: 1;
+    border-color: rgba(255, 255, 255, 0.8);
+    animation: rotateGoldHalo 8s linear infinite; /* Speeds up on hover */
+}
+
+@keyframes rotateGoldHalo {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.ambassador-image {
+    width: clamp(170px, 42vw, 230px);
+    height: clamp(170px, 42vw, 230px);
+    margin: auto;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    border: 4px solid #D4AF37; /* Metallic Gold */
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.4), 0 0 80px rgba(212, 175, 55, 0.15);
+    z-index: 2;
+    transition: box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.ambassador-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), filter 0.6s ease;
+}
+
+.ambassador-card:hover .ambassador-image img {
+    transform: scale(1.12);
+    filter: contrast(1.1) brightness(1.1);
+}
+
+.ambassador-card:hover .ambassador-image {
+    border-color: #FFF5A3;
+    box-shadow: 0 0 40px rgba(255, 245, 163, 0.7), 0 0 100px rgba(212, 175, 55, 0.3);
+}
+
+.gold-glow {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(212, 175, 55, 0.6), transparent);
+    opacity: 0.8;
+    mix-blend-mode: overlay;
+}
+
+.ambassador-name {
+    margin-top: 25px;
+    font-size: clamp(1.3rem, 3.5vw, 1.5rem);
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #FFF5A3;
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+}
+
+.ambassador-role {
+    color: #D4AF37;
+    margin-top: 8px;
+    font-size: clamp(0.8rem, 2vw, 0.95rem);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-weight: 600;
+}
+
+.ambassador-tag {
+    margin-top: 14px;
+    display: inline-block;
+    padding: 8px 18px;
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(0, 0, 0, 0.5));
+    backdrop-filter: blur(8px);
+    font-size: 0.75rem;
+    color: #FFF5A3;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-radius: 4px;
+    box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.05);
+}
+
 
 /* ==========================================================================
    CREATOR WALL GRID

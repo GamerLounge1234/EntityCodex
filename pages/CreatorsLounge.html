@@ -7,11 +7,42 @@
     <title>Dead By Daylight Creator Archives</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="../assets/css/creators.css">
+
+    <!-- Added basic styles for the Twitch and YouTube buttons -->
+    <style>
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .modal-social-btn {
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s ease;
+        }
+        .modal-social-btn:hover {
+            opacity: 0.8;
+        }
+        .twitch-btn {
+            background-color: #9146FF;
+            color: #FFFFFF;
+        }
+        .youtube-btn {
+            background-color: #FF0000;
+            color: #FFFFFF;
+        }
+    </style>
 </head>
 
 <body>
@@ -46,7 +77,9 @@
                 `YatoTheMad is a dedicated Dead by Daylight killer specialist known for his deep build analysis, practical gameplay insights, and educational content. He regularly tests community-requested builds across different killers, breaking down their strengths, weaknesses, consistency, and real-world effectiveness. His content goes beyond simply winning matches, focusing on understanding why certain strategies work and how players can improve their decision-making in every trial.`, 
                 `Killer Analysis, Build Testing, Strategy Guides, Community Requests, Educational Gameplay`, 
                 `Analytical, Competitive, Informative`, 
-                `With strong game sense, reliable map awareness, and a methodical approach to killer gameplay, YatoTheMad helps players understand the deeper mechanics of Dead by Daylight. His ability to evaluate perks, adapt to different survivor playstyles, and provide honest feedback on builds makes his content valuable for both beginner and experienced killer mains looking to sharpen their skills.`
+                `With strong game sense, reliable map awareness, and a methodical approach to killer gameplay, YatoTheMad helps players understand the deeper mechanics of Dead by Daylight. His ability to evaluate perks, adapt to different survivor playstyles, and provide honest feedback on builds makes his content valuable for both beginner and experienced killer mains looking to sharpen their skills.`,
+                'https://www.twitch.tv/yatothemad', /* Paste Twitch Link Here */
+                'https://www.youtube.com/@YatoTheMad'  /* Paste YouTube Link Here */
             )">
                 <div class="ambassador-image">
                     <img src="../assets/images/creators/Yato.jpeg" alt="YatoTheMad">
@@ -56,14 +89,15 @@
                 <div class="ambassador-tag">The Killer Strategist</div>
             </div>
 
-
             <!-- 2. leongrayj -->
             <div class="ambassador-card" onclick="openModal(
                 'leongrayj', 'Meta Build Specialist', '../assets/images/creators/leongrayj.webp', 
                 `leongrayj is a highly strategic Dead by Daylight survivor main known for his deep understanding of meta builds and optimal gameplay. He focuses on entertaining his audience by showcasing the true potential of top-tier survivor loadouts, taking the time to explain the synergy between perks. He breaks down every match, mapping out all possible gameplay scenarios and demonstrating how to counter various killer strategies.`, 
                 `Survivor Main, Meta Builds, Perk Explanations, Strategic Gameplay, Scenario Mapping`, 
                 `Analytical, Tactical, Educational`, 
-                `With a methodical playstyle and a talent for teaching, leongrayj helps viewers elevate their own survivor gameplay. His streams are perfect for those who want to understand the mechanics behind the meta, learn how to maximize perk efficiency, and see high-level looping and decision-making in action.`
+                `With a methodical playstyle and a talent for teaching, leongrayj helps viewers elevate their own survivor gameplay. His streams are perfect for those who want to understand the mechanics behind the meta, learn how to maximize perk efficiency, and see high-level looping and decision-making in action.`,
+                'https://www.twitch.tv/leongrayj', /* Paste Twitch Link Here */
+                ''  /* Paste YouTube Link Here */
             )">
                 <div class="ambassador-image">
                     <img src="../assets/images/creators/leongrayj.webp" alt="leongrayj">
@@ -79,7 +113,9 @@
                 `Kala-aKaar Gaming brings pure entertainment with a perfect mix of horror scares, funny moments, and intense gameplay all delivered with authentic Hinglish vibes. Whether he is diving into Dead by Daylight, surviving chaotic co-op games like Phasmophobia, or exploring action and adventure titles, he tackles every game in his own unique style. Sometimes playing like a pro and sometimes like a complete noob, his streams always guarantee a fantastic time.`, 
                 `Horror Scares, Funny Co-op Chaos, Action & Adventure, Relatable Gameplay, Hinglish Vibes`, 
                 `Entertaining, Humorous, Relatable`, 
-                `With hilarious reactions and a genuine connection to his audience, Kala-aKaar Gaming creates a welcoming space for anyone who loves high-energy moments and relatable gaming fails. If you are looking for non-stop laughs, thrilling chases, and a community built on pure fun, this channel is the perfect place to hang out.`
+                `With hilarious reactions and a genuine connection to his audience, Kala-aKaar Gaming creates a welcoming space for anyone who loves high-energy moments and relatable gaming fails. If you are looking for non-stop laughs, thrilling chases, and a community built on pure fun, this channel is the perfect place to hang out.`,
+                'https://www.twitch.tv/kala_akaar', /* Paste Twitch Link Here */
+                'https://www.youtube.com/@Kala-aKaarGaming'  /* Paste YouTube Link Here */
             )">
                 <div class="ambassador-image">
                     <img src="../assets/images/creators/KK.jpg" alt="Kala-aKaar Gaming">
@@ -95,7 +131,9 @@
                 `itswhitesugar is a vibrant Dead by Daylight streamer known for his high-energy broadcasts and deep community engagement. Whether he is tackling chaotic viewer builds, playing all killers, or attempting fun speedruns, he always prioritizes chat interaction. He goes out of his way to answer every viewer, fostering a welcoming environment while actively discussing strategies and how the game should be played.`, 
                 `Interactive Gameplay, Viewer Builds, Game Analysis, DBD Chaos, Energetic Streaming`, 
                 `Lively, Engaging, Educational`, 
-                `With an infectious energy and a dedication to his audience, itswhitesugar constantly invents new ways to entertain. His streams offer a perfect blend of Dead by Daylight chaos and thoughtful game analysis, making him an engaging watch for anyone looking to learn about the game while feeling like part of a close-knit community.`
+                `With an infectious energy and a dedication to his audience, itswhitesugar constantly invents new ways to entertain. His streams offer a perfect blend of Dead by Daylight chaos and thoughtful game analysis, making him an engaging watch for anyone looking to learn about the game while feeling like part of a close-knit community.`,
+                'https://www.twitch.tv/itswhitesugar', /* Paste Twitch Link Here */
+                'https://www.youtube.com/@itswhitesugar'  /* Paste YouTube Link Here */
             )">
                 <div class="ambassador-image">
                     <img src="../assets/images/creators/itswhitesugar.jpeg" alt="itswhitesugar">
@@ -119,252 +157,280 @@
         <div class="creator-grid">
 
             <!-- HENS -->
-
-            <div class="creator"
-                onclick="openModal('Hens333','Competitive Hybrid Master','../assets/images/creators/hens.webp',`One of the strongest competitive-minded Dead By Daylight creators in the world. Hens333 is known for elite high-MMR gameplay, tournament-level understanding, incredible consistency, and extremely advanced game knowledge. His streams combine positivity with top-tier mechanics, making him one of the most respected creators in modern DBD.`,`High MMR Gameplay, Tournament Analysis, Meta Knowledge, Competitive Survivor & Killer`,`Positive, Competitive, Highly Skilled, Consistent`,`If you want to improve seriously at Dead By Daylight, Hens is one of the best creators to study. His gameplay teaches advanced macro decisions, efficiency, pressure management, survivor pathing, and competitive mentality.`)">
-
+            <div class="creator" onclick="openModal(
+                'Hens333','Competitive Hybrid Master','../assets/images/creators/hens.webp',
+                `One of the strongest competitive-minded Dead By Daylight creators in the world. Hens333 is known for elite high-MMR gameplay, tournament-level understanding, incredible consistency, and extremely advanced game knowledge. His streams combine positivity with top-tier mechanics, making him one of the most respected creators in modern DBD.`,
+                `High MMR Gameplay, Tournament Analysis, Meta Knowledge, Competitive Survivor & Killer`,
+                `Positive, Competitive, Highly Skilled, Consistent`,
+                `If you want to improve seriously at Dead By Daylight, Hens is one of the best creators to study. His gameplay teaches advanced macro decisions, efficiency, pressure management, survivor pathing, and competitive mentality.`,
+                'https://www.twitch.tv/hens', /* Paste Twitch Link Here */
+                'https://www.youtube.com/@hens333'  /* Paste YouTube Link Here */
+            )">
                 <div class="creator-image">
                     <img src="../assets/images/creators/hens.webp" alt="Hens333">
                     <div class="blood-glow"></div>
                 </div>
-
                 <div class="creator-name">Hens333</div>
                 <div class="creator-role">Competitive Master</div>
                 <div class="creator-tag">Top Meta Analyst</div>
-
             </div>
 
             <!-- OTZ -->
-
-            <div class="creator"
-                onclick="openModal('Otzdarva','The Educational Legend','../assets/images/creators/otz.jpeg',`Otzdarva is considered the most respected educational creator in Dead By Daylight history. Famous for massive spreadsheets, killer guides, tier lists, and strategic breakdowns, Otz has helped thousands of players master the game. Calm, intelligent, and analytical, his content is the gold standard for learning DBD.`,`Killer Guides, Statistics, Win Streaks, Educational Content`,`Wholesome, Calm, Analytical, Beginner-Friendly`,`Watching Otzdarva feels like learning DBD from a master tactician. His content turns complicated mechanics into understandable systems and helps players improve efficiently.`)">
-
+            <div class="creator" onclick="openModal(
+                'Otzdarva','The Educational Legend','../assets/images/creators/otz.jpeg',
+                `Otzdarva is considered the most respected educational creator in Dead By Daylight history. Famous for massive spreadsheets, killer guides, tier lists, and strategic breakdowns, Otz has helped thousands of players master the game. Calm, intelligent, and analytical, his content is the gold standard for learning DBD.`,
+                `Killer Guides, Statistics, Win Streaks, Educational Content`,
+                `Wholesome, Calm, Analytical, Beginner-Friendly`,
+                `Watching Otzdarva feels like learning DBD from a master tactician. His content turns complicated mechanics into understandable systems and helps players improve efficiently.`,
+                'https://www.twitch.tv/otzdarva', /* Paste Twitch Link Here */
+                'https://www.youtube.com/@otzdarva'  /* Paste YouTube Link Here */
+            )">
                 <div class="creator-image">
                     <img src="../assets/images/creators/otz.jpeg" alt="Otzdarva">
                     <div class="blood-glow"></div>
                 </div>
-
                 <div class="creator-name">Otzdarva</div>
                 <div class="creator-role">The Strategist</div>
                 <div class="creator-tag">Most Respected Creator</div>
-
             </div>
 
             <!-- Mr tatorhead -->
-            <div class="creator"
-                onclick="openModal('Mr Tatorhead','The Perkless Professor','../assets/images/creators/tator.jpeg',`Mr Tatorhead is a highly educational Dead by Daylight streamer famous for playing completely perkless since October 2020. Specializing in deep-dive map tile breakdowns and looping guides, he proves you don't need meta perks to juice killers. His streams are a unique mix of chill vibes, incredible map knowledge, and literal tap dancing.`,`Perkless Looping, Educational Guides, Map Tile Mastery`,`Chill, Informative, Skilled, Perkless`,`Watching Mr Tatorhead is like taking a masterclass in DBD map geometry and tile logic.`)">
-
+            <div class="creator" onclick="openModal(
+                'Mr Tatorhead','The Perkless Professor','../assets/images/creators/tator.jpeg',
+                `Mr Tatorhead is a highly educational Dead by Daylight streamer famous for playing completely perkless since October 2020. Specializing in deep-dive map tile breakdowns and looping guides, he proves you don't need meta perks to juice killers. His streams are a unique mix of chill vibes, incredible map knowledge, and literal tap dancing.`,
+                `Perkless Looping, Educational Guides, Map Tile Mastery`,
+                `Chill, Informative, Skilled, Perkless`,
+                `Watching Mr Tatorhead is like taking a masterclass in DBD map geometry and tile logic.`,
+                'https://www.twitch.tv/mr_tatorhead', /* Paste Twitch Link Here */
+                'https://www.youtube.com/@Mr_TatorHead'  /* Paste YouTube Link Here */
+            )">
                 <div class="creator-image">
                     <img src="../assets/images/creators/tator.jpeg" alt="Mr Tatorhead">
                     <div class="blood-glow"></div>
                 </div>
-
                 <div class="creator-name">Mr Tatorhead</div>
                 <div class="creator-role">Educational Survivor</div>
                 <div class="creator-tag">No Perks Since 2020</div>
-
             </div>
 
             <!-- JRM -->
-
-            <div class="creator"
-                onclick="openModal('TheJRM','The Chaos Survivor','../assets/images/creators/jrm.jpg',`TheJRM is one of the most entertaining survivor players in Dead By Daylight. Famous for looping killers with flashy movement, meme gameplay, and chaotic editing, JRM transformed DBD entertainment content into something cinematic and addictive.`,`Looping, Meme Gameplay, Hardcore Challenges`,`Funny, Chaotic, Stylish, Entertaining`,`JRM is pure entertainment energy. His movement and editing style make every chase feel intense and cinematic.`)">
-
+            <div class="creator" onclick="openModal(
+                'TheJRM','The Chaos Survivor','../assets/images/creators/jrm.jpg',
+                `TheJRM is one of the most entertaining survivor players in Dead By Daylight. Famous for looping killers with flashy movement, meme gameplay, and chaotic editing, JRM transformed DBD entertainment content into something cinematic and addictive.`,
+                `Looping, Meme Gameplay, Hardcore Challenges`,
+                `Funny, Chaotic, Stylish, Entertaining`,
+                `JRM is pure entertainment energy. His movement and editing style make every chase feel intense and cinematic.`,
+                'https://www.twitch.tv/thejrm', /* Paste Twitch Link Here */
+                'https://www.youtube.com/@TheJRM'  /* Paste YouTube Link Here */
+            )">
                 <div class="creator-image">
                     <img src="../assets/images/creators/jrm.jpg" alt="JRM">
                     <div class="blood-glow"></div>
                 </div>
-
                 <div class="creator-name">TheJRM</div>
                 <div class="creator-role">Survivor Entertainer</div>
                 <div class="creator-tag">Looping Specialist</div>
-
             </div>
 
             <!-- AYRUN -->
-
-            <div class="creator"
-                onclick="openModal('Ayrun','The Aggressive Looper','../assets/images/creators/ayrun.png',`Ayrun is one of the most mechanically gifted survivor players in Dead By Daylight. Known for aggressive looping, high-speed movement, and survivor mindgames, his gameplay is flashy, risky, and extremely entertaining.`,`Aggressive Looping, Survivor Techs, Chase Mindgames`,`Sweaty, Skilled, Stylish, Fearless`,`Watching Ayrun feels like watching a speedrunner break the limits of survivor gameplay.`)">
-
+            <div class="creator" onclick="openModal(
+                'Ayrun','The Aggressive Looper','../assets/images/creators/ayrun.png',
+                `Ayrun is one of the most mechanically gifted survivor players in Dead By Daylight. Known for aggressive looping, high-speed movement, and survivor mindgames, his gameplay is flashy, risky, and extremely entertaining.`,
+                `Aggressive Looping, Survivor Techs, Chase Mindgames`,
+                `Sweaty, Skilled, Stylish, Fearless`,
+                `Watching Ayrun feels like watching a speedrunner break the limits of survivor gameplay.`,
+                'https://www.twitch.tv/ayrun', /* Paste Twitch Link Here */
+                'https://www.youtube.com/@Ayrun'  /* Paste YouTube Link Here */
+            )">
                 <div class="creator-image">
                     <img src="../assets/images/creators/ayrun.png" alt="Ayrun">
                     <div class="blood-glow"></div>
                 </div>
-
                 <div class="creator-name">Ayrun</div>
                 <div class="creator-role">Elite Survivor</div>
                 <div class="creator-tag">Movement King</div>
-
             </div>
 
             <!-- TRU3 -->
-
-            <div class="creator"
-                onclick="openModal('TrU3Ta1ent','The Macro Analyst','../assets/images/creators/tru3.jpg',`One of the oldest and most influential DBD creators. TrU3Ta1ent is known for analytical killer gameplay, competitive discussions, and detailed match breakdowns. His streams are heavily focused on understanding game balance and macro strategy.`,`Competitive Analysis, Killer Gameplay, Match Breakdown`,`Analytical, Divisive, Strategic`,`TrU3Ta1ent focuses deeply on game systems and macro gameplay, making him popular among competitive-minded viewers.`)">
-
+            <div class="creator" onclick="openModal(
+                'TrU3Ta1ent','The Macro Analyst','../assets/images/creators/tru3.jpg',
+                `One of the oldest and most influential DBD creators. TrU3Ta1ent is known for analytical killer gameplay, competitive discussions, and detailed match breakdowns. His streams are heavily focused on understanding game balance and macro strategy.`,
+                `Competitive Analysis, Killer Gameplay, Match Breakdown`,
+                `Analytical, Divisive, Strategic`,
+                `TrU3Ta1ent focuses deeply on game systems and macro gameplay, making him popular among competitive-minded viewers.`,
+                'https://www.twitch.tv/tru3ta1ent', /* Paste Twitch Link Here */
+                'https://www.youtube.com/@TrU3Ta1ent'  /* Paste YouTube Link Here */
+            )">
                 <div class="creator-image">
                     <img src="../assets/images/creators/tru3.jpg" alt="TrU3Ta1ent">
                     <div class="blood-glow"></div>
                 </div>
-
                 <div class="creator-name">TrU3Ta1ent</div>
                 <div class="creator-role">Macro Analyst</div>
                 <div class="creator-tag">Competitive Veteran</div>
-
             </div>
 
-
-
             <!-- SPOOKY -->
-
-            <div class="creator"
-                onclick="openModal('SpookyLoopz','The Chill Entity','../assets/images/creators/spooky.jpg',`SpookyLoopz is one of the most beginner-friendly and relaxing DBD creators. His content focuses on humor, fun builds, and enjoyable gameplay experiences while still teaching useful mechanics.`,`Fun Builds, Chill Gameplay, Beginner Friendly`,`Relaxed, Funny, Positive`,`SpookyLoopz creates a welcoming DBD atmosphere that makes viewers want to keep watching for hours.`)">
-
+            <div class="creator" onclick="openModal(
+                'SpookyLoopz','The Chill Entity','../assets/images/creators/spooky.jpg',
+                `SpookyLoopz is one of the most beginner-friendly and relaxing DBD creators. His content focuses on humor, fun builds, and enjoyable gameplay experiences while still teaching useful mechanics.`,
+                `Fun Builds, Chill Gameplay, Beginner Friendly`,
+                `Relaxed, Funny, Positive`,
+                `SpookyLoopz creates a welcoming DBD atmosphere that makes viewers want to keep watching for hours.`,
+                'https://www.twitch.tv/search?term=spookyloopz', /* Paste Twitch Link Here */
+                'https://www.youtube.com/@SpookyLoopz'  /* Paste YouTube Link Here */
+            )">
                 <div class="creator-image">
                     <img src="../assets/images/creators/spooky.jpg" alt="SpookyLoopz">
                     <div class="blood-glow"></div>
                 </div>
-
                 <div class="creator-name">SpookyLoopz</div>
                 <div class="creator-role">Chill Creator</div>
                 <div class="creator-tag">Good Vibes</div>
-
             </div>
 
             <!-- TOFU -->
-
-            <div class="creator"
-                onclick="openModal('OhTofu','The Veteran Guide','../assets/images/creators/tofu.jpg',`OhTofu has been a respected Dead By Daylight creator since the early years of the game. Known for balanced commentary and informative gameplay, he remains one of the safest recommendations for new viewers.`,`Informative Commentary, Survivor Gameplay, Challenge Runs`,`Balanced, Informative, Experienced`,`OhTofu combines education with entertainment in a clean and approachable way.`)">
-
+            <div class="creator" onclick="openModal(
+                'OhTofu','The Veteran Guide','../assets/images/creators/tofu.jpg',
+                `OhTofu has been a respected Dead By Daylight creator since the early years of the game. Known for balanced commentary and informative gameplay, he remains one of the safest recommendations for new viewers.`,
+                `Informative Commentary, Survivor Gameplay, Challenge Runs`,
+                `Balanced, Informative, Experienced`,
+                `OhTofu combines education with entertainment in a clean and approachable way.`,
+                'https://www.twitch.tv/ohtofu', /* Paste Twitch Link Here */
+                'https://www.youtube.com/@OhTofu'  /* Paste YouTube Link Here */
+            )">
                 <div class="creator-image">
                     <img src="../assets/images/creators/tofu.jpg" alt="OhTofu">
                     <div class="blood-glow"></div>
                 </div>
-
                 <div class="creator-name">OhTofu</div>
                 <div class="creator-role">Veteran Creator</div>
                 <div class="creator-tag">Trusted Teacher</div>
-
             </div>
 
+            <!-- YatoTheMad Duplicate for Creator Wall -->
             <div class="creator" onclick="openModal(
-    'YatoTheMad',
-    'The Killer Strategist',
-    '../assets/images/creators/Yato.jpeg',
-    `YatoTheMad is a dedicated Dead by Daylight killer specialist known for his deep build analysis, practical gameplay insights, and educational content. He regularly tests community-requested builds across different killers, breaking down their strengths, weaknesses, consistency, and real-world effectiveness. His content goes beyond simply winning matches, focusing on understanding why certain strategies work and how players can improve their decision-making in every trial.`,
-    `Killer Analysis, Build Testing, Strategy Guides, Community Requests, Educational Gameplay`,
-    `Analytical, Competitive, Informative`,
-    `With strong game sense, reliable map awareness, and a methodical approach to killer gameplay, YatoTheMad helps players understand the deeper mechanics of Dead by Daylight. His ability to evaluate perks, adapt to different survivor playstyles, and provide honest feedback on builds makes his content valuable for both beginner and experienced killer mains looking to sharpen their skills.`
-    )">
-
+                'YatoTheMad',
+                'The Killer Strategist',
+                '../assets/images/creators/Yato.jpeg',
+                `YatoTheMad is a dedicated Dead by Daylight killer specialist known for his deep build analysis, practical gameplay insights, and educational content. He regularly tests community-requested builds across different killers, breaking down their strengths, weaknesses, consistency, and real-world effectiveness. His content goes beyond simply winning matches, focusing on understanding why certain strategies work and how players can improve their decision-making in every trial.`,
+                `Killer Analysis, Build Testing, Strategy Guides, Community Requests, Educational Gameplay`,
+                `Analytical, Competitive, Informative`,
+                `With strong game sense, reliable map awareness, and a methodical approach to killer gameplay, YatoTheMad helps players understand the deeper mechanics of Dead by Daylight. His ability to evaluate perks, adapt to different survivor playstyles, and provide honest feedback on builds makes his content valuable for both beginner and experienced killer mains looking to sharpen their skills.`,
+                'https://www.twitch.tv/yatothemad', /* Paste Twitch Link Here */
+                'https://www.youtube.com/@YatoTheMad'  /* Paste YouTube Link Here */
+            )">
                 <div class="creator-image">
                     <img src="../assets/images/creators/Yato.jpeg" alt="YatoTheMad">
                     <div class="blood-glow"></div>
                 </div>
-
                 <div class="creator-name">YatoTheMad</div>
                 <div class="creator-role">Killer Strategist</div>
                 <div class="creator-tag">Build Analyst</div>
-
             </div>
+            
+            <!-- itswhitesugar Duplicate for Creator Wall -->
             <div class="creator" onclick="openModal(
-    'itswhitesugar',
-    'Community-Driven Entertainer',
-    '../assets/images/creators/itswhitesugar.jpeg',
-    `itswhitesugar is a vibrant Dead by Daylight streamer known for his high-energy broadcasts and deep community engagement. Whether he is tackling chaotic viewer builds, playing all killers, or attempting fun speedruns, he always prioritizes chat interaction. He goes out of his way to answer every viewer, fostering a welcoming environment while actively discussing strategies and how the game should be played.`,
-    `Interactive Gameplay, Viewer Builds, Game Analysis, DBD Chaos, Energetic Streaming`,
-    `Lively, Engaging, Educational`,
-    `With an infectious energy and a dedication to his audience, itswhitesugar constantly invents new ways to entertain. His streams offer a perfect blend of Dead by Daylight chaos and thoughtful game analysis, making him an engaging watch for anyone looking to learn about the game while feeling like part of a close-knit community.`
-    )">
-
+                'itswhitesugar',
+                'Community-Driven Entertainer',
+                '../assets/images/creators/itswhitesugar.jpeg',
+                `itswhitesugar is a vibrant Dead by Daylight streamer known for his high-energy broadcasts and deep community engagement. Whether he is tackling chaotic viewer builds, playing all killers, or attempting fun speedruns, he always prioritizes chat interaction. He goes out of his way to answer every viewer, fostering a welcoming environment while actively discussing strategies and how the game should be played.`,
+                `Interactive Gameplay, Viewer Builds, Game Analysis, DBD Chaos, Energetic Streaming`,
+                `Lively, Engaging, Educational`,
+                `With an infectious energy and a dedication to his audience, itswhitesugar constantly invents new ways to entertain. His streams offer a perfect blend of Dead by Daylight chaos and thoughtful game analysis, making him an engaging watch for anyone looking to learn about the game while feeling like part of a close-knit community.`,
+                'https://www.twitch.tv/itswhitesugar', /* Paste Twitch Link Here */
+                'https://www.youtube.com/@itswhitesugar'  /* Paste YouTube Link Here */
+            )">
                 <div class="creator-image">
                     <img src="../assets/images/creators/itswhitesugar.jpeg" alt="itswhitesugar">
                     <div class="blood-glow"></div>
                 </div>
-
                 <div class="creator-name">itswhitesugar</div>
                 <div class="creator-role">Community-Driven Entertainer</div>
                 <div class="creator-tag">Interactive Streamer</div>
-
             </div>
+
             <!-- Laculan -->
-
-            <div class="creator"
-                onclick="openModal('Laculan','The P100 Nurse Main','../assets/images/creators/laculan.jpeg',`Laculan is a Scottish streamer and self-proclaimed 'Most Consistent Nurse Main' in Dead by Daylight. Famous for his ruthless P100 Nurse gameplay, he dominates lobbies with pinpoint blinks, aggressive win streaks, and deep Killer knowledge. His streams offer a perfect mix of top-tier mechanical skill, chill vibes, and unfiltered Scottish humor.`,`P100 Nurse, Killer Main, Blink Mastery`,`Skilled, Ruthless, Entertaining, Scottish`,`Watching Laculan play Nurse is a masterclass in predictive blinking and pure Killer efficiency.`)">
-
+            <div class="creator" onclick="openModal(
+                'Laculan','The P100 Nurse Main','../assets/images/creators/laculan.jpeg',
+                `Laculan is a Scottish streamer and self-proclaimed 'Most Consistent Nurse Main' in Dead by Daylight. Famous for his ruthless P100 Nurse gameplay, he dominates lobbies with pinpoint blinks, aggressive win streaks, and deep Killer knowledge. His streams offer a perfect mix of top-tier mechanical skill, chill vibes, and unfiltered Scottish humor.`,
+                `P100 Nurse, Killer Main, Blink Mastery`,
+                `Skilled, Ruthless, Entertaining, Scottish`,
+                `Watching Laculan play Nurse is a masterclass in predictive blinking and pure Killer efficiency.`,
+                'https://www.twitch.tv/laculan', /* Paste Twitch Link Here */
+                'https://www.youtube.com/@Laculan'  /* Paste YouTube Link Here */
+            )">
                 <div class="creator-image">
                     <img src="../assets/images/creators/laculan.jpeg" alt="Laculan">
                     <div class="blood-glow"></div>
                 </div>
-
                 <div class="creator-name">Laculan</div>
                 <div class="creator-role">Elite Killer</div>
                 <div class="creator-tag">Nurse Mastery</div>
-
             </div>
 
+            <!-- BitzTheToaster -->
             <div class="creator" onclick="openModal(
-    'BitzTheToaster',
-    'The Chaotic Alaskan Toaster',
-    '../assets/images/creators/Bitz.png',
-    `BitzTheToaster is a hilarious and chaotic VTuber hailing from Alaska, instantly recognizable by her iconic toaster avatar. Known for her incredibly lively Dead by Daylight streams, she plays both Survivor and Killer with a focus on fun, unconventional builds, and unique in-game interactions that make every trial an absolute blast. Whether she's memeing with the opposition or getting easily jump-scared (and screaming!), Bitz brings an unmatched, infectious energy to her community. When she isn't bringing the laughs to the Fog, you can find her surviving the harsh, unforgiving world of RUST, dropping into PvP shooters, or braving other horror games—assuming the Alaskan internet bears are behaving! 🐻`,
-    `DBD Survivor & Killer, RUST, Horror Games, VTuber, Meme Builds, Chat Interaction`,
-    `Chaotic, Hilarious, Welcoming, Easily Startled`,
-    `With her motto of 'good vibes and questionable decisions,' Bitz excels at turning even the sweatiest Dead by Daylight matches into a comedy show. Her greatest strengths are her organic interactions with other players and her top-tier chat engagement, creating a cozy yet chaotic community where everyone feels welcome to hang out and laugh along with her.`
-    )">
-
+                'BitzTheToaster',
+                'The Chaotic Alaskan Toaster',
+                '../assets/images/creators/Bitz.png',
+                `BitzTheToaster is a hilarious and chaotic VTuber hailing from Alaska, instantly recognizable by her iconic toaster avatar. Known for her incredibly lively Dead by Daylight streams, she plays both Survivor and Killer with a focus on fun, unconventional builds, and unique in-game interactions that make every trial an absolute blast. Whether she's memeing with the opposition or getting easily jump-scared (and screaming!), Bitz brings an unmatched, infectious energy to her community. When she isn't bringing the laughs to the Fog, you can find her surviving the harsh, unforgiving world of RUST, dropping into PvP shooters, or braving other horror games—assuming the Alaskan internet bears are behaving! 🐻`,
+                `DBD Survivor & Killer, RUST, Horror Games, VTuber, Meme Builds, Chat Interaction`,
+                `Chaotic, Hilarious, Welcoming, Easily Startled`,
+                `With her motto of 'good vibes and questionable decisions,' Bitz excels at turning even the sweatiest Dead by Daylight matches into a comedy show. Her greatest strengths are her organic interactions with other players and her top-tier chat engagement, creating a cozy yet chaotic community where everyone feels welcome to hang out and laugh along with her.`,
+                'https://www.twitch.tv/bitzthetoaster', /* Paste Twitch Link Here */
+                'https://www.youtube.com/@BitzTheToaster'  /* Paste YouTube Link Here */
+            )">
                 <div class="creator-image">
                     <img src="../assets/images/creators/Bitz.png" alt="BitzTheToaster">
                     <div class="blood-glow"></div>
                 </div>
-
                 <div class="creator-name">BitzTheToaster</div>
                 <div class="creator-role">The Chaotic Toaster</div>
                 <div class="creator-tag">Good Vibes & Chaos</div>
-
             </div>
+            
+            <!-- leongrayj Duplicate for Creator Wall -->
             <div class="creator" onclick="openModal(
-    'leongrayj',
-    'Meta Build Specialist',
-    '../assets/images/creators/leongrayj.webp',
-    `leongrayj is a highly strategic Dead by Daylight survivor main known for his deep understanding of meta builds and optimal gameplay. He focuses on entertaining his audience by showcasing the true potential of top-tier survivor loadouts, taking the time to explain the synergy between perks. He breaks down every match, mapping out all possible gameplay scenarios and demonstrating how to counter various killer strategies.`,
-    `Survivor Main, Meta Builds, Perk Explanations, Strategic Gameplay, Scenario Mapping`,
-    `Analytical, Tactical, Educational`,
-    `With a methodical playstyle and a talent for teaching, leongrayj helps viewers elevate their own survivor gameplay. His streams are perfect for those who want to understand the mechanics behind the meta, learn how to maximize perk efficiency, and see high-level looping and decision-making in action.`
-    )">
-
+                'leongrayj',
+                'Meta Build Specialist',
+                '../assets/images/creators/leongrayj.webp',
+                `leongrayj is a highly strategic Dead by Daylight survivor main known for his deep understanding of meta builds and optimal gameplay. He focuses on entertaining his audience by showcasing the true potential of top-tier survivor loadouts, taking the time to explain the synergy between perks. He breaks down every match, mapping out all possible gameplay scenarios and demonstrating how to counter various killer strategies.`,
+                `Survivor Main, Meta Builds, Perk Explanations, Strategic Gameplay, Scenario Mapping`,
+                `Analytical, Tactical, Educational`,
+                `With a methodical playstyle and a talent for teaching, leongrayj helps viewers elevate their own survivor gameplay. His streams are perfect for those who want to understand the mechanics behind the meta, learn how to maximize perk efficiency, and see high-level looping and decision-making in action.`,
+                'https://www.twitch.tv/leongrayj', /* Paste Twitch Link Here */
+                ''  /* Paste YouTube Link Here */
+            )">
                 <div class="creator-image">
                     <img src="../assets/images/creators/leongrayj.webp" alt="leongrayj">
                     <div class="blood-glow"></div>
                 </div>
-
                 <div class="creator-name">leongrayj</div>
                 <div class="creator-role">Meta Build Specialist</div>
                 <div class="creator-tag">Survivor Main</div>
-
             </div>
+            
+            <!-- Kala-aKaar Gaming Duplicate for Creator Wall -->
             <div class="creator" onclick="openModal(
-    'Kala-aKaar Gaming',
-    'Hinglish Variety Streamer',
-    '../assets/images/creators/KK.jpg',
-    `Kala-aKaar Gaming brings pure entertainment with a perfect mix of horror scares, funny moments, and intense gameplay all delivered with authentic Hinglish vibes. Whether he is diving into Dead by Daylight, surviving chaotic co-op games like Phasmophobia, or exploring action and adventure titles, he tackles every game in his own unique style. Sometimes playing like a pro and sometimes like a complete noob, his streams always guarantee a fantastic time.`,
-    `Horror Scares, Funny Co-op Chaos, Action & Adventure, Relatable Gameplay, Hinglish Vibes`,
-    `Entertaining, Humorous, Relatable`,
-    `With hilarious reactions and a genuine connection to his audience, Kala-aKaar Gaming creates a welcoming space for anyone who loves high-energy moments and relatable gaming fails. If you are looking for non-stop laughs, thrilling chases, and a community built on pure fun, this channel is the perfect place to hang out.`
-    )">
-
+                'Kala-aKaar Gaming',
+                'Hinglish Variety Streamer',
+                '../assets/images/creators/KK.jpg',
+                `Kala-aKaar Gaming brings pure entertainment with a perfect mix of horror scares, funny moments, and intense gameplay all delivered with authentic Hinglish vibes. Whether he is diving into Dead by Daylight, surviving chaotic co-op games like Phasmophobia, or exploring action and adventure titles, he tackles every game in his own unique style. Sometimes playing like a pro and sometimes like a complete noob, his streams always guarantee a fantastic time.`,
+                `Horror Scares, Funny Co-op Chaos, Action & Adventure, Relatable Gameplay, Hinglish Vibes`,
+                `Entertaining, Humorous, Relatable`,
+                `With hilarious reactions and a genuine connection to his audience, Kala-aKaar Gaming creates a welcoming space for anyone who loves high-energy moments and relatable gaming fails. If you are looking for non-stop laughs, thrilling chases, and a community built on pure fun, this channel is the perfect place to hang out.`,
+                'https://www.twitch.tv/kala_akaar', /* Paste Twitch Link Here */
+                'https://www.youtube.com/@Kala-aKaarGaming'  /* Paste YouTube Link Here */
+            )">
                 <div class="creator-image">
                     <img src="../assets/images/creators/KK.jpg" alt="Kala-aKaar Gaming">
                     <div class="blood-glow"></div>
                 </div>
-
                 <div class="creator-name">Kala-aKaar Gaming</div>
                 <div class="creator-role">Hinglish Variety Streamer</div>
                 <div class="creator-tag">Entertaining Gameplay</div>
-
             </div>
-
-
 
         </div>
 
@@ -373,28 +439,19 @@
     <!-- MODAL -->
 
     <div class="modal" id="modal">
-
         <div class="modal-box">
-
             <div class="close" onclick="closeModal()">×</div>
-
             <div class="modal-content">
-
                 <div class="modal-left">
-
                     <div class="modal-avatar">
                         <img id="modalImage" src="" alt="">
                     </div>
-
                 </div>
-
                 <div class="modal-right">
-
                     <h2 id="modalTitle"></h2>
                     <div class="modal-sub" id="modalSub"></div>
-                    <div id="modalShowcaseContainer" class="modal-showcase" style="display: none;">
-                        <img id="modalShowcaseGif" src="../assets/images/creators/sugar.gif" alt="Creator Showcase">
-                    </div>
+
+                    <!-- Removed Showcase GIF from here -->
 
                     <div class="description" id="modalDescription"></div>
 
@@ -409,25 +466,28 @@
                     </div>
 
                     <div class="footer-note" id="modalNote"></div>
+                    
                     <div class="modal-buttons">
-
-                        <a id="modalProfileButton" class="modal-profile-btn" href="request.html" target="_self"
-                            style="display:none;">
-                            Build Requests
+                        <!-- New Twitch and YouTube Buttons -->
+                        <a id="modalTwitchBtn" class="modal-social-btn twitch-btn" href="#" target="_blank">
+                            Twitch
+                        </a>
+                        <a id="modalYoutubeBtn" class="modal-social-btn youtube-btn" href="#" target="_blank">
+                            YouTube
                         </a>
 
+                        <a id="modalProfileButton" class="modal-profile-btn" href="request.html" target="_self" style="display:none;">
+                            Build Requests
+                        </a>
                     </div>
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
     <script>
-
-        function openModal(name, sub, image, description, known, rep, note) {
+        // Updated function signature to accept twitchLink and youtubeLink
+        function openModal(name, sub, image, description, known, rep, note, twitchLink, youtubeLink) {
             document.getElementById("modal").classList.add("active");
 
             document.getElementById("modalTitle").innerText = name;
@@ -436,24 +496,21 @@
             document.getElementById("modalDescription").innerText = description;
             document.getElementById("modalNote").innerText = note;
 
-            const profileButton = document.getElementById("modalProfileButton");
-            const showcaseContainer = document.getElementById("modalShowcaseContainer");
-            const showcaseGif = document.getElementById("modalShowcaseGif");
+            // Update Social Links dynamically
+            document.getElementById("modalTwitchBtn").href = twitchLink;
+            document.getElementById("modalYoutubeBtn").href = youtubeLink;
 
+            const profileButton = document.getElementById("modalProfileButton");
             profileButton.style.display = "none";
-            showcaseContainer.style.display = "none";
-            showcaseGif.src = "";
 
             let knownContainer = document.getElementById("modalKnown");
             knownContainer.innerHTML = "";
-
             known.split(",").forEach(item => {
                 knownContainer.innerHTML += `<div class="badge">${item.trim()}</div>`;
             });
 
             let repContainer = document.getElementById("modalRep");
             repContainer.innerHTML = "";
-
             rep.split(",").forEach(item => {
                 repContainer.innerHTML += `<div class="badge">${item.trim()}</div>`;
             });
@@ -462,40 +519,13 @@
                 profileButton.style.display = "inline-flex";
                 profileButton.href = "request.html";
                 profileButton.textContent = "Build Requests";
-
-                showcaseContainer.style.display = "block";
-                showcaseGif.src = "../assets/images/creators/yato.gif";
-            }
-
-            if (name === "itswhitesugar") {
-                showcaseContainer.style.display = "block";
-                showcaseGif.src = "../assets/images/creators/sugar.gif";
-            }
-
-            if (name === "Kala-aKaar Gaming") {
-                showcaseContainer.style.display = "block";
-                showcaseGif.src = "../assets/images/creators/KK.gif"; 
             }
             
-            if (name === "leongrayj") {
-                showcaseContainer.style.display = "block";
-                showcaseGif.src = "../assets/images/creators/leongrayj.gif"; 
-            }
-            
-            if (name === "BitzTheToaster") {
-                showcaseContainer.style.display = "block";
-                showcaseGif.src = "../assets/images/creators/Bitz.gif"; 
-            }
-            if (name === "CountValyss") {
-                showcaseContainer.style.display = "block";
-                showcaseGif.src = "../assets/images/creators/val.gif"; 
-            }
+            // All specific GIF loading code has been completely removed from here.
         }
-
 
         function closeModal() {
             document.getElementById("modal").classList.remove("active");
-            document.getElementById("modalShowcaseGif").src = "";
         }
 
         window.onclick = function (e) {
@@ -504,7 +534,6 @@
                 closeModal();
             }
         }
-
     </script>
     <script src="../assets/js/session.js"></script>
 </body>

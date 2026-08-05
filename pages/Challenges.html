@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DBD Challenges - The Entity's Realm</title>
+    <title>DBD Challenges - The Entity's Descent & Roulette</title>
 
     <style>
         /* ==========================================================================
@@ -17,6 +17,7 @@
             /* Core Colors */
             --bg-dark: #050508;
             --bg-void: #0a0505;
+            --bg-panel: #111116;
             --entity-red: #d32f2f;
             --entity-blood: #9a031e;
             --entity-glow: rgba(211, 47, 47, 0.8);
@@ -53,6 +54,7 @@
            GLOBAL RESETS & BASE STYLES
            ========================================================================== */
         * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
+
         ::selection { background: var(--arterial-spray); color: var(--pitch-black); text-shadow: none; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
@@ -60,33 +62,37 @@
         ::-webkit-scrollbar-thumb:hover { background: var(--entity-red); }
 
         body, html {
-            width: 100%; max-width: 100vw; min-height: 100%; background-color: var(--bg-dark);
-            color: var(--text-light); font-family: var(--font-main); overflow-x: hidden; scroll-behavior: smooth;
+            width: 100%; max-width: 100vw; min-height: 100%;
+            background-color: var(--bg-dark); color: var(--text-light);
+            font-family: var(--font-main); overflow-x: hidden; scroll-behavior: smooth;
         }
 
+        /* Looping Cinematic Fog Background */
         .fog-overlay {
             position: fixed; top: 0; left: 0; width: 200vw; height: 100vh;
             background: transparent url('https://www.transparenttextures.com/patterns/stardust.png') repeat;
-            opacity: 0.12; animation: driftFog 60s linear infinite; pointer-events: none; z-index: -1; mix-blend-mode: screen;
+            opacity: 0.12; animation: driftFog 60s linear infinite;
+            pointer-events: none; z-index: -1; mix-blend-mode: screen;
         }
 
         .bg-gradient {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at 50% 10%, #2a0808 0%, var(--bg-dark) 60%); z-index: -2;
+            background: radial-gradient(circle at 50% 10%, #2a0808 0%, var(--bg-dark) 60%);
+            z-index: -2;
         }
 
         .beta-banner {
             background: linear-gradient(90deg, rgba(211, 47, 47, 0) 0%, rgba(211, 47, 47, 0.2) 50%, rgba(211, 47, 47, 0) 100%);
-            color: var(--entity-red); text-align: center; padding: clamp(0.5rem, 2vw, 0.8rem);
-            font-size: clamp(0.7rem, 2vw, 0.85rem); letter-spacing: clamp(1px, 1vw, 3px);
-            text-transform: uppercase; font-weight: 800; border-bottom: 1px solid rgba(211, 47, 47, 0.4); animation: pulseBanner 2s infinite;
+            color: var(--entity-red); text-align: center;
+            padding: clamp(0.5rem, 2vw, 0.8rem); font-size: clamp(0.7rem, 2vw, 0.85rem);
+            letter-spacing: clamp(1px, 1vw, 3px); text-transform: uppercase;
+            font-weight: 800; border-bottom: 1px solid rgba(211, 47, 47, 0.4);
+            animation: pulseBanner 2s infinite;
         }
 
-        /* ==========================================================================
-           KEYFRAME ANIMATIONS
-           ========================================================================== */
         @keyframes driftFog { 0% { transform: translateX(0); } 100% { transform: translateX(-50vw); } }
-        @keyframes pulseBanner { 0% { text-shadow: 0 0 5px var(--entity-red); } 50% { text-shadow: 0 0 15px var(--entity-red), 0 0 30px var(--entity-blood); } 100% { text-shadow: 0 0 5px var(--entity-red); } }
+        @keyframes pulseBanner { 0%, 100% { text-shadow: 0 0 5px var(--entity-red); } 50% { text-shadow: 0 0 15px var(--entity-red), 0 0 30px var(--entity-blood); } }
+        
         @keyframes glitchText {
             0% { text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75), -0.025em -0.05em 0 rgba(0, 255, 0, 0.75), 0.025em 0.05em 0 rgba(0, 0, 255, 0.75); }
             14% { text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75), -0.025em -0.05em 0 rgba(0, 255, 0, 0.75), 0.025em 0.05em 0 rgba(0, 0, 255, 0.75); }
@@ -96,37 +102,53 @@
             99% { text-shadow: 0.025em 0.05em 0 rgba(255, 0, 0, 0.75), 0.05em 0 0 rgba(0, 255, 0, 0.75), 0 -0.05em 0 rgba(0, 0, 255, 0.75); }
             100% { text-shadow: -0.025em 0 0 rgba(255, 0, 0, 0.75), -0.025em -0.025em 0 rgba(0, 255, 0, 0.75), -0.025em -0.05em 0 rgba(0, 0, 255, 0.75); }
         }
-        @keyframes entityBreathe { 0% { box-shadow: 0 0 20px rgba(154, 3, 30, 0.2); border-color: rgba(211, 47, 47, 0.3); } 50% { box-shadow: 0 0 40px rgba(154, 3, 30, 0.6); border-color: rgba(211, 47, 47, 0.8); } 100% { box-shadow: 0 0 20px rgba(154, 3, 30, 0.2); border-color: rgba(211, 47, 47, 0.3); } }
-        @keyframes floatCard { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
-        @keyframes pulseGold { 0% { box-shadow: 0 0 10px rgba(229,184,36,0.2); } 50% { box-shadow: 0 0 25px rgba(229,184,36,0.6); } 100% { box-shadow: 0 0 10px rgba(229,184,36,0.2); } }
+
+        @keyframes entityBreathe {
+            0%, 100% { box-shadow: 0 0 20px rgba(154, 3, 30, 0.2); border-color: rgba(211, 47, 47, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(154, 3, 30, 0.6); border-color: rgba(211, 47, 47, 0.8); }
+        }
+
+        @keyframes floatCard { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
 
         /* ==========================================================================
            NAVIGATION BAR
            ========================================================================== */
         .navbar {
-            position: sticky; top: 0; left: 0; width: 100%; min-height: 70px; height: auto; padding: 10px 15px;
-            display: flex; justify-content: center; align-items: center;
+            position: sticky; top: 0; left: 0; width: 100%; min-height: 70px; height: auto;
+            padding: 10px 15px; display: flex; justify-content: center; align-items: center;
             background: linear-gradient(180deg, rgba(0, 0, 0, .98) 0%, rgba(12, 0, 0, .92) 60%, rgba(22, 0, 0, .96) 100%);
             backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
             border-bottom: 2px solid rgba(110, 25, 25, .7); z-index: 1000;
-            animation: organicHeartbeatBorder 4s ease-in-out infinite; box-shadow: 0 4px 18px rgba(0, 0, 0, .55);
+            animation: organicHeartbeatBorder 4s ease-in-out infinite;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, .55);
         }
-        .nav-links { display: flex; justify-content: center; align-items: center; gap: clamp(10px, 3vw, 42px); flex-wrap: wrap; margin: 0; padding: 5px 0; list-style: none; }
+
+        .nav-links {
+            display: flex; justify-content: center; align-items: center; gap: clamp(10px, 3vw, 42px);
+            flex-wrap: wrap; margin: 0; padding: 5px 0; list-style: none;
+        }
+
         .navbar li a {
-            position: relative; display: inline-flex; align-items: center; justify-content: center; padding: clamp(5px, 1.5vw, 8px) clamp(10px, 2vw, 16px);
-            font-family: var(--font-ui, 'Segoe UI', sans-serif); font-size: clamp(0.85rem, 2.5vw, 1.15rem); font-weight: 700;
-            text-transform: uppercase; letter-spacing: clamp(1px, 1vw, 3px); text-decoration: none; color: var(--muted-bone, #888899);
+            position: relative; display: inline-flex; align-items: center; justify-content: center;
+            padding: clamp(5px, 1.5vw, 8px) clamp(10px, 2vw, 16px);
+            font-family: var(--font-ui, 'Segoe UI', sans-serif); font-size: clamp(0.85rem, 2.5vw, 1.15rem);
+            font-weight: 700; text-transform: uppercase; letter-spacing: clamp(1px, 1vw, 3px);
+            text-decoration: none; color: var(--muted-bone, #888899);
             transition: color .35s ease, text-shadow .35s ease, transform .35s ease; white-space: nowrap;
         }
+
         .navbar li a::before {
-            content: ""; position: absolute; left: 50%; top: 50%; width: 0%; height: 3px; background: var(--arterial-spray, #ff0505);
-            transform: translate(-50%, -50%) rotate(-4deg); opacity: 0; border-radius: 20px;
-            box-shadow: 0 0 10px var(--arterial-spray, #ff0505), 0 0 20px rgba(255, 30, 30, .5);
+            content: ""; position: absolute; left: 50%; top: 50%; width: 0%; height: 3px;
+            background: var(--arterial-spray, #ff0505); transform: translate(-50%, -50%) rotate(-4deg);
+            opacity: 0; border-radius: 20px; box-shadow: 0 0 10px var(--arterial-spray, #ff0505), 0 0 20px rgba(255, 30, 30, .5);
             transition: width .45s cubic-bezier(.22, 1, .36, 1), opacity .3s ease;
         }
-        .navbar li a:hover, .navbar li a.active { color: var(--bone-white, #ffffff); transform: translateY(-2px); text-shadow: 0 0 8px rgba(255, 255, 255, .3), 0 0 18px rgba(255, 40, 40, .7); }
+
+        .navbar li a:hover, .navbar li a.active {
+            color: var(--bone-white, #ffffff); transform: translateY(-2px);
+            text-shadow: 0 0 8px rgba(255, 255, 255, .3), 0 0 18px rgba(255, 40, 40, .7);
+        }
         .navbar li a:hover::before, .navbar li a.active::before { width: 110%; opacity: 1; }
-        .navbar li a:active { transform: scale(.96); }
 
         @keyframes organicHeartbeatBorder {
             0%, 100% { border-bottom-color: #4d1111; box-shadow: 0 4px 18px rgba(0, 0, 0, .55); }
@@ -144,62 +166,84 @@
         }
 
         /* ==========================================================================
-           PREMIUM ADD-ON: ROLE TOGGLE
+           CHALLENGE TOGGLE
            ========================================================================== */
-        .role-toggle-container { display: flex; justify-content: center; margin: 2.5rem auto 1rem auto; position: relative; z-index: 10; }
-        .role-toggle {
-            background: rgba(10, 5, 5, 0.85); border: 1px solid var(--glass-border); border-radius: 50px;
-            display: flex; position: relative; padding: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 15px rgba(255, 0, 0, 0.15); width: clamp(280px, 50vw, 400px);
+        .challenge-toggle-container {
+            display: flex; justify-content: center; gap: 20px; 
+            margin-top: 3rem; position: relative; z-index: 10;
         }
         .toggle-btn {
-            flex: 1; background: transparent; color: var(--text-muted); border: none; padding: 12px 20px; font-family: var(--font-ui);
-            font-size: clamp(1.1rem, 2.5vw, 1.4rem); font-weight: bold; letter-spacing: 2px; cursor: pointer; position: relative;
-            z-index: 2; transition: color 0.4s ease, text-shadow 0.4s ease; text-transform: uppercase; text-align: center;
+            background: rgba(0,0,0,0.6); color: var(--text-muted); border: 2px solid #444;
+            padding: 15px 40px; font-family: var(--font-ui); font-size: 1.5rem; letter-spacing: 2px;
+            text-transform: uppercase; cursor: pointer; border-radius: 8px; transition: 0.3s;
         }
-        .toggle-btn.active { color: #fff; text-shadow: 0 0 12px rgba(255, 255, 255, 0.8); }
-        .toggle-slider {
-            position: absolute; top: 5px; left: 5px; width: calc(50% - 5px); height: calc(100% - 10px);
-            background: linear-gradient(135deg, var(--entity-red), var(--dried-blood)); border-radius: 40px; transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-            z-index: 1; box-shadow: var(--neon-glow);
+        .toggle-btn.active {
+            background: var(--entity-blood); color: #fff; border-color: var(--entity-red);
+            box-shadow: 0 0 20px rgba(211,47,47,0.5);
         }
+        .toggle-btn:hover:not(.active) { border-color: var(--text-muted); color: #fff; }
+
+        /* Hide campaign sections dynamically */
+        .campaign-section { display: none; }
+        .campaign-section.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* ==========================================================================
-           CHALLENGE VIEW TOGGLING ANIMATION
+           COMMON HERO / SECTION STYLES
            ========================================================================== */
-        .challenge-realm { display: none; opacity: 0; transition: opacity 0.5s ease; }
-        .challenge-realm.active-realm { display: block; animation: realmFadeIn 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        @keyframes realmFadeIn {
-            0% { opacity: 0; transform: translateY(20px); filter: blur(5px); }
-            100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+        .entity-gauntlet-container, .container {
+            font-family: var(--font-main); position: relative; line-height: 1.6; width: 100%; max-width: 1200px; margin: 0 auto;
         }
 
-        /* ==========================================================================
-           COMMON HERO & CONTAINER STYLES
-           ========================================================================== */
-        .entity-gauntlet-container { font-family: var(--font-mono); position: relative; line-height: 1.6; width: 100%; }
-        .descent-hero {
-            text-align: center; padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 5vw, 2rem);
+        .descent-hero, .hero-title {
+            text-align: center; padding: clamp(4rem, 10vw, 8rem) clamp(1rem, 5vw, 2rem);
             background: radial-gradient(circle at center, rgba(30, 10, 10, 0.8) 0%, transparent 70%);
-            position: relative; z-index: 2; border-bottom: 2px solid var(--glass-border); border-top: 2px solid var(--glass-border); margin-bottom: clamp(2rem, 5vw, 3rem);
+            position: relative; z-index: 2; border-bottom: 2px solid var(--glass-border);
+            border-top: 2px solid var(--glass-border); margin-top: clamp(2rem, 5vw, 4rem); margin-bottom: clamp(2rem, 5vw, 3rem);
         }
-        .descent-hero p.quote { font-size: clamp(1rem, 2.5vw, 1.2rem); font-style: italic; color: #aaa; letter-spacing: 1px; text-shadow: 0 0 5px rgba(0, 0, 0, 0.8); padding: 0 10px; }
-        
-        .open-tracker-btn {
-            background: linear-gradient(135deg, var(--dried-blood), #110000); color: var(--bone-white); border: 1px solid var(--arterial-spray);
-            padding: 15px 40px; font-family: var(--font-ui); font-size: 1.5rem; letter-spacing: 4px; text-transform: uppercase; font-weight: bold;
-            box-shadow: 0 0 20px rgba(255, 5, 5, 0.4); border-radius: 4px; transition: all 0.3s var(--smooth-curve); margin: 20px 0; position: relative; z-index: 100; cursor: pointer; display: inline-block;
-        }
-        .open-tracker-btn:hover { transform: translateY(-5px) scale(1.05); background: linear-gradient(135deg, var(--arterial-spray), var(--dried-blood)); box-shadow: 0 10px 40px rgba(255, 5, 5, 0.8); color: white; }
 
-        .descent-section {
-            padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 5vw, 2rem); max-width: 1200px; width: 95%; margin: 0 auto clamp(2rem, 5vw, 3rem) auto;
-            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; backdrop-filter: blur(10px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6); position: relative; z-index: 2;
+        .glitch-text {
+            font-size: clamp(2.5rem, 8vw, 6rem); color: #fff; text-transform: uppercase;
+            letter-spacing: clamp(3px, 2vw, 8px); margin-bottom: 20px; position: relative;
+            display: inline-block; animation: glitchText 3s infinite; word-wrap: break-word; font-family: var(--font-mono);
         }
-        .section-header { color: var(--entity-red); font-size: clamp(1.8rem, 5vw, 2.5rem); text-transform: uppercase; letter-spacing: 3px; border-left: 6px solid var(--entity-red); padding-left: clamp(10px, 3vw, 20px); margin-bottom: 1.5rem; text-shadow: var(--neon-glow); }
+        .glitch-text::before, .glitch-text::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.8; }
+        .glitch-text::before { left: 2px; text-shadow: -2px 0 red; clip: rect(24px, 550px, 90px, 0); animation: glitchText 2s infinite linear alternate-reverse; }
+        .glitch-text::after { left: -2px; text-shadow: -2px 0 blue; clip: rect(85px, 550px, 140px, 0); animation: glitchText 2.5s infinite linear alternate-reverse; }
+
+        .descent-hero p.quote, .hero-title p.subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.2rem); color: #aaa; letter-spacing: 2px;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.8); padding: 0 10px; font-style: italic;
+        }
+
+        .open-tracker-btn {
+            background: linear-gradient(135deg, var(--dried-blood), #110000); color: var(--bone-white);
+            border: 1px solid var(--arterial-spray); padding: 15px 40px; font-family: var(--font-ui);
+            font-size: 1.5rem; letter-spacing: 4px; text-transform: uppercase; font-weight: bold;
+            box-shadow: 0 0 20px rgba(255, 5, 5, 0.4); border-radius: 4px; transition: all 0.3s var(--smooth-curve);
+            margin: 20px 0; position: relative; z-index: 100; cursor: pointer; display: inline-block;
+        }
+        .open-tracker-btn:hover {
+            transform: translateY(-5px) scale(1.05); background: linear-gradient(135deg, var(--arterial-spray), var(--dried-blood));
+            box-shadow: 0 10px 40px rgba(255, 5, 5, 0.8); color: white;
+        }
+
+        /* Generic Sections */
+        .descent-section {
+            padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 5vw, 2rem); max-width: 1200px; width: 95%;
+            margin: 0 auto clamp(2rem, 5vw, 3rem) auto; background: var(--glass-bg);
+            border: 1px solid var(--glass-border); border-radius: 16px; backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6); position: relative; z-index: 2;
+        }
+        .section-header {
+            color: var(--entity-red); font-size: clamp(1.8rem, 5vw, 2.5rem); text-transform: uppercase;
+            letter-spacing: 3px; border-left: 6px solid var(--entity-red); padding-left: clamp(10px, 3vw, 20px);
+            margin-bottom: 1.5rem; text-shadow: var(--neon-glow);
+        }
         .section-desc { font-size: clamp(1rem, 2.5vw, 1.1rem); color: var(--text-muted); margin-bottom: clamp(2rem, 5vw, 3rem); line-height: 1.8; }
 
         /* ==========================================================================
-           KILLER SPECIFIC STYLES (ACCORDIONS, ALTAR, ASCENSION)
+           KILLER CAMPAIGN STYLES
            ========================================================================== */
         .perk-accordion-wrapper { display: flex; flex-direction: column; gap: 15px; }
         .perk-accordion { background: rgba(10, 10, 15, 0.8); border: 1px solid #333; border-radius: 8px; overflow: hidden; transition: var(--transition-smooth); }
@@ -224,6 +268,7 @@
         .altar-slot.consumed .perk-diamond { background: var(--entity-blood); border-color: #ff0000; box-shadow: 0 0 30px var(--entity-red), inset 0 0 20px #000; transform: rotate(45deg) scale(0.8); animation: shake 0.5s ease-in-out; }
         .altar-slot.consumed .perk-diamond span { color: #000; text-shadow: none; }
         .altar-slot.consumed .slot-label { color: var(--entity-red); text-shadow: 0 0 10px var(--entity-red); }
+
         @keyframes shake { 0%, 100% { transform: rotate(45deg) scale(0.8) translate(0, 0); } 25% { transform: rotate(45deg) scale(0.8) translate(5px, 5px); } 50% { transform: rotate(45deg) scale(0.8) translate(-5px, -5px); } 75% { transform: rotate(45deg) scale(0.8) translate(5px, -5px); } }
 
         .ascension-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(15px, 4vw, 20px); }
@@ -236,120 +281,188 @@
         .ascension-card h4 { font-size: clamp(1.1rem, 3vw, 1.3rem); color: #fff; margin-bottom: 15px; position: relative; z-index: 1; font-family: var(--font-main); }
         .ascension-card p { color: var(--text-muted); font-size: clamp(0.85rem, 2vw, 0.95rem); position: relative; z-index: 1; }
 
-        .challenge-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: clamp(1.5rem, 4vw, 2.5rem); width: 95%; max-width: 1200px; margin: 0 auto; padding-bottom: 4rem; }
+        .challenge-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: clamp(1.5rem, 4vw, 2.5rem); }
         .challenge-card { background: linear-gradient(145deg, #1a1a24 0%, #0d0d12 100%); border: 1px solid #333; border-radius: 12px; padding: clamp(1.5rem, 5vw, 2.5rem); cursor: pointer; transition: var(--transition-bounce); position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
         .challenge-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--entity-red); transform: scaleX(0); transition: transform 0.4s ease; transform-origin: left; }
         .challenge-card:hover { transform: translateY(-10px); border-color: var(--entity-red); box-shadow: var(--neon-glow); animation: entityBreathe 3s infinite; }
         .challenge-card:hover::before { transform: scaleX(1); }
         .card-type { font-size: clamp(0.75rem, 2vw, 0.85rem); text-transform: uppercase; color: var(--entity-red); letter-spacing: 2px; margin-bottom: 1rem; font-weight: bold; font-family: var(--font-main); }
         .card-title { font-size: clamp(1.4rem, 4vw, 1.8rem); color: #fff; margin-bottom: 1rem; font-family: var(--font-main); }
-        .realm-section-title { text-align: center; font-family: var(--font-ui); color: var(--text-light); font-size: clamp(2rem, 5vw, 3.5rem); text-transform: uppercase; letter-spacing: 4px; margin: 3rem auto 2rem auto; text-shadow: 0 0 15px rgba(211,47,47,0.5); border-bottom: 2px solid var(--glass-border); padding-bottom: 10px; width: 90%; max-width: 1200px; }
 
         /* ==========================================================================
-           SURVIVOR ROULETTE SPECIFIC STYLES
+           SURVIVOR CAMPAIGN STYLES
            ========================================================================== */
-        .rules-wrapper { display: flex; flex-direction: column; gap: 2.5rem; margin-bottom: 3rem; }
-        .rule-card {
-            background: var(--glass-bg); border-left: 4px solid var(--entity-red);
-            border-right: 1px solid rgba(255,255,255,0.05); border-top: 1px solid rgba(255,255,255,0.05);
-            border-bottom: 1px solid rgba(255,255,255,0.05); padding: 2.5rem; border-radius: 4px 12px 12px 4px;
-            backdrop-filter: blur(12px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); transition: var(--transition-smooth);
-            display: flex; flex-direction: column;
-        }
-        .rule-card:hover { transform: translateX(10px); border-left-color: var(--entity-blood); }
+        .rules-wrapper { display: flex; flex-direction: column; gap: 2.5rem; margin-bottom: 5rem; }
+        .rule-card { background: var(--glass-bg); border-left: 4px solid var(--entity-red); border-right: 1px solid rgba(255,255,255,0.05); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 2.5rem; border-radius: 4px 12px 12px 4px; backdrop-filter: blur(12px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); transition: var(--transition-smooth); display: flex; flex-direction: column; }
+        .rule-card:hover { transform: translateX(10px); border-left-color: var(--entity-blood); box-shadow: -5px 0 20px rgba(211, 47, 47, 0.4), 0 20px 40px rgba(0,0,0,0.6); }
         .rule-card.gold-tier { border-left-color: var(--gold-ascension); }
-        .rule-card.gold-tier:hover { border-left-color: #fff; }
+        .rule-card.gold-tier:hover { border-left-color: #fff; box-shadow: -5px 0 20px rgba(229, 184, 36, 0.4), 0 20px 40px rgba(0,0,0,0.6); }
         .rule-header { display: flex; align-items: center; gap: 15px; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; }
         .rule-number { font-family: var(--font-mono); font-size: 1.8rem; font-weight: bold; color: var(--entity-red); text-shadow: var(--neon-glow); }
         .rule-card.gold-tier .rule-number { color: var(--gold-ascension); text-shadow: var(--gold-glow); }
         .rule-title { font-size: 1.6rem; color: #fff; text-transform: uppercase; letter-spacing: 2px; }
         .rule-content p { font-size: 1.1rem; line-height: 1.8; color: var(--text-muted); margin-bottom: 1rem; }
         .rule-content strong { color: #fff; }
-        
         .highlight-box { background: rgba(0,0,0,0.4); padding: 1.5rem; border-radius: 8px; margin-top: 1.5rem; border: 1px dashed rgba(255,255,255,0.2); }
         .highlight-box h4 { color: var(--entity-red); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px; }
         .rule-card.gold-tier .highlight-box h4 { color: var(--gold-ascension); }
-        
         .win-table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: rgba(0,0,0,0.3); border-radius: 8px; overflow: hidden; }
         .win-table th, .win-table td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .win-table th { background: rgba(211, 47, 47, 0.2); color: #fff; }
+
+        /* ==========================================================================
+           MODALS & FLOATING APPS (TRACKERS)
+           ========================================================================== */
+        /* Core Tracker Window Base */
+        .tracker-window {
+            position: fixed; top: 90px; right: 20px; width: 90vw; max-width: 1100px; height: 80vh;
+            background: rgba(10, 2, 2, 0.95); border: 2px solid var(--dried-blood); z-index: 5000;
+            border-radius: 8px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(255, 0, 0, 0.2);
+            display: none; flex-direction: column; font-family: var(--font-tracker);
+            transition: all 0.4s var(--smooth-curve); overflow: hidden;
+        }
+        .tracker-window.active { display: flex; animation: slideUpFade 0.5s var(--smooth-curve); }
+        .tracker-window.minimized { height: 60px; width: 350px; top: auto; bottom: 20px; right: 20px; cursor: pointer; }
         
-        .controls-bar { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-bottom: 2rem; padding: 1rem; background: rgba(20, 10, 10, 0.8); border-radius: 8px; border: 1px solid var(--glass-border); }
-        .custom-select { background: #111; color: #fff; border: 1px solid var(--entity-red); padding: 12px 20px; font-size: 1.1rem; border-radius: 4px; font-family: var(--font-main); outline: none; cursor: pointer; box-shadow: inset 0 0 10px rgba(0,0,0,0.8); }
-        .inventory-btn { background: transparent; color: #ccc; border: 1px dashed var(--entity-red); padding: 12px 20px; font-size: 1.1rem; border-radius: 4px; cursor: pointer; transition: var(--transition-smooth); }
-        .inventory-btn:hover { background: rgba(211, 47, 47, 0.1); color: #fff; border-style: solid; }
+        .tracker-title-bar {
+            height: 60px; background: linear-gradient(90deg, #2a0000, #000); border-bottom: 1px solid var(--arterial-spray);
+            display: flex; justify-content: space-between; align-items: center; padding: 0 20px; flex-shrink: 0; user-select: none;
+        }
+        .tracker-title-bar h3 { color: var(--bone-white); font-family: var(--font-ui); font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; margin: 0; }
+        .tracker-title-bar h3 span { color: var(--arterial-spray); }
+        .tracker-controls span { color: var(--muted-bone); font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer; transition: color 0.2s; }
+        .tracker-controls span:hover { color: var(--bone-white); text-shadow: 0 0 10px white; }
+
+        .tracker-body { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; background: var(--bg-panel); }
+        .tracker-nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; padding: 15px; background: rgba(0, 0, 0, 0.5); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .tracker-nav button { background: rgba(20, 20, 20, 0.8); border: 1px solid var(--dried-blood); color: var(--muted-bone); padding: 8px 15px; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.3s; font-family: var(--font-ui); letter-spacing: 1px; }
+        .tracker-nav button:hover, .tracker-nav button.active-btn { background: var(--dried-blood); color: white; border-color: var(--arterial-spray); box-shadow: 0 0 15px rgba(255, 0, 0, 0.4); }
+
+        .t-view { display: none; flex: 1; padding: 20px; overflow-y: auto; }
+        .t-view.active { display: block; animation: fadeIn 0.4s; }
+
+        /* Killer Tracker Components */
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; padding-bottom: 50px; }
+        .tracker-killer-card { background: linear-gradient(180deg, rgba(20, 20, 20, 0.8), rgba(5, 5, 5, 0.9)); border: 1px solid rgba(255, 255, 255, 0.1); padding: 15px; text-align: center; cursor: pointer; font-weight: 700; border-radius: 4px; transition: all 0.3s; position: relative; }
+        .tracker-killer-card:hover { border-color: var(--entity-red); box-shadow: 0 5px 20px rgba(255, 30, 30, 0.3); transform: translateY(-5px); color: white; }
+        .tracker-killer-card.completed { border-color: var(--entity-orange); background: rgba(139, 0, 0, 0.2); }
+        .tracker-killer-card.completed::after { content: 'CLEANSED'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg); color: var(--entity-orange); font-size: 1rem; font-weight: 900; opacity: 0.8; letter-spacing: 2px; text-shadow: 0 0 10px #000; }
         
-        .randomizer-section { background: linear-gradient(180deg, #100a0a 0%, #050508 100%); border: 1px solid var(--glass-border); border-radius: 16px; padding: 4rem 2rem; text-align: center; box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 30px 60px rgba(0,0,0,0.9); position: relative; overflow: hidden; transition: var(--transition-smooth); }
-        .randomizer-section.golden-active { border-color: var(--gold-ascension); box-shadow: inset 0 0 50px rgba(229, 184, 36, 0.1), 0 30px 60px rgba(0,0,0,0.9); }
-        .randomizer-section::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--entity-red); box-shadow: var(--neon-glow); transition: var(--transition-smooth); }
-        .randomizer-section.golden-active::before { background: var(--gold-ascension); box-shadow: var(--gold-glow); }
+        .builder-layout { display: flex; flex-direction: column; gap: 20px; height: 100%; }
+        @media (min-width: 800px) { .builder-layout { flex-direction: row; } }
+        .schools-sidebar { width: 100%; display: flex; overflow-x: auto; gap: 10px; }
+        @media (min-width: 800px) { .schools-sidebar { width: 200px; flex-direction: column; overflow-x: visible; } }
+        .school-btn { padding: 12px; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--muted-bone); text-align: center; cursor: pointer; transition: 0.3s; font-family: var(--font-ui); font-size: 1.1rem; }
+        .school-btn.active-tab { border-left: 4px solid var(--entity-red); background: rgba(255, 30, 30, 0.1); color: white; }
+        .school-btn.locked { border-color: var(--entity-orange); color: var(--entity-orange); }
+        .school-btn.disabled { opacity: 0.3; pointer-events: none; }
         
-        .spin-btn { background: linear-gradient(45deg, #7a0000 0%, #d32f2f 100%); color: #fff; border: 2px solid #ff4d4d; padding: 1.2rem 3rem; font-size: 1.3rem; font-weight: bold; text-transform: uppercase; letter-spacing: 4px; border-radius: 4px; cursor: pointer; transition: var(--transition-bounce); box-shadow: 0 10px 20px rgba(0,0,0,0.5), 0 0 15px rgba(211, 47, 47, 0.4); margin-bottom: 2rem; position: relative; overflow: hidden; z-index: 1; }
-        .spin-btn::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); transition: all 0.5s ease; z-index: -1; }
-        .spin-btn:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 15px 25px rgba(0,0,0,0.6), 0 0 30px rgba(211, 47, 47, 0.8); border-color: #fff; }
-        .spin-btn:hover::after { left: 100%; }
-        .spin-btn:active { transform: scale(0.95); }
+        .perks-matrix { flex: 1; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 4px; display: flex; flex-direction: column; }
+        .matrix-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; overflow-y: auto; padding-right: 5px; max-height: 400px; }
+        .tracker-perk-item { background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px; text-align: center; font-size: 0.8rem; cursor: pointer; transition: 0.2s; border-radius: 3px; font-family: var(--font-tracker); }
+        .tracker-perk-item:hover { border-color: white; background: rgba(50, 50, 50, 0.9); }
+        .tracker-perk-item.banned { text-decoration: line-through; color: var(--entity-blood); opacity: 0.4; pointer-events: none; border-color: transparent; }
+        .tracker-perk-item.selected { background: var(--entity-blood); border-color: var(--entity-red); color: white; }
         
-        .golden-banner { display: none; background: rgba(229, 184, 36, 0.15); border: 1px solid var(--gold-ascension); color: var(--gold-ascension); padding: 1rem; margin: 0 auto 2rem auto; max-width: 800px; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; animation: pulseGold 2s infinite; }
+        .selected-perks-display { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 20px 0; }
+        .perk-slot { width: 140px; height: 50px; border: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; background: rgba(0, 0, 0, 0.8); color: var(--muted-bone); border-radius: 3px; position: relative; font-family: var(--font-tracker); }
+        .perk-slot.filled { border-color: var(--entity-red); color: white; background: linear-gradient(135deg, rgba(30, 0, 0, 0.8), rgba(10, 0, 0, 0.9)); box-shadow: inset 0 0 10px rgba(255, 0, 0, 0.2); }
+        .perk-slot .school-label { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #000; border: 1px solid var(--glass-border); font-size: 0.6rem; color: var(--entity-orange); padding: 2px 5px; border-radius: 4px; }
+        #start-trial-btn { display: none; width: 100%; padding: 15px; background: var(--entity-orange); color: white; border: none; font-weight: bold; text-transform: uppercase; cursor: pointer; letter-spacing: 2px; font-family: var(--font-ui); font-size: 1.2rem; }
+
+        .trial-perks { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin: 40px 0; }
+        .trial-perk { width: 120px; height: 120px; background: rgba(0, 0, 0, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 10px; border-radius: 6px; font-family: var(--font-tracker); transition: all 0.5s var(--smooth-curve); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); position: relative; overflow: hidden; }
+        .trial-perk.active-perk { border-color: var(--entity-red); box-shadow: inset 0 0 20px rgba(255, 0, 0, 0.2); }
+        .sacrifice-mode .trial-perk.active-perk { cursor: crosshair; border-color: var(--entity-orange); animation: breathe 1.5s infinite; }
+        .perk-shattered { animation: cinematicShatter 1s forwards !important; pointer-events: none; }
         
-        .perk-display-area { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 3.5rem 2.5rem; min-height: 320px; padding: 2rem 1rem; }
+        .trial-controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+        .trial-controls button { padding: 15px 30px; font-weight: bold; text-transform: uppercase; cursor: pointer; background: black; color: white; border: 1px solid white; transition: 0.3s; font-family: var(--font-ui); font-size: 1.2rem; }
+        .btn-win:hover { border-color: #00ff66; color: #00ff66; box-shadow: 0 0 20px rgba(0, 255, 102, 0.3); }
+        .btn-lose:hover { border-color: var(--entity-red); color: var(--entity-red); box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); }
+
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .stat-box { background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); padding: 20px; text-align: center; border-radius: 6px; font-family: var(--font-ui); font-size: 1.2rem; text-transform: uppercase; }
+        .stat-value { font-size: 3rem; font-weight: 900; margin-top: 10px; font-family: var(--font-tracker); }
+        .highlight { color: var(--entity-red); text-shadow: 0 0 15px rgba(211,47,47,0.5); }
+        #stat-sacrificed, #surv-stat-pot { color: var(--entity-orange); }
+        #stat-lifelines, #surv-stat-safe { color: #00ff66; }
+
+        .lb-table-container { width: 100%; overflow-x: auto; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; }
+        .lb-table { width: 100%; border-collapse: collapse; text-align: left; font-family: var(--font-tracker); font-size: 0.95rem; }
+        .lb-table th { background: rgba(30, 0, 0, 0.8); color: var(--arterial-spray); padding: 15px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--dried-blood); font-family: var(--font-ui); font-size: 1.2rem; }
+        .lb-table td { padding: 12px 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #ccc; }
+        .lb-me { background: rgba(255, 30, 30, 0.15); font-weight: bold; border-left: 4px solid var(--arterial-spray); }
+        .lb-me td { color: #fff; }
+
+        /* Survivor Tracker Specifics */
+        .goal-container { background: rgba(0,0,0,0.6); padding: 2rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); text-align: center; margin-top: 2rem; }
+        .goal-title { font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1.5rem; color: #fff; font-family: var(--font-ui); }
+        .progress-track { width: 100%; height: 20px; background: #000; border-radius: 10px; border: 1px solid #333; overflow: hidden; position: relative; margin-bottom: 1rem; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #7a0000 0%, var(--entity-red) 100%); width: 0%; transition: width 1s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 0 20px var(--entity-red); }
+        .goal-numbers { display: flex; justify-content: space-between; color: var(--text-muted); font-family: var(--font-mono); }
+
+        .controls-bar { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 20px; background: rgba(0,0,0,0.6); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border: 1px solid rgba(255,255,255,0.05); }
+        .custom-select { background: #000; color: #fff; border: 1px solid var(--entity-red); padding: 12px 20px; font-size: 1.1rem; border-radius: 4px; outline: none; cursor: pointer; }
+        .btn-primary { background: linear-gradient(45deg, #7a0000 0%, #d32f2f 100%); color: #fff; border: 2px solid #ff4d4d; padding: 1.2rem 3rem; font-size: 1.2rem; font-weight: bold; text-transform: uppercase; letter-spacing: 4px; border-radius: 4px; cursor: pointer; transition: var(--transition-bounce); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .btn-primary:hover { transform: translateY(-3px) scale(1.05); box-shadow: var(--neon-glow); border-color: #fff; }
+        .btn-primary:active { transform: scale(0.95); }
+        .btn-primary:disabled { filter: grayscale(1); opacity: 0.5; pointer-events: none; }
+        .btn-outline { background: transparent; color: #fff; border: 2px solid #555; padding: 1.2rem 3rem; font-size: 1.2rem; font-weight: bold; text-transform: uppercase; letter-spacing: 4px; border-radius: 4px; cursor: pointer; transition: var(--transition-smooth); }
+        .btn-outline:hover { border-color: #fff; background: rgba(255,255,255,0.05); }
+        .action-zone { text-align: center; margin-bottom: 2rem; }
+
+        .decision-panel { display: none; background: rgba(211, 47, 47, 0.1); border: 1px solid var(--entity-red); padding: 2rem; border-radius: 8px; margin-bottom: 2rem; text-align: center; box-shadow: inset 0 0 30px rgba(211,47,47,0.1); }
+        .decision-panel.active { display: block; animation: pulseGlow 2s infinite; }
+        .decision-title { font-size: 1.8rem; color: #fff; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem; font-family: var(--font-ui); }
+        .decision-pot { font-family: var(--font-mono); font-size: 2.5rem; color: var(--entity-red); font-weight: bold; margin-bottom: 2rem; }
+        .decision-buttons { display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; }
+        .timer-bar { width: 100%; height: 4px; background: #333; margin-top: 2rem; border-radius: 2px; overflow: hidden; }
+        .timer-fill { height: 100%; width: 100%; background: var(--entity-red); transform-origin: left; }
+        @keyframes pulseGlow { 0% { box-shadow: inset 0 0 10px rgba(211,47,47,0.1); } 50% { box-shadow: inset 0 0 40px rgba(211,47,47,0.3); } 100% { box-shadow: inset 0 0 10px rgba(211,47,47,0.1); } }
+
+        .golden-banner { display: none; background: rgba(229, 184, 36, 0.15); border: 1px solid var(--gold-ascension); color: var(--gold-ascension); padding: 1rem; margin: 0 auto 2rem auto; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; text-align: center; animation: pulseGold 2s infinite; }
+        .surv-randomizer-active { border: 2px solid var(--gold-ascension) !important; box-shadow: inset 0 0 50px rgba(229, 184, 36, 0.1), 0 30px 60px rgba(0,0,0,0.9) !important; }
+
+        .perk-display-area { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 3.5rem 2.5rem; min-height: 320px; padding: 2rem 1rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; }
         .perk-card-container { display: flex; flex-direction: column; align-items: center; width: 120px; opacity: 0; transform: translateY(30px); transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .perk-card-container.revealed { opacity: 1; transform: translateY(0); }
         .perk-node { position: relative; width: 85px; height: 85px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
-        .rhombus-outer { width: 75px; height: 75px; background: linear-gradient(135deg, #2a2a35 0%, #0d0d12 100%); border: 2px solid #555; transform: rotate(45deg); position: absolute; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.6); transition: var(--transition-bounce); display: flex; justify-content: center; align-items: center; cursor: pointer; overflow: hidden; }
+        .rhombus-outer { width: 75px; height: 75px; background: linear-gradient(135deg, #2a2a35 0%, #0d0d12 100%); border: 2px solid #555; transform: rotate(45deg); position: absolute; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.6); transition: var(--transition-bounce); overflow: hidden; display: flex; justify-content: center; align-items: center; }
         .perk-card-container:hover .rhombus-outer { border-color: var(--entity-red); box-shadow: inset 0 0 20px rgba(211, 47, 47, 0.4), 0 0 25px rgba(211, 47, 47, 0.7); transform: rotate(45deg) scale(1.12); z-index: 10; }
-        .randomizer-section.golden-active .perk-card-container:hover .rhombus-outer { border-color: var(--gold-ascension); box-shadow: inset 0 0 20px rgba(229, 184, 36, 0.4), 0 0 25px rgba(229, 184, 36, 0.7); }
-        .rhombus-inner-img { width: 135%; height: 135%; object-fit: contain; transform: rotate(-45deg); filter: drop-shadow(0px 0px 4px rgba(0,0,0,0.8)); pointer-events: none; transition: filter 0.3s ease; }
+        .surv-randomizer-active .perk-card-container:hover .rhombus-outer { border-color: var(--gold-ascension); box-shadow: inset 0 0 20px rgba(229, 184, 36, 0.4), 0 0 25px rgba(229, 184, 36, 0.7); }
+        .rhombus-inner-img { width: 135%; height: 135%; object-fit: contain; transform: rotate(-45deg); filter: drop-shadow(0px 0px 4px rgba(0,0,0,0.8)); pointer-events: none; }
         .perk-card-container:hover .rhombus-inner-img { filter: drop-shadow(0px 0px 8px rgba(211, 47, 47, 0.9)) brightness(1.25); }
-        .perk-fallback-badge { position: absolute; transform: rotate(-45deg); color: var(--gold-ascension); font-family: var(--font-mono); font-weight: 900; font-size: 0.85rem; letter-spacing: 1px; text-align: center; pointer-events: none; }
-        .perk-name-label { color: #d0d0dd; font-family: var(--font-main); font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-align: center; line-height: 1.3; width: 100%; word-wrap: break-word; text-shadow: 0 2px 4px rgba(0,0,0,0.9); margin-top: 85px; transition: var(--transition-smooth); }
+        .perk-fallback-badge { position: absolute; transform: rotate(-45deg); color: var(--gold-ascension); font-family: var(--font-mono); font-weight: 900; font-size: 0.85rem; letter-spacing: 1px; pointer-events: none; }
+        .perk-name-label { color: #d0d0dd; font-family: var(--font-main); font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-align: center; line-height: 1.3; text-shadow: 0 2px 4px rgba(0,0,0,0.9); transition: var(--transition-smooth); }
         .perk-card-container:hover .perk-name-label { color: #ffffff; text-shadow: 0 0 10px var(--entity-red); }
 
-        /* ==========================================================================
-           MODALS (INFO, INVENTORY, IFRAMES)
-           ========================================================================== */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(12px); display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: var(--transition-smooth); z-index: 2000; }
+        .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
+        .char-checkbox-label { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
+        .char-checkbox-label:hover { background: rgba(255,255,255,0.08); border-color: #555; }
+        .char-checkbox-label input[type="checkbox"] { appearance: none; width: 20px; height: 20px; background: #000; border: 1px solid #555; border-radius: 4px; cursor: pointer; position: relative; }
+        .char-checkbox-label input[type="checkbox"]:checked { background: var(--entity-red); border-color: var(--entity-red); }
+        .char-checkbox-label input[type="checkbox"]:checked::after { content: '✔'; position: absolute; color: #fff; font-size: 14px; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+        /* Shared Modals & Tooltips */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(12px); display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: var(--transition-smooth); z-index: 8000; }
         .modal-overlay.active { opacity: 1; pointer-events: all; }
         .modal-content { background: linear-gradient(180deg, #15151a 0%, #050508 100%); border: 1px solid var(--glass-border); border-radius: 16px; width: 95%; max-width: 850px; padding: clamp(1.5rem, 5vw, 3rem); position: relative; transform: scale(0.95) translateY(20px); transition: var(--transition-bounce); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(211, 47, 47, 0.1); max-height: 90vh; overflow-y: auto; font-family: var(--font-journal); }
         .modal-overlay.active .modal-content { transform: scale(1) translateY(0); }
-        .close-btn { position: absolute; top: clamp(1rem, 3vw, 1.5rem); right: clamp(1.5rem, 4vw, 2rem); font-size: clamp(2rem, 5vw, 2.5rem); color: #666; cursor: pointer; transition: color 0.2s; line-height: 1; z-index: 10;}
+        .close-btn { position: absolute; top: clamp(1rem, 3vw, 1.5rem); right: clamp(1.5rem, 4vw, 2rem); font-size: clamp(2rem, 5vw, 2.5rem); color: #666; cursor: pointer; transition: color 0.2s; line-height: 1; }
         .close-btn:hover { color: var(--entity-red); text-shadow: 0 0 10px red; }
 
-        /* Tooltip */
-        .custom-tooltip { position: fixed; background: rgba(10, 10, 15, 0.95); border: 1px solid var(--entity-red); border-radius: 8px; width: 320px; padding: 1.5rem; pointer-events: none; opacity: 0; z-index: 9999; box-shadow: 0 15px 35px rgba(0,0,0,0.9), inset 0 0 15px rgba(211, 47, 47, 0.2); backdrop-filter: blur(12px); transform: scale(0.95) translateY(10px); transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; gap: 10px; font-family: var(--font-main); }
-        .custom-tooltip.visible { opacity: 1; transform: scale(1) translateY(0); }
+        #custom-tooltip { position: fixed; background: rgba(10, 10, 15, 0.95); border: 1px solid var(--entity-red); border-radius: 8px; width: 320px; padding: 1.5rem; pointer-events: none; opacity: 0; z-index: 9999; box-shadow: 0 15px 35px rgba(0,0,0,0.9); backdrop-filter: blur(12px); transform: scale(0.95) translateY(10px); transition: 0.2s; display: flex; flex-direction: column; gap: 10px; }
+        #custom-tooltip.visible { opacity: 1; transform: scale(1) translateY(0); }
         .tt-header { border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .tt-title { color: #fff; font-size: 1.2rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-        .tt-char { color: var(--entity-red); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; }
-        .tt-effect { color: #ccc; font-size: 0.9rem; line-height: 1.5; margin-top: 5px; }
+        .tt-title { color: #fff; font-size: 1.2rem; font-weight: bold; text-transform: uppercase; }
+        .tt-char { color: var(--entity-red); font-size: 0.85rem; text-transform: uppercase; }
+        .tt-effect { color: #ccc; font-size: 0.9rem; line-height: 1.5; }
         .tt-effect strong { color: #fff; }
 
-        /* Inventory Content Elements */
-        .inventory-body { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;}
-        .char-checkbox-label { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 4px; cursor: pointer; border: 1px solid transparent; transition: 0.2s; font-family: var(--font-main); color: var(--text-light); }
-        .char-checkbox-label:hover { background: rgba(255,255,255,0.08); border-color: #555; }
-        .char-checkbox-label input[type="checkbox"] { appearance: none; width: 18px; height: 18px; background: #222; border: 1px solid #555; border-radius: 3px; cursor: pointer; position: relative; }
-        .char-checkbox-label input[type="checkbox"]:checked { background: var(--entity-red); border-color: var(--entity-red); }
-        .char-checkbox-label input[type="checkbox"]:checked::after { content: 'X'; position: absolute; color: #fff; font-size: 12px; font-weight: bold; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-        .save-btn { background: var(--entity-red); color: #fff; border: none; padding: 10px 24px; font-size: 1.1rem; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; margin-top: 20px; float: right; font-family: var(--font-main); }
-        .save-btn:hover { background: var(--entity-blood); }
-
-        /* ==========================================================================
-           IFRAME POPUPS (KILLER & ROULETTE DASHBOARDS)
-           ========================================================================== */
-        .tracker-popup {
-            position: fixed; top: 90px; right: 20px; width: 90vw; max-width: 1100px; height: 80vh;
-            background: rgba(10, 2, 2, 0.95); border: 2px solid #3a0000; z-index: 5000; border-radius: 8px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(255, 0, 0, 0.2);
-            display: none; flex-direction: column; transition: all 0.4s cubic-bezier(0.25, 1, 0.3, 1); overflow: hidden;
-        }
-        .tracker-popup.active { display: flex; animation: slideUpFade 0.5s ease-out; }
-        .tracker-popup.minimized { height: 60px !important; width: 350px !important; top: auto !important; bottom: 20px !important; cursor: pointer; }
-        
-        @keyframes slideUpFade {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes cinematicShatter { 0% { transform: scale(1); opacity: 1; } 20% { transform: scale(1.1) rotate(-5deg); filter: blur(2px); background: red; } 100% { transform: scale(0.5) translateY(50px) rotate(20deg); filter: blur(10px); opacity: 0; display: none; } }
     </style>
 </head>
 
@@ -366,10 +479,10 @@
     <nav class="navbar">
         <ul class="nav-links">
             <li><a href="../index.html">Lobby</a></li>
-            <li><a href="../pages/Randomizer.html">Randomizer</a></li>
-            <li><a href="../pages/Challenges.html" class="active">Challenges</a></li>
-            <li><a href="../pages/killers.html">Killer Wheel</a></li>
-            <li><a href="../pages/CreatorsLounge.html">Creators</a></li>
+            <li><a href="../pages/randomizer.html">Randomizer</a></li>
+            <li><a href="../pages/challenges.html" class="active">Challenges</a></li>
+            <li><a href="../pages/killer-wheel.html">Killer Wheel</a></li>
+            <li><a href="../pages/creators.html">Creators</a></li>
         </ul>
         <div id="authContainer" class="auth-links">
             <a href="../pages/login.html" style="color: var(--text-light); text-decoration: none; font-weight: bold; font-size: 0.9rem; letter-spacing: 1px;">LOGIN</a>
@@ -377,687 +490,413 @@
         </div>
     </nav>
 
-    <!-- ==========================================================================
-         PREMIUM ADD-ON: ROLE TOGGLE
-         ========================================================================== -->
-    <div class="role-toggle-container">
-        <div class="role-toggle">
-            <div class="toggle-slider"></div>
-            <button class="toggle-btn active" onclick="switchRole('killer', this)">KILLER</button>
-            <button class="toggle-btn" onclick="switchRole('survivor', this)">SURVIVOR</button>
-        </div>
+    <!-- CHALLENGE TOGGLE -->
+    <div class="challenge-toggle-container">
+        <button class="toggle-btn active" id="btn-killer" onclick="switchCampaign('killer')">Killer: The Descent</button>
+        <button class="toggle-btn" id="btn-survivor" onclick="switchCampaign('survivor')">Survivor: The Roulette</button>
     </div>
 
-
     <!-- ==========================================================================
-         CHALLENGE VIEWS WRAPPER
+         KILLER CAMPAIGN: THE ENTITY'S DESCENT
          ========================================================================== -->
-    <div id="challenge-views-wrapper">
+    <section class="campaign-section active" id="killer-campaign">
+        <div class="entity-gauntlet-container">
+            <div class="descent-hero">
+                <h1 class="glitch-text" data-text="THE ENTITY'S DESCENT">THE ENTITY'S DESCENT</h1>
+                <h2 style="color: #ccc; letter-spacing: 4px; font-size: 1.5rem; margin-bottom: 2rem; text-transform: uppercase; font-family: var(--font-main);">
+                    A Story of Survival and Sacrifice</h2>
+                <p class="quote">"The Entity doesn't want you to be perfect. It just wants to see how much pain you can take."</p>
+                <p style="margin-top: 1rem; color: #888; font-family: var(--font-journal);">Time to finish: 15–25 Hours
+                    (Over 30 Hours if you dare to try the hardest modes)</p>
+                <button class="open-tracker-btn" onclick="KillerTrackerApp.open()">Access Personal Tracker</button>
+                <p style="color: #eee; font-size: 1.1rem; max-width: 800px; margin: 1rem auto; line-height: 1.6; font-family: var(--font-journal);">
+                    Welcome to the fog! This is a massive, long-form challenge where every single choice matters. Your
+                    ultimate goal? <strong>Win a game with every single Killer.</strong> But there is a twist: if you lose a
+                    match, the game isn't over. Instead, things just get darker and harder. Here is how your story unfolds.
+                </p>
+            </div>
 
-        <!-- ==========================================================================
-             KILLER VIEW (DESCENT)
-             ========================================================================== -->
-        <div id="view-killer" class="challenge-realm active-realm">
-            <section class="entity-gauntlet-container">
-                <!-- Hero Section -->
-                <div class="descent-hero">
-                    <h1 class="glitch-text" data-text="THE ENTITY'S DESCENT">THE ENTITY'S DESCENT</h1>
-                    <h2 style="color: #ccc; letter-spacing: 4px; font-size: 1.5rem; margin-bottom: 2rem; text-transform: uppercase;">
-                        A Story of Survival and Sacrifice</h2>
-                    <p class="quote">"The Entity doesn't want you to be perfect. It just wants to see how much pain you can take."</p>
-                    <p style="margin-top: 1rem; color: #888; font-family: var(--font-journal);">Time to finish: 15–25 Hours
-                        (Over 30 Hours if you dare to try the hardest modes)</p>
+            <!-- Step 1: Choose Your Weapons -->
+            <div class="descent-section">
+                <h3 class="section-header">Step 1: Choose Your Weapons</h3>
+                <p class="section-desc">Before your Killer steps into the trial, you have to build their loadout. Think of
+                    the perks in Dead by Daylight as 8 different "schools of magic" (we call them
+                    <strong>Disciplines</strong>). You are only allowed to pick <strong>four different schools</strong>. You
+                    cannot pick the same one twice! Once you have your four schools, choose exactly <strong>one
+                        perk</strong> from each.</p>
 
-                    <button class="open-tracker-btn" onclick="TrackerApp.checkAuthAndOpen()">Access Personal Tracker</button>
-
-                    <p style="color: #eee; font-size: 1.1rem; max-width: 800px; margin: 1rem auto; line-height: 1.6; font-family: var(--font-journal);">
-                        Welcome to the fog! This is a massive, long-form challenge where every single choice matters. Your
-                        ultimate goal? <strong>Win a game with every single Killer.</strong> But there is a twist: if you lose a
-                        match, the game isn't over. Instead, things just get darker and harder. Here is how your story unfolds.
-                    </p>
+                <div class="perk-accordion-wrapper" id="killer-accordions-container">
+                    <!-- JavaScript will populate the Killer Accordions here from the Perks Object -->
                 </div>
+            </div>
 
-                <!-- How to Play / Step 1 -->
-                <div class="descent-section">
-                    <h3 class="section-header">Step 1: Choose Your Weapons</h3>
-                    <p class="section-desc">Before your Killer steps into the trial, you have to build their loadout. Think of
-                        the perks in Dead by Daylight as 8 different "schools of magic" (we call them
-                        <strong>Disciplines</strong>). You are only allowed to pick <strong>four different schools</strong>. You
-                        cannot pick the same one twice! Once you have your four schools, choose exactly <strong>one
-                            perk</strong> from each.</p>
+            <!-- Step 2: The Downward Spiral -->
+            <div class="descent-section">
+                <h3 class="section-header">Step 2: The Downward Spiral</h3>
+                <p class="section-desc">You start your first game feeling powerful with all 4 of your chosen perks. If you
+                    win, congratulations! That Killer is completely finished. But if you lose? You begin <strong>The
+                        Descent</strong>. The Entity demands a sacrifice. You must throw away one of your perks forever. You
+                    get to choose which one to lose, but you are now weaker. If you lose again, you lose another perk. And
+                    another.</p>
 
-                    <div class="perk-accordion-wrapper">
-                        <!-- INFO -->
-                        <div class="perk-accordion">
-                            <div class="accordion-header" onclick="toggleAccordion(this)">
-                                <h4>INFO <span style="font-size:0.8rem; color:#888; font-weight:normal; font-family:var(--font-journal);">(Finding & Tracking Survivors)</span></h4>
-                                <span class="accordion-icon">▼</span>
-                            </div>
-                            <div class="accordion-content">
-                                <div class="perk-grid">
-                                    <div class="perk-item">A Nurse's Calling</div><div class="perk-item">Alien Instinct</div><div class="perk-item">Awakened Awareness</div>
-                                    <div class="perk-item">Barbecue & Chilli</div><div class="perk-item">Bitter Murmur</div><div class="perk-item">Darkness Revealed</div>
-                                    <div class="perk-item">Deathbound</div><div class="perk-item">Deerstalker</div><div class="perk-item">Discordance</div>
-                                    <div class="perk-item">Gearhead</div><div class="perk-item">Hoarder</div><div class="perk-item">Human Greed</div>
-                                    <div class="perk-item">I'm All Ears</div><div class="perk-item">Infectious Fright</div><div class="perk-item">Lethal Pursuer</div>
-                                    <div class="perk-item">Nemesis</div><div class="perk-item">Nowhere to Hide</div><div class="perk-item">Phantom Fear</div>
-                                    <div class="perk-item">Scourge Hook: Floods of Rage</div><div class="perk-item">Scourge Hook: Hangman's Trick</div><div class="perk-item">Scourge Hook: Jagged Compass</div>
-                                    <div class="perk-item">Shattered Hope</div><div class="perk-item">Spies from the Shadows</div><div class="perk-item">Stridor</div>
-                                    <div class="perk-item">Surveillance</div><div class="perk-item">THWACK!</div><div class="perk-item">Territorial Imperative</div>
-                                    <div class="perk-item">Thrilling Tremors</div><div class="perk-item">Tinkerer</div><div class="perk-item">Ultimate Weapon</div>
-                                    <div class="perk-item">Wandering Eye</div><div class="perk-item">Weave Attunement</div><div class="perk-item">Whispers</div><div class="perk-item">Zanshin Tactics</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- CHASE -->
-                        <div class="perk-accordion">
-                            <div class="accordion-header" onclick="toggleAccordion(this)">
-                                <h4>CHASE <span style="font-size:0.8rem; color:#888; font-weight:normal; font-family:var(--font-journal);">(Stopping Loops & Brutality)</span></h4>
-                                <span class="accordion-icon">▼</span>
-                            </div>
-                            <div class="accordion-content">
-                                <div class="perk-grid">
-                                    <div class="perk-item">All-Shaking Thunder</div><div class="perk-item">Bamboozle</div><div class="perk-item">Bloodhound</div>
-                                    <div class="perk-item">Brutal Strength</div><div class="perk-item">Coup de Grâce</div><div class="perk-item">Cruel Limits</div>
-                                    <div class="perk-item">Dark Arrogance</div><div class="perk-item">Dissolution</div><div class="perk-item">Enduring</div>
-                                    <div class="perk-item">Iron Grasp</div><div class="perk-item">Lightborn</div><div class="perk-item">Mad Grit</div>
-                                    <div class="perk-item">Predator</div><div class="perk-item">Spirit Fury</div><div class="perk-item">Superior Anatomy</div><div class="perk-item">Unrelenting</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- SPEED -->
-                        <div class="perk-accordion">
-                            <div class="accordion-header" onclick="toggleAccordion(this)">
-                                <h4>SPEED <span style="font-size:0.8rem; color:#888; font-weight:normal; font-family:var(--font-journal);">(Moving Faster & Haste)</span></h4>
-                                <span class="accordion-icon">▼</span>
-                            </div>
-                            <div class="accordion-content">
-                                <div class="perk-grid">
-                                    <div class="perk-item">Agitation</div><div class="perk-item">Batteries Included</div><div class="perk-item">Fire Up</div>
-                                    <div class="perk-item">Forever Entwined</div><div class="perk-item">Game Afoot</div><div class="perk-item">Help Wanted</div>
-                                    <div class="perk-item">Keep Them Waiting</div><div class="perk-item">Machine Learning</div><div class="perk-item">Play With Your Food</div>
-                                    <div class="perk-item">Rampage</div><div class="perk-item">Rapid Brutality</div><div class="perk-item">Save the Best for Last</div>
-                                    <div class="perk-item">Scourge Hook: Monstrous Shrine</div><div class="perk-item">See How They Run</div><div class="perk-item">Shadowborn</div><div class="perk-item">Unbound</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- SLOWDOWN -->
-                        <div class="perk-accordion">
-                            <div class="accordion-header" onclick="toggleAccordion(this)">
-                                <h4>SLOWDOWN <span style="font-size:0.8rem; color:#888; font-weight:normal; font-family:var(--font-journal);">(Stopping Healing & Actions)</span></h4>
-                                <span class="accordion-icon">▼</span>
-                            </div>
-                            <div class="accordion-content">
-                                <div class="perk-grid">
-                                    <div class="perk-item">Blood Echo</div><div class="perk-item">Blood Warden</div><div class="perk-item">Corrupt Intervention</div>
-                                    <div class="perk-item">Coulrophobia</div><div class="perk-item">Cull the Weak</div><div class="perk-item">Dead Man's Switch</div>
-                                    <div class="perk-item">Deadlock</div><div class="perk-item">Dominance</div><div class="perk-item">Dying Light</div>
-                                    <div class="perk-item">Forced Hesitation</div><div class="perk-item">Forced Penance</div><div class="perk-item">Franklin's Demise</div>
-                                    <div class="perk-item">Genetic Limits</div><div class="perk-item">Grim Embrace</div><div class="perk-item">Haywire</div>
-                                    <div class="perk-item">Hysteria</div><div class="perk-item">Knock Out</div><div class="perk-item">Languid Touch</div>
-                                    <div class="perk-item">Leverage</div><div class="perk-item">Mindbreaker</div><div class="perk-item">No Holds Barred</div>
-                                    <div class="perk-item">No Quarter</div><div class="perk-item">No Way Out</div><div class="perk-item">None Are Free</div>
-                                    <div class="perk-item">Overwhelming Presence</div><div class="perk-item">Remember Me</div><div class="perk-item">Scourge Hook: Gift of Pain</div>
-                                    <div class="perk-item">Scourge Hook: Weeping Wounds</div><div class="perk-item">Septic Touch</div><div class="perk-item">Sloppy Butcher</div>
-                                    <div class="perk-item">Terminus</div><div class="perk-item">Thanatophobia</div><div class="perk-item">Unnerving Presence</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- GEN -->
-                        <div class="perk-accordion">
-                            <div class="accordion-header" onclick="toggleAccordion(this)">
-                                <h4>GEN <span style="font-size:0.8rem; color:#888; font-weight:normal; font-family:var(--font-journal);">(Blowing Up Generators)</span></h4>
-                                <span class="accordion-icon">▼</span>
-                            </div>
-                            <div class="accordion-content">
-                                <div class="perk-grid">
-                                    <div class="perk-item">Call of Brine</div><div class="perk-item">Eruption</div><div class="perk-item">Merciless Storm</div>
-                                    <div class="perk-item">Oppression</div><div class="perk-item">Overcharge</div><div class="perk-item">Pop Goes the Weasel</div>
-                                    <div class="perk-item">Pain Resonance</div><div class="perk-item">Surge</div><div class="perk-item">Turn Back the Clock</div><div class="perk-item">Undone</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- TERROR -->
-                        <div class="perk-accordion">
-                            <div class="accordion-header" onclick="toggleAccordion(this)">
-                                <h4>TERROR <span style="font-size:0.8rem; color:#888; font-weight:normal; font-family:var(--font-journal);">(Being Sneaky & Scary)</span></h4>
-                                <span class="accordion-icon">▼</span>
-                            </div>
-                            <div class="accordion-content">
-                                <div class="perk-grid">
-                                    <div class="perk-item">Beast of Prey</div><div class="perk-item">Dark Devotion</div><div class="perk-item">Distressing</div>
-                                    <div class="perk-item">Furtive Chase</div><div class="perk-item">Insidious</div><div class="perk-item">Monitor & Abuse</div>
-                                    <div class="perk-item">Secret Project</div><div class="perk-item">Silent Shadow</div><div class="perk-item">Trail of Torment</div><div class="perk-item">Unforeseen</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- EXPOSE -->
-                        <div class="perk-accordion">
-                            <div class="accordion-header" onclick="toggleAccordion(this)">
-                                <h4>EXPOSE <span style="font-size:0.8rem; color:#888; font-weight:normal; font-family:var(--font-journal);">(One-Hit Downs)</span></h4>
-                                <span class="accordion-icon">▼</span>
-                            </div>
-                            <div class="accordion-content">
-                                <div class="perk-grid">
-                                    <div class="perk-item">Dragon's Grip</div><div class="perk-item">Friends 'til the End</div><div class="perk-item">Hubris</div>
-                                    <div class="perk-item">Iron Maiden</div><div class="perk-item">Make Your Choice</div><div class="perk-item">Rancor</div>
-                                    <div class="perk-item">Ravenous</div><div class="perk-item">Starstruck</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- HEX -->
-                        <div class="perk-accordion">
-                            <div class="accordion-header" onclick="toggleAccordion(this)">
-                                <h4>HEX <span style="font-size:0.8rem; color:#888; font-weight:normal; font-family:var(--font-journal);">(Powerful Totems, High Risk)</span></h4>
-                                <span class="accordion-icon">▼</span>
-                            </div>
-                            <div class="accordion-content">
-                                <div class="perk-grid">
-                                    <div class="perk-item">Blood Favour</div><div class="perk-item">Crowd Control</div><div class="perk-item">Devour Hope</div>
-                                    <div class="perk-item">Face the Darkness</div><div class="perk-item">Fortune's Fool</div><div class="perk-item">Haunted Ground</div>
-                                    <div class="perk-item">Hive Mind</div><div class="perk-item">Huntress Lullaby</div><div class="perk-item">NOED</div>
-                                    <div class="perk-item">Nothing but Misery</div><div class="perk-item">Overture of Doom</div><div class="perk-item">Pentimento</div>
-                                    <div class="perk-item">Plaything</div><div class="perk-item">Retribution</div><div class="perk-item">Ruin</div>
-                                    <div class="perk-item">Scared to Death</div><div class="perk-item">Third Seal</div><div class="perk-item">Thrill of the Hunt</div>
-                                    <div class="perk-item">Two Can Play</div><div class="perk-item">Undying</div><div class="perk-item">Wretched Fate</div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="descent-altar" id="descentLoopContainer">
+                    <div class="altar-slot" id="loop-perk-1">
+                        <div class="perk-diamond"><span>I</span></div>
+                        <div class="slot-label">1st Loss (3 Perks left)</div>
+                    </div>
+                    <div class="altar-slot" id="loop-perk-2">
+                        <div class="perk-diamond"><span>II</span></div>
+                        <div class="slot-label">2nd Loss (2 Perks left)</div>
+                    </div>
+                    <div class="altar-slot" id="loop-perk-3">
+                        <div class="perk-diamond"><span>III</span></div>
+                        <div class="slot-label">3rd Loss (1 Perk left)</div>
+                    </div>
+                    <div class="altar-slot" id="loop-perk-4" style="transform: scale(1.1);">
+                        <div class="perk-diamond"><span>Lifeline</span></div>
+                        <div class="slot-label" style="color: #fff;">0 Perks (The Abyss)</div>
                     </div>
                 </div>
 
-                <!-- Step 2: The Descent Mechanic (Looping Animation) -->
-                <div class="descent-section">
-                    <h3 class="section-header">Step 2: The Downward Spiral</h3>
-                    <p class="section-desc">You start your first game feeling powerful with all 4 of your chosen perks. If you
-                        win, congratulations! That Killer is completely finished. But if you lose? You begin <strong>The
-                            Descent</strong>. The Entity demands a sacrifice. You must throw away one of your perks forever. You
-                        get to choose which one to lose, but you are now weaker. If you lose again, you lose another perk. And
-                        another.</p>
-
-                    <div class="descent-altar" id="descentLoopContainer">
-                        <div class="altar-slot" id="loop-perk-1">
-                            <div class="perk-diamond"><span>I</span></div>
-                            <div class="slot-label">1st Loss (3 Perks left)</div>
-                        </div>
-                        <div class="altar-slot" id="loop-perk-2">
-                            <div class="perk-diamond"><span>II</span></div>
-                            <div class="slot-label">2nd Loss (2 Perks left)</div>
-                        </div>
-                        <div class="altar-slot" id="loop-perk-3">
-                            <div class="perk-diamond"><span>III</span></div>
-                            <div class="slot-label">3rd Loss (1 Perk left)</div>
-                        </div>
-                        <div class="altar-slot" id="loop-perk-4" style="transform: scale(1.1);">
-                            <div class="perk-diamond"><span>Lifeline</span></div>
-                            <div class="slot-label" style="color: #fff;">0 Perks (The Abyss)</div>
-                        </div>
-                    </div>
-
-                    <div style="background: rgba(0,0,0,0.5); padding: 20px; border-left: 4px solid var(--entity-red); border-radius: 4px; margin-top: 30px;">
-                        <h4 style="color: #fff; margin-bottom: 10px; font-size: 1.2rem; font-family: var(--font-ui); text-transform: uppercase;">
-                            The Last Hope: The Perkless Lifeline</h4>
-                        <p style="color: #aaa; font-size: 0.95rem; line-height: 1.6; font-family: var(--font-journal);">What
-                            happens when you lose all your perks? The Entity gives you one final chance to prove yourself. You
-                            must play a game with <strong>no perks at all</strong>. <br><br>If you somehow survive and win this
-                            test, you get to climb back up! You earn back 1 perk and get to keep trying.<br><br>But if you lose
-                            this final test? The Entity gets angry. Those 4 perks you originally picked are now <strong>banned
-                                forever</strong> for that specific Killer. You have to start their story all over again by
-                            drafting 4 brand new perks.</p>
-                    </div>
+                <div style="background: rgba(0,0,0,0.5); padding: 20px; border-left: 4px solid var(--entity-red); border-radius: 4px; margin-top: 30px;">
+                    <h4 style="color: #fff; margin-bottom: 10px; font-size: 1.2rem; font-family: var(--font-ui); text-transform: uppercase;">
+                        The Last Hope: The Perkless Lifeline</h4>
+                    <p style="color: #aaa; font-size: 0.95rem; line-height: 1.6; font-family: var(--font-journal);">What
+                        happens when you lose all your perks? The Entity gives you one final chance to prove yourself. You
+                        must play a game with <strong>no perks at all</strong>. <br><br>If you somehow survive and win this
+                        test, you get to climb back up! You earn back 1 perk and get to keep trying.<br><br>But if you lose
+                        this final test? The Entity gets angry. Those 4 perks you originally picked are now <strong>banned
+                            forever</strong> for that specific Killer. You have to start their story all over again by
+                        drafting 4 brand new perks.</p>
                 </div>
+            </div>
 
-                <!-- Ascension Tiers -->
-                <div class="descent-section">
-                    <h3 class="section-header">The True Nightmare: Ascension Tiers</h3>
-                    <p class="section-desc">Did you manage to win a game with every single Killer? Amazing! But the story isn't
-                        over. Now, you unlock the endgame. These are terrifying new rules that change everything.</p>
+            <!-- Ascension Tiers -->
+            <div class="descent-section">
+                <h3 class="section-header">The True Nightmare: Ascension Tiers</h3>
+                <p class="section-desc">Did you manage to win a game with every single Killer? Amazing! But the story isn't
+                    over. Now, you unlock the endgame. These are terrifying new rules that change everything.</p>
 
-                    <div class="ascension-grid">
-                        <div class="ascension-card">
-                            <div class="tier-num">I</div>
-                            <h4>Weakened Tools</h4>
-                            <p>You are no longer allowed to use strong items. Only the weakest Brown and Yellow add-ons are
-                                allowed.</p>
-                        </div>
-                        <div class="ascension-card">
-                            <div class="tier-num">II</div>
-                            <h4>The Entity's Choice</h4>
-                            <p>Before you even pick your perks, the Entity randomly bans two whole Disciplines. You have to make
-                                do with what's left.</p>
-                        </div>
-                        <div class="ascension-card">
-                            <div class="tier-num">III</div>
-                            <h4>A Fast Fall</h4>
-                            <p>The punishment for losing is much faster. If you lose once, you drop straight down to 2 perks.
-                                Lose again, and you are immediately at zero.</p>
-                        </div>
-                        <div class="ascension-card">
-                            <div class="tier-num">IV</div>
-                            <h4>Perfect or Nothing</h4>
-                            <p>A normal win isn't good enough anymore. If even one survivor escapes (through the gates or the
-                                hatch), it counts as a loss. You must kill all four.</p>
-                        </div>
+                <div class="ascension-grid">
+                    <div class="ascension-card">
+                        <div class="tier-num">I</div>
+                        <h4>Weakened Tools</h4>
+                        <p>You are no longer allowed to use strong items. Only the weakest Brown and Yellow add-ons are
+                            allowed.</p>
+                    </div>
+                    <div class="ascension-card">
+                        <div class="tier-num">II</div>
+                        <h4>The Entity's Choice</h4>
+                        <p>Before you even pick your perks, the Entity randomly bans two whole Disciplines. You have to make
+                            do with what's left.</p>
+                    </div>
+                    <div class="ascension-card">
+                        <div class="tier-num">III</div>
+                        <h4>A Fast Fall</h4>
+                        <p>The punishment for losing is much faster. If you lose once, you drop straight down to 2 perks.
+                            Lose again, and you are immediately at zero.</p>
+                    </div>
+                    <div class="ascension-card">
+                        <div class="tier-num">IV</div>
+                        <h4>Perfect or Nothing</h4>
+                        <p>A normal win isn't good enough anymore. If even one survivor escapes (through the gates or the
+                            hatch), it counts as a loss. You must kill all four.</p>
                     </div>
                 </div>
-            </section>
-
-            <h2 class="realm-section-title">Other Killer Challenges</h2>
-            <div class="challenge-grid" id="killer-grid">
-                <div class="challenge-card" onclick="openModal('warden')">
-                    <span class="card-type">Killer Campaign</span>
-                    <h3 class="card-title">The Entity's Warden</h3>
-                    <p style="color: var(--muted-bone); font-size: 0.95rem; font-family: var(--font-journal);">Total
-                        territorial dominance. Confine your prey.</p>
-                </div>
-                <div class="challenge-card" onclick="openModal('purifier')">
-                    <span class="card-type">Saboteur Campaign</span>
-                    <h3 class="card-title">The Hex Purifier</h3>
-                    <p style="color: var(--muted-bone); font-size: 0.95rem; font-family: var(--font-journal);">Cleanse the
-                        realm. Touch no generators until the end.</p>
-                </div>
-                <p style="color:var(--text-muted); text-align:center; width:100%; font-style:italic; grid-column: 1 / -1;">More nightmares coming soon. The Entity is currently scheming...</p>
             </div>
         </div>
 
-        <!-- ==========================================================================
-             SURVIVOR VIEW (ROULETTE)
-             ========================================================================== -->
-        <div id="view-survivor" class="challenge-realm">
-            <section class="entity-gauntlet-container">
-                
-                <header class="descent-hero">
-                    <h1 class="glitch-text" data-text="THE ENTITY'S ROULETTE">THE ENTITY'S ROULETTE</h1>
-                    <p class="subtitle" style="margin-bottom: 2rem;">A 30-Hour Test of Greed, Survival, and Chance</p>
-                    <button class="open-tracker-btn" onclick="RouletteTrackerApp.checkAuthAndOpen()">Access Personal Tracker Dashboard</button>
-                </header>
-
-                <div class="descent-section">
-                    <!-- Rule 1: Goal -->
-                    <div class="rule-card" style="margin-bottom: 2rem;">
-                        <div class="rule-header"><span class="rule-number">GOAL</span><h2 class="rule-title">Survive or Perish</h2></div>
-                        <div class="rule-content">
-                            <p>The goal is simple: your team must reach <strong>20,000 Safe Points</strong> to win the whole challenge.</p>
-                            <p>The rules adapt depending on how many friends are playing with you. There are no ties in this game. If a tie happens, the Killer wins, and you lose.</p>
-                            <table class="win-table">
-                                <tr><th>Party Size</th><th>Win Condition</th><th>Loss Condition</th></tr>
-                                <tr><td><strong>Squad (4 Players)</strong></td><td>3 or 4 Survivors escape</td><td>0, 1, or 2 escape</td></tr>
-                                <tr><td><strong>Trio (3 Players)</strong></td><td>2 or 3 Survivors escape</td><td>0 or 1 escape</td></tr>
-                                <tr><td><strong>Duo (2 Players)</strong></td><td>BOTH Survivors escape</td><td>0 or 1 escape</td></tr>
-                                <tr><td><strong>Solo (1 Player)</strong></td><td>YOU must escape</td><td>You die</td></tr>
-                            </table>
-                            <div class="highlight-box">
-                                <h4>Example</h4>
-                                <p>If you are playing as a Duo (2 players), it is hardcore mode. Both of you must survive the match to win. If one of you escapes, but the other dies trying to save you, the entire match counts as a Loss.</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Rule 2: Perks -->
-                    <div class="rule-card" style="margin-bottom: 2rem;">
-                        <div class="rule-header"><span class="rule-number">01</span><h2 class="rule-title">Perk Selection</h2></div>
-                        <div class="rule-content">
-                            <p>Before you play, spin for random perks. The system will give exactly <strong>4 perks for each person playing</strong>.</p>
-                            <p>Use the "Manage Perk Inventory" button to turn off characters you do not own. The game will never give you a perk you cannot equip.</p>
-                            <div class="highlight-box">
-                                <h4>Example</h4>
-                                <p>If you are playing as a Trio (3 players), the wheel will give you 12 random perks. You and your friends look at all 12 perks and decide who gets which ones. Player 1 could take all the healing perks, while Player 2 takes the running perks. You build the team strategy together.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Rule 3: Bans -->
-                    <div class="rule-card" style="margin-bottom: 2rem;">
-                        <div class="rule-header"><span class="rule-number">02</span><h2 class="rule-title">The Ban System</h2></div>
-                        <div class="rule-content">
-                            <p>If you lose, the perks your team used are locked away in <strong>Ransom Jail</strong>.</p>
-                            <p>To free them, play a <strong>Jailbreak Match</strong>. Win to free them, lose to lose 1,000 Safe Points and trap your new perks too.</p>
-                            <p><em>Changed Party Sizes? The jail remembers your locked perks. Even if your friends log off, you can do a Solo Jailbreak match to free the perks for later!</em></p>
-                        </div>
-                    </div>
-
-                    <!-- Rule 4: Cash Out -->
-                    <div class="rule-card" style="margin-bottom: 2rem;">
-                        <div class="rule-header"><span class="rule-number">03</span><h2 class="rule-title">Cash Out or Spin</h2></div>
-                        <div class="rule-content">
-                            <p>When you win, you earn points in a temporary 'Pot'. You have exactly 60 seconds to make a choice:</p>
-                            <p>Win 1: 200 pts | Win 2: 500 pts | Win 3: 1,000 pts | Win 4: 2,000 pts | Win 5: 4,000 pts</p>
-                            <p><strong>Choice A: Cash Out.</strong> Save points to Safe Bank forever, reset streak to zero.</p>
-                            <p><strong>Choice B: Spin Again.</strong> Risk the Pot points in another match to grow the multiplier.</p>
-                        </div>
-                    </div>
-
-                    <!-- Rule 5: Gold -->
-                    <div class="rule-card gold-tier">
-                        <div class="rule-header"><span class="rule-number">04</span><h2 class="rule-title">The Golden Spin</h2></div>
-                        <div class="rule-content">
-                            <p>A <strong>Golden Spin!</strong> multiplies your next win points by three.</p>
-                            <p><strong>You are not allowed to "Cash Out" after a Golden Spin game.</strong> You must play one more game.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="controls-bar" style="max-width: 1200px; width: 95%; margin: 0 auto 2rem auto;">
-                    <select id="roulettePartySize" class="custom-select">
-                        <option value="4">Squad (4 Players - 16 Perks)</option>
-                        <option value="3">Trio (3 Players - 12 Perks)</option>
-                        <option value="2">Duo (2 Players - 8 Perks)</option>
-                        <option value="1">Solo (1 Player - 4 Perks)</option>
-                    </select>
-                    <button class="inventory-btn" onclick="openRouletteInventory()">Manage Perk Inventory</button>
-                </div>
-
-                <div class="descent-section randomizer-section" id="rouletteRandomizerBox">
-                    <h2 style="font-size: 2.5rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">The Algorithm</h2>
-                    <div class="golden-banner" id="rouletteGoldenBanner">WARNING: GOLDEN TICKET TRIGGERED! Points Tripled. Cash Out Forbidden!</div>
-                    <button class="spin-btn" id="rouletteSpinBtn" onclick="initiateRouletteSpin()">Roll the Entity's Dice</button>
-                    <div class="perk-display-area" id="roulettePerkDisplayArea"></div>
-                </div>
-            </section>
-            
-            <h2 class="realm-section-title">Other Survivor Challenges</h2>
-            <div class="challenge-grid" id="survivor-grid">
-                <div class="challenge-card" onclick="openModal('phantom')">
+        <div style="max-width: 1200px; margin: 0 auto 5rem auto; padding: 0 2rem; position: relative; z-index: 2;">
+            <h2 style="color: #fff; font-size: 2.5rem; text-transform: uppercase; text-align: center; margin-bottom: 3rem; text-shadow: 0 0 20px rgba(255,255,255,0.3); font-family: var(--font-ui);">
+                Other Hardest Trials</h2>
+            <div class="challenge-grid">
+                <div class="challenge-card" onclick="openKillerModal('phantom')">
                     <span class="card-type">Survivor Campaign</span>
                     <h3 class="card-title">The Phantom of the Fog</h3>
                     <p style="color: var(--muted-bone); font-size: 0.95rem; font-family: var(--font-journal);">Complete
                         pacifism. Never trigger a chase sequence.</p>
                 </div>
-            </div>
-            
-            <!-- Tooltip & Modals for Survivor -->
-            <div id="s_custom-tooltip" class="custom-tooltip">
-                <div class="tt-header">
-                    <div class="tt-title" id="s_tt-title">Perk Name</div>
-                    <div class="tt-char" id="s_tt-char">Character Name</div>
+                <div class="challenge-card" onclick="openKillerModal('warden')">
+                    <span class="card-type">Killer Campaign</span>
+                    <h3 class="card-title">The Entity's Warden</h3>
+                    <p style="color: var(--muted-bone); font-size: 0.95rem; font-family: var(--font-journal);">Total
+                        territorial dominance. Confine your prey.</p>
                 </div>
-                <div class="tt-effect" id="s_tt-effect">Effect description</div>
+                <div class="challenge-card" onclick="openKillerModal('purifier')">
+                    <span class="card-type">Saboteur Campaign</span>
+                    <h3 class="card-title">The Hex Purifier</h3>
+                    <p style="color: var(--muted-bone); font-size: 0.95rem; font-family: var(--font-journal);">Cleanse the
+                        realm. Touch no generators until the end.</p>
+                </div>
             </div>
+        </div>
+    </section>
 
-            <div class="modal-overlay" id="rouletteInventoryModal">
-                <div class="modal-content">
-                    <div class="modal-header" style="border-bottom: 1px solid #333; padding-bottom: 15px; display:flex; justify-content:space-between; align-items:center;">
-                        <h2 style="color: #fff; text-transform: uppercase; letter-spacing: 2px; font-size: 1.5rem; margin:0;">Survivor Inventory</h2>
-                        <span class="close-btn" style="position:static;" onclick="closeRouletteInventory()">&times;</span>
+    <!-- ==========================================================================
+         SURVIVOR CAMPAIGN: THE ENTITY'S ROULETTE
+         ========================================================================== -->
+    <section class="campaign-section" id="survivor-campaign">
+        <div class="container">
+            <header class="hero-title">
+                <h1 class="glitch-text" data-text="THE ENTITY'S ROULETTE">THE ENTITY'S ROULETTE</h1>
+                <p class="subtitle">A 30-Hour Test of Greed, Survival, and Chance</p>
+                <button class="open-tracker-btn" onclick="SurvTrackerApp.open()">Access Personal Tracker Dashboard</button>
+            </header>
+
+            <div class="rules-wrapper">
+                <div class="rule-card">
+                    <div class="rule-header">
+                        <span class="rule-number">GOAL</span>
+                        <h2 class="rule-title">Survive or Perish</h2>
                     </div>
-                    <div style="padding: 10px 0; color: var(--text-muted); font-size: 0.9rem;">
-                        Uncheck the characters you DO NOT own. Their perks will be removed from the randomizer pool. "All" includes general non-teachable perks.
+                    <div class="rule-content">
+                        <p>The goal is simple: your team must reach <strong>20,000 Safe Points</strong> to win the whole challenge.</p>
+                        <p>The rules adapt depending on how many friends are playing with you. There are no ties in this game. If a tie happens, the Killer wins, and you lose.</p>
+                        <table class="win-table">
+                            <tr><th>Party Size</th><th>Win Condition</th><th>Loss Condition</th></tr>
+                            <tr><td><strong>Squad (4 Players)</strong></td><td>3 or 4 Survivors escape</td><td>0, 1, or 2 Survivors escape</td></tr>
+                            <tr><td><strong>Trio (3 Players)</strong></td><td>2 or 3 Survivors escape</td><td>0 or 1 Survivor escapes</td></tr>
+                            <tr><td><strong>Duo (2 Players)</strong></td><td>BOTH Survivors must escape</td><td>0 or 1 Survivor escapes</td></tr>
+                            <tr><td><strong>Solo (1 Player)</strong></td><td>YOU must escape (Hatch or Gates)</td><td>You die (Random teammates do not matter)</td></tr>
+                        </table>
+                        <div class="highlight-box">
+                            <h4>Example</h4>
+                            <p>If you are playing as a Duo (2 players), it is hardcore mode. Both of you must survive the match to win. If one of you escapes, but the other dies trying to save you, the entire match counts as a Loss.</p>
+                        </div>
                     </div>
-                    <div class="inventory-body" id="rouletteInventoryCheckboxes"></div>
-                    <div style="border-top: 1px solid #333; margin-top: 15px; padding-top: 15px;">
-                        <button class="save-btn" onclick="closeRouletteInventory()">Save & Apply</button>
+                </div>
+
+                <div class="rule-card">
+                    <div class="rule-header"><span class="rule-number">01</span><h2 class="rule-title">Perk Selection</h2></div>
+                    <div class="rule-content">
+                        <p>Before you play, you must click the "Initiate Algorithm" button in the Tracker Dashboard to spin for random perks. The system will give exactly <strong>4 perks for each person playing</strong>.</p>
+                        <p>Don't own all the characters in the game? No problem. Use the "Roster Configuration" tab in your tracker to turn off characters you do not have. The game will never give you a perk you cannot equip.</p>
+                        <div class="highlight-box">
+                            <h4>Example</h4>
+                            <p>If you are playing as a Trio (3 players), the wheel will give you 12 random perks. You and your friends look at all 12 perks and decide who gets which ones. Player 1 could take all the healing perks, while Player 2 takes the running perks. You build the team strategy together.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rule-card">
+                    <div class="rule-header"><span class="rule-number">02</span><h2 class="rule-title">The Ban System: Ransom Jail</h2></div>
+                    <div class="rule-content">
+                        <p>If you lose a game, you do not just lose points. The perks your team used are locked away in <strong>Ransom Jail</strong>. You cannot use them again. As more perks go to jail, you have fewer options left.</p>
+                        <p>But you can try to rescue them! Before a game starts, tell your team you are doing a <strong>Jailbreak Match</strong>. You spin for new perks and play. If you win, all trapped perks are free. If you lose, you lose 1,000 points from your bank, and your new perks get locked in jail too.</p>
+                        <p><em>Changed Party Sizes? The jail remembers your locked perks. Even if your friends log off, you can do a Solo Jailbreak match to free the perks for later!</em></p>
+                    </div>
+                </div>
+
+                <div class="rule-card">
+                    <div class="rule-header"><span class="rule-number">03</span><h2 class="rule-title">The Checkpoint System: Cash Out or Spin</h2></div>
+                    <div class="rule-content">
+                        <p>When you win, you earn points in a temporary 'Pot'. You have exactly 60 seconds to make a choice:</p>
+                        <p>Win 1: 200 pts | Win 2: 500 pts | Win 3: 1,000 pts | Win 4: 2,000 pts | Win 5: 4,000 pts</p>
+                        <p><strong>Choice A: Cash Out (Safe).</strong> Save the points to your Safe Bank. They are yours forever, but your winning streak goes back to zero.</p>
+                        <p><strong>Choice B: Spin Again (Greed).</strong> Risk it! Leave the points in the Pot and play another match. Win, and the points grow huge. Lose, and you lose all Pot points, plus your perks go to jail.</p>
+                    </div>
+                </div>
+
+                <div class="rule-card gold-tier">
+                    <div class="rule-header"><span class="rule-number">04</span><h2 class="rule-title">The Golden Spin</h2></div>
+                    <div class="rule-content">
+                        <p>Every time you spin for new perks, there is a small chance the screen will turn Gold. This is a <strong>Golden Spin!</strong></p>
+                        <p>When this happens, the points for your next match are multiplied by three. But there is a massive catch: <strong>You are not allowed to "Cash Out" after a Golden Spin game.</strong> You must play at least one more game after it and risk all those points.</p>
                     </div>
                 </div>
             </div>
         </div>
+    </section>
 
-    </div>
 
     <!-- ==========================================================================
-         KILLER MODALS AND TRACKER UI
+         TRACKER WINDOWS (FLOATING APPS)
          ========================================================================== -->
-    <!-- CHALLENGE INFO MODAL POPUP (SHARED) -->
+         
+    <!-- KILLER TRACKER -->
+    <div id="killer-tracker-window" class="tracker-window">
+        <div class="tracker-title-bar" onclick="KillerTrackerApp.toggleMinimize(event)">
+            <h3>Entity's <span>Terminal</span> [K]</h3>
+            <div class="tracker-controls"><span id="k-btn-minimize">_</span><span onclick="KillerTrackerApp.close(event)">X</span></div>
+        </div>
+        <div class="tracker-body">
+            <div class="tracker-nav">
+                <button id="nav-roster" onclick="KillerTrackerApp.showView('t-roster')" class="active-btn">Roster</button>
+                <button id="nav-builder" onclick="KillerTrackerApp.showView('t-builder')" style="display:none;">Builder</button>
+                <button id="nav-trial" onclick="KillerTrackerApp.showView('t-trial')" style="display:none;">Trial</button>
+                <button id="nav-stats" onclick="KillerTrackerApp.showView('t-stats')">Analytics</button>
+                <button id="nav-leaderboard" onclick="KillerTrackerApp.showView('t-leaderboard')">Leaderboard</button>
+            </div>
+
+            <!-- ROSTER VIEW -->
+            <div id="t-roster" class="t-view active"><div class="roster-grid" id="roster-grid"></div></div>
+
+            <!-- BUILDER VIEW -->
+            <div id="t-builder" class="t-view">
+                <div style="text-align:center; margin-bottom: 20px;">
+                    <h2 id="builder-killer-name" style="color:var(--arterial-spray); font-size:2rem; text-transform:uppercase; font-family: var(--font-ui);">Killer</h2>
+                    <div class="selected-perks-display">
+                        <div class="perk-slot" id="slot-0">Empty</div><div class="perk-slot" id="slot-1">Empty</div>
+                        <div class="perk-slot" id="slot-2">Empty</div><div class="perk-slot" id="slot-3">Empty</div>
+                    </div>
+                    <button id="start-trial-btn" onclick="Trial.start()">Commence Trial</button>
+                </div>
+                <div class="builder-layout">
+                    <div class="schools-sidebar" id="schools-sidebar"></div>
+                    <div class="perks-matrix">
+                        <input type="text" id="perk-search" style="background:#000; color:#fff; border:1px solid #333; padding:10px; margin-bottom:10px;" placeholder="Search perks..." onkeyup="Builder.filterPerks()">
+                        <div class="matrix-grid" id="matrix-grid"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TRIAL VIEW -->
+            <div id="t-trial" class="t-view">
+                <div style="text-align:center;">
+                    <h2 id="trial-killer-name" style="font-size:3rem; color:white; text-transform:uppercase; font-family: var(--font-ui);">Killer</h2>
+                    <h3 id="trial-message" style="color:var(--entity-orange); margin: 10px 0 30px; font-family: var(--font-tracker);">Survive. Kill. Appease.</h3>
+                    <div class="trial-perks" id="trial-perks-container"></div>
+                    <div class="trial-controls" id="trial-controls">
+                        <button class="btn-win" onclick="Trial.win()">Entity Pleased (Win)</button>
+                        <button class="btn-lose" onclick="Trial.lose()">Entity Hungers (Lose)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STATS VIEW -->
+            <div id="t-stats" class="t-view">
+                <div class="dashboard-grid">
+                    <div class="stat-box"><div>Total Points</div><div class="stat-value highlight" id="stat-points">0</div></div>
+                    <div class="stat-box"><div>Killers Cleansed</div><div class="stat-value" id="stat-killers" style="color:white;">0 / 43</div></div>
+                    <div class="stat-box"><div>Perks Sacrificed</div><div class="stat-value" id="stat-sacrificed">0</div></div>
+                    <div class="stat-box"><div>Lifelines Grasped</div><div class="stat-value" id="stat-lifelines">0</div></div>
+                </div>
+            </div>
+
+            <!-- LEADERBOARD VIEW -->
+            <div id="t-leaderboard" class="t-view">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2 style="color: var(--arterial-spray); font-family: var(--font-ui); font-size: 2rem; letter-spacing: 2px;">Global Hierarchy</h2>
+                    <p style="color: var(--muted-bone); font-family: var(--font-journal);">See how you stack up against the rest of the Fog.</p>
+                </div>
+                <div class="lb-table-container"><div id="leaderboard-list" style="text-align: center; padding: 20px; color: white;">Loading Leaderboard...</div></div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- SURVIVOR TRACKER (ROULETTE DASHBOARD) -->
+    <div id="survivor-tracker-window" class="tracker-window">
+        <div class="tracker-title-bar" onclick="SurvTrackerApp.toggleMinimize(event)">
+            <h3>Entity's <span>Terminal</span> [S]</h3>
+            <div class="tracker-controls"><span id="s-btn-minimize">_</span><span onclick="SurvTrackerApp.close(event)">X</span></div>
+        </div>
+        <div class="tracker-body">
+            <div class="tracker-nav">
+                <button id="s-nav-dashboard" onclick="SurvTrackerApp.showView('s-view-dashboard')" class="active-btn">Analytics</button>
+                <button id="s-nav-trial" onclick="SurvTrackerApp.showView('s-view-trial')">The Fog (Play)</button>
+                <button id="s-nav-roster" onclick="SurvTrackerApp.showView('s-view-roster')">Roster</button>
+                <button id="s-nav-leaderboard" onclick="SurvTrackerApp.showView('s-view-leaderboard')">Leaderboard</button>
+            </div>
+
+            <!-- SURVIVOR DASHBOARD VIEW -->
+            <div id="s-view-dashboard" class="t-view active">
+                <h2 class="section-title" style="font-size: 2rem; border-bottom:none; margin-bottom: 1rem;">Operational Analytics</h2>
+                <div class="dashboard-grid">
+                    <div class="stat-box"><div>Safe Bank Pts</div><div class="stat-value" id="surv-stat-safe">0</div></div>
+                    <div class="stat-box"><div>Active Pot</div><div class="stat-value" id="surv-stat-pot" style="color:var(--entity-orange);">0</div></div>
+                    <div class="stat-box"><div>Current Streak</div><div class="stat-value" id="surv-stat-streak" style="color:white;">0</div></div>
+                    <div class="stat-box"><div>Ransom Jail</div><div class="stat-value highlight" id="surv-stat-jail">0</div></div>
+                </div>
+                <div class="goal-container">
+                    <h3 class="goal-title">The Entity's Demand</h3>
+                    <div class="progress-track"><div class="progress-fill" id="surv-goal-progress"></div></div>
+                    <div class="goal-numbers"><span>0</span><span id="surv-goal-text">0 / 20,000 Points</span><span>20,000</span></div>
+                </div>
+            </div>
+
+            <!-- SURVIVOR PLAY/RANDOMIZER VIEW -->
+            <div id="s-view-trial" class="t-view">
+                <div class="controls-bar" id="surv-controlsBar" style="background:transparent; border:none; padding:0; margin-bottom:1rem;">
+                    <label style="color: var(--text-muted); text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px;">Party Size:</label>
+                    <select id="surv-party-size" class="custom-select">
+                        <option value="4">Squad (4 Players)</option>
+                        <option value="3">Trio (3 Players)</option>
+                        <option value="2">Duo (2 Players)</option>
+                        <option value="1">Solo (1 Player)</option>
+                    </select>
+                </div>
+                <div class="action-zone" id="surv-actionZoneInitial">
+                    <button class="btn-primary" id="surv-btnInitiate" onclick="SurvTrackerApp.startDraft()">Initiate Algorithm</button>
+                    <button class="btn-outline" id="surv-btnJailbreak" style="display: none; margin-left: 15px;" onclick="SurvTrackerApp.initiateJailbreak()">Jailbreak Trial</button>
+                </div>
+                
+                <div class="decision-panel" id="surv-decisionPanel">
+                    <h3 class="decision-title">Trial Victorious</h3>
+                    <div class="decision-pot" id="surv-decisionPotValue">Pot: 200 Pts</div>
+                    <div class="decision-buttons">
+                        <button class="btn-outline" onclick="SurvTrackerApp.executeCashOut()" id="surv-btnCashOut">Cash Out (Secure)</button>
+                        <button class="btn-primary" onclick="SurvTrackerApp.startDraft(true)">Double Down (Spin)</button>
+                    </div>
+                    <div class="timer-bar"><div class="timer-fill" id="surv-decisionTimer"></div></div>
+                </div>
+
+                <div class="action-zone" id="surv-actionZoneMatch" style="display: none; gap: 20px;">
+                    <button class="btn-primary" style="background: linear-gradient(45deg, #1e3c23, #2e7d32); border-color: #4caf50;" onclick="SurvTrackerApp.resolveMatch('win')">Declare Victory</button>
+                    <button class="btn-primary" onclick="SurvTrackerApp.resolveMatch('loss')">Declare Failure</button>
+                </div>
+
+                <div class="golden-banner" id="surv-goldenBanner">WARNING: GOLDEN TICKET TRIGGERED! Points Tripled. Cash Out Forbidden!</div>
+                <div class="perk-display-area" id="surv-perkDisplayArea">
+                    <p style="color: var(--text-muted); width: 100%; text-align: center; margin-top: 50px;">Awaiting algorithmic input...</p>
+                </div>
+            </div>
+
+            <!-- SURVIVOR INVENTORY/ROSTER VIEW -->
+            <div id="s-view-roster" class="t-view">
+                <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 1.1rem; text-align:center;">Exclude operatives you do not possess. Their associated tools will be stripped from the drafting pool.</p>
+                <div class="inventory-grid" id="surv-inventoryGrid"></div>
+            </div>
+
+            <!-- SURVIVOR LEADERBOARD VIEW -->
+            <div id="s-view-leaderboard" class="t-view">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2 style="color: var(--arterial-spray); font-family: var(--font-ui); font-size: 2rem; letter-spacing: 2px;">Global Hierarchy (Survivors)</h2>
+                    <p style="color: var(--muted-bone); font-family: var(--font-journal);">Safe Bank Rankings.</p>
+                </div>
+                <div class="lb-table-container"><div id="surv-leaderboard-list" style="text-align: center; padding: 20px; color: white;">Loading Leaderboard...</div></div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==========================================================================
+         SHARED MODALS & TOOLTIPS
+         ========================================================================== -->
+    <div id="custom-tooltip">
+        <div class="tt-header">
+            <div class="tt-title" id="tt-title">Perk Name</div>
+            <div class="tt-char" id="tt-char">Character Name</div>
+        </div>
+        <div class="tt-effect" id="tt-effect">Effect description</div>
+    </div>
+
+    <!-- Killer Challenge Modal -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
-            <div id="modalBody" style="color: #fff; line-height: 1.6;">
-                <!-- Populated via JS -->
-            </div>
+            <span class="close-btn" onclick="closeKillerModal()">&times;</span>
+            <div id="modalBody" style="color: #fff; line-height: 1.6;"></div>
         </div>
     </div>
 
     <!-- ==========================================================================
-         THE TRACKER WINDOWS (IFRAME POPUPS)
+         JAVASCRIPT
          ========================================================================== -->
-    
-    <!-- 1. KILLER TRACKER WINDOW -->
-    <div id="killer-tracker-popup" class="tracker-popup">
-        <div style="height: 60px; background: linear-gradient(90deg, #2a0000, #000); border-bottom: 1px solid #ff0505; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; flex-shrink: 0;"
-            onclick="TrackerApp.toggleMinimize(event)">
-            <h3 style="color: #ffffff; font-family: 'Teko', sans-serif; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; margin: 0;">
-                Killer <span style="color: #ff0505;">Dashboard</span></h3>
-            <div>
-                <span style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer;">_</span>
-                <span onclick="TrackerApp.close(event)" style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer;">X</span>
-            </div>
-        </div>
-        <div style="flex: 1; overflow: hidden; background: var(--bg-dark);">
-            <iframe id="killer-iframe" src="" style="width: 100%; height: 100%; border: none;"></iframe>
-        </div>
-    </div>
-
-    <!-- 2. SURVIVOR ROULETTE DASHBOARD WINDOW -->
-    <div id="roulette-tracker-popup" class="tracker-popup">
-        <div style="height: 60px; background: linear-gradient(90deg, #2a0000, #000); border-bottom: 1px solid #ff0505; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; flex-shrink: 0;"
-            onclick="RouletteTrackerApp.toggleMinimize(event)">
-            <h3 style="color: #ffffff; font-family: 'Teko', sans-serif; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; margin: 0;">
-                Roulette <span style="color: #ff0505;">Dashboard</span></h3>
-            <div>
-                <span style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer;">_</span>
-                <span onclick="RouletteTrackerApp.close(event)" style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer;">X</span>
-            </div>
-        </div>
-        <div style="flex: 1; overflow: hidden; background: var(--bg-dark);">
-            <iframe id="roulette-iframe" src="" style="width: 100%; height: 100%; border: none;"></iframe>
-        </div>
-    </div>
-
-    <!-- JAVASCRIPT LOGIC -->
-    <!-- 1. The Session Bouncer -->
-    <script src="../assets/js/session.js"></script>
-
-    <!-- UI Core Logic -->
     <script>
-        // --- ADD-ON: PREMIUM TOGGLE LOGIC ---
-        window.switchRole = function (role, btnElement) {
-            // Update Toggle Visuals (Text Color)
-            document.querySelectorAll('.toggle-btn').forEach(btn => {
-                btn.classList.remove('active');
-                btn.style.color = "var(--text-muted)";
-                btn.style.textShadow = "none";
-            });
-            btnElement.classList.add('active');
-            btnElement.style.color = "#fff";
-            btnElement.style.textShadow = "0 0 12px rgba(255, 255, 255, 0.8)";
-
-            // Move the background slider
-            const slider = document.querySelector('.toggle-slider');
-            if (role === 'killer') {
-                slider.style.transform = 'translateX(0)';
-            } else {
-                slider.style.transform = 'translateX(100%)';
-            }
-
-            // Hide both views initially
-            document.getElementById('view-killer').style.display = 'none';
-            document.getElementById('view-killer').classList.remove('active-realm');
-            document.getElementById('view-survivor').style.display = 'none';
-            document.getElementById('view-survivor').classList.remove('active-realm');
-
-            // Show the correct view with a slight delay for the animation
-            if (role === 'killer') {
-                document.getElementById('view-killer').style.display = 'block';
-                setTimeout(() => document.getElementById('view-killer').classList.add('active-realm'), 50);
-            } else {
-                document.getElementById('view-survivor').style.display = 'block';
-                setTimeout(() => document.getElementById('view-survivor').classList.add('active-realm'), 50);
-            }
-        };
-
-        // --- OLD THEME ACCORDION LOGIC ---
-        window.toggleAccordion = function (header) {
-            const accordion = header.parentElement;
-            const content = accordion.querySelector('.accordion-content');
-
-            document.querySelectorAll('.perk-accordion').forEach(acc => {
-                if (acc !== accordion) {
-                    acc.classList.remove('active');
-                    acc.querySelector('.accordion-content').style.maxHeight = null;
-                }
-            });
-
-            accordion.classList.toggle('active');
-            if (accordion.classList.contains('active')) {
-                content.style.maxHeight = content.scrollHeight + "px";
-            } else {
-                content.style.maxHeight = null;
-            }
-        };
-
-        // --- LOOPING ALTAR ANIMATION LOGIC ---
-        window.startDescentLoop = function () {
-            const slots = [
-                document.getElementById('loop-perk-1'),
-                document.getElementById('loop-perk-2'),
-                document.getElementById('loop-perk-3'),
-                document.getElementById('loop-perk-4')
-            ];
-            let currentIndex = 0;
-            setInterval(() => {
-                if (currentIndex >= slots.length) {
-                    slots.forEach(slot => slot.classList.remove('consumed'));
-                    currentIndex = 0;
-                    return;
-                }
-                slots[currentIndex].classList.add('consumed');
-                currentIndex++;
-            }, 1500);
-        };
-
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', window.startDescentLoop);
-        } else {
-            window.startDescentLoop();
-        }
-
-        // --- IFRAME TRACKER CONTROLLERS ---
-        const TrackerApp = {
-            checkAuthAndOpen() {
-                const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-                if (isLoggedIn) {
-                    this.open();
-                } else {
-                    alert("The Entity requires your soul first. Please login or register to access the tracker.");
-                    window.location.href = '../pages/login.html';
-                }
-            },
-            open() {
-                const win = document.getElementById('killer-tracker-popup');
-                const iframe = document.getElementById('killer-iframe');
-                
-                // Loads dashboard.html only when opened to save resources
-                if (!iframe.src || iframe.src === window.location.href) {
-                    iframe.src = 'dashboard.html'; 
-                }
-                
-                win.classList.add('active');
-                win.classList.remove('minimized');
-            },
-            close(e) {
-                if (e) e.stopPropagation();
-                document.getElementById('killer-tracker-popup').classList.remove('active');
-            },
-            toggleMinimize(e) {
-                if (e && e.target.innerText === 'X') return;
-                document.getElementById('killer-tracker-popup').classList.toggle('minimized');
-            }
-        };
-
-        const RouletteTrackerApp = {
-            checkAuthAndOpen() {
-                const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-                if (isLoggedIn) {
-                    this.open();
-                } else {
-                    alert("The Entity requires your soul first. Please login or register to access the tracker.");
-                    window.location.href = '../pages/login.html';
-                }
-            },
-            open() {
-                const win = document.getElementById('roulette-tracker-popup');
-                const iframe = document.getElementById('roulette-iframe');
-                
-                // Loads roulette_dashboard.html only when opened to save resources
-                if (!iframe.src || iframe.src === window.location.href) {
-                    iframe.src = 'roulette_dashboard.html'; 
-                }
-                
-                win.classList.add('active');
-                win.classList.remove('minimized');
-            },
-            close(e) {
-                if (e) e.stopPropagation();
-                document.getElementById('roulette-tracker-popup').classList.remove('active');
-            },
-            toggleMinimize(e) {
-                if (e && e.target.innerText === 'X') return;
-                document.getElementById('roulette-tracker-popup').classList.toggle('minimized');
-            }
-        };
-
-        window.TrackerApp = TrackerApp;
-        window.RouletteTrackerApp = RouletteTrackerApp;
-
-        // --- MODAL DATA LOGIC ---
-        const challengeData = {
-            'phantom': {
-                title: "The Phantom of the Fog",
-                meta: "Survivor // Difficulty: Extreme // 10 wins only Not A Streak",
-                desc: "Imagine being a ghost in a horror anime. You aren't here to fight, and you definitely aren't here to run. You are here to vanish. Your ultimate goal is to escape and get 10 total wins under your belt. (Don't worry, it doesn't have to be a streak just 10 wins total!). But here is the massive catch: the Killer can never, ever know you exist. If the chase music starts playing even for a single second, your trial is immediately ruined and it counts as a loss. You have to creep through the tall grass, hold your breath while the killer walks right past you, and let your teammates take all the heat. You will rely heavily on your perks to hide your scratch marks, silence your grunts of pain, and keep your aura completely hidden. Play like a shadow.",
-                perks: ["Distortion", "Urban Evasion", "Calm Spirit", "Iron Will"]
-            },
-            'warden': {
-                title: "The Entity's Warden",
-                meta: "Killer // Difficulty: Hard // 10 wins only Not A Streak",
-                desc: "Think of yourself as the final boss waiting deep inside your castle. When the match starts, look around and pick one specific area of the map. It could be the big main building, or maybe the creepy killer shack. That spot is now your kingdom. Your goal is to secure 10 total victories, but you are absolutely forbidden from hooking anyone outside of your kingdom. If you knock a survivor down on the complete opposite side of the map, you have to throw them over your shoulder and carry them all the way back to your chosen zone. It turns the game into a desperate tug-of-war. Will they wiggle out before you reach your dungeon? Your perk build is designed entirely around moving incredibly fast while carrying bodies, ensuring nobody escapes your grasp once they enter your territory.",
-                perks: ["Agitation", "Iron Grasp", "Territorial Imperative", "Monstrous Shrine"]
-            },
-            'purifier': {
-                title: "The Hex Purifier",
-                meta: "Mixed // Difficulty: Insane // 10 wins only Not A Streak",
-                desc: "While your teammates are playing a normal game of Dead by Daylight, you are basically the magical support character on a secret side quest. You need 10 wins to complete this challenge, but you are not allowed to touch a single generator. Not even for one second! Your only true mission is to rid the map of dark magic. You must hunt down and crush all 5 bone totems hidden around the environment before the final generator pops. Since you aren't doing generators, you have to be the ultimate team player in other ways rescuing people from hooks, healing the injured, and cleansing totems as fast as humanly possible. Once the exit gates are finally powered by your team, your curse is lifted and you can help open the doors to escape.",
-                perks: ["Counterforce", "Small Game", "Plunderer's Instinct", "We'll Make It"]
-            }
-        };
-
-        const modal = document.getElementById('modalOverlay');
-        const modalBody = document.getElementById('modalBody');
-
-        window.openModal = function (challengeId) {
-            if(!challengeData[challengeId]) return;
-            const data = challengeData[challengeId];
-            modalBody.innerHTML = `
-                <h2 style="font-size: 2.5rem; color: #fff; margin-bottom: 0.5rem; font-family: var(--font-title); text-shadow: 0 0 10px rgba(211,47,47,0.8);">${data.title}</h2>
-                <div style="color: var(--arterial-spray); font-weight: bold; margin-bottom: 2rem; border-bottom: 1px solid #333; padding-bottom: 1rem; font-family: var(--font-ui); font-size: 1.2rem;">${data.meta}</div>
-                <p style="font-size: 1.1rem; color: #ccc; font-family: var(--font-journal);">${data.desc}</p>
-                <h4 style="margin-top: 2rem; color: var(--arterial-spray); font-size: 1.2rem; text-transform: uppercase; font-family: var(--font-ui);">Mandatory Build</h4>
-                <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
-                    ${data.perks.map(perk => `<div style="background: rgba(255,255,255,0.05); border: 1px dashed #555; padding: 1rem 1.5rem; border-radius: 6px; flex: 1; text-align: center; min-width: 150px; font-family: var(--font-tracker); font-weight: bold;">${perk}</div>`).join('')}
-                </div>
-            `;
-            modal.classList.add('active');
-        }
-
-        window.closeModal = function () {
-            modal.classList.remove('active');
-        }
-
-        window.onclick = (e) => {
-            if (e.target == modal) window.closeModal();
-        }
-    </script>
-
-    <!-- SURVIVOR (ROULETTE) JAVASCRIPT LOGIC -->
-    <script>
-        // --- Survivor Randomizer Logic ---
-        const survivorRawPerkData = `
+        // ==========================================
+        // SHARED DATA & HELPERS
+        // ==========================================
+        const rawPerkData = `
 A Place For Us|Kwon Tae-young|When finishing healing another Survivor, both gain the Elusive Status Effect.
 Ace in the Hole|Ace Visconti|Items retrieved from Chests have 1 guaranteed Add-on.
 Adrenaline|Meg Thomas|When Exit Gates are powered, instantly heal one Health State and gain +50% Haste for 3 seconds.
@@ -1235,7 +1074,7 @@ Will to Live|All|After unhook, escape Killer's grasp if grabbed.
 Windows of Opportunity|Kate Denson|See Auras of all Pallets and Windows nearby.
 Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`;
 
-        const s_iconFilenames = [
+        const iconFilenames = [
             "IconPerks_aceInTheHole.webp", "IconPerks_adrenaline.webp", "IconPerks_aftercare.webp", "IconPerks_alert.webp", 
             "IconPerks_anyMeansNecessary.webp", "IconPerks_appraisal.webp", "IconPerks_autodidact.webp", "IconPerks_babysitter.webp", 
             "IconPerks_backgroundPlayer.webp", "IconPerks_balancedLanding.webp", "IconPerks_bardicInspiration.webp", "IconPerks_betterThanNew.webp", 
@@ -1276,20 +1115,11 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
             "IconPerks_wicked.webp", "IconPerks_windowsOfOpportunity.webp", "IconPerks_wiretap.webp"
         ];
 
-        function getRouletteIconPath(perkName) {
+        function getExactOrFuzzyFilename(perkName) {
             const normPerk = perkName.toLowerCase().replace(/[^a-z0-9]/g, '');
-            const overrides = {
-                'quickquiet': 'IconPerks_quick&Quiet.webp',
-                'dejavu': 'IconPerks_dejaVu.webp',
-                'downtothelast': 'IconPerks_soleSurvivor.webp',
-                'solesurvivor': 'IconPerks_soleSurvivor.webp',
-                'decisivestrike': 'IconPerks_decisiveStrike.webp',
-                'willtolive': 'IconPerks_decisiveStrike.webp',
-                'boundbyobsession': 'IconPerks_objectOfObsession.webp',
-                'objectofobsession': 'IconPerks_objectOfObsession.webp'
-            };
+            const overrides = { 'quickquiet': 'IconPerks_quick&Quiet.webp', 'dejavu': 'IconPerks_dejaVu.webp', 'downtothelast': 'IconPerks_soleSurvivor.webp', 'solesurvivor': 'IconPerks_soleSurvivor.webp', 'decisivestrike': 'IconPerks_decisiveStrike.webp', 'willtolive': 'IconPerks_decisiveStrike.webp', 'boundbyobsession': 'IconPerks_objectOfObsession.webp', 'objectofobsession': 'IconPerks_objectOfObsession.webp' };
             if (overrides[normPerk]) return overrides[normPerk];
-            for (let file of s_iconFilenames) {
+            for (let file of iconFilenames) {
                 let cleanFile = file.replace('IconPerks_', '').replace('.webp', '').toLowerCase().replace(/[^a-z0-9]/g, '');
                 if (cleanFile === normPerk || cleanFile.includes(normPerk) || normPerk.includes(cleanFile)) return file;
             }
@@ -1297,145 +1127,534 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
             return `IconPerks_${camelCase}.webp`;
         }
 
-        const SURVIVOR_PERKS = [];
-        survivorRawPerkData.trim().split('\n').forEach(line => {
+        const ALL_PERKS = [];
+        rawPerkData.trim().split('\n').forEach(line => {
             if(!line.trim()) return;
             const parts = line.split('|');
             if(parts.length === 3) {
-                SURVIVOR_PERKS.push({
+                ALL_PERKS.push({
                     name: parts[0].trim(),
                     character: parts[1].trim(),
                     effect: parts[2].trim(),
-                    iconPath: `../assets/images/perks/${getRouletteIconPath(parts[0].trim())}`
+                    iconPath: `../assets/images/perks/${getExactOrFuzzyFilename(parts[0].trim())}`
                 });
             }
         });
 
-        let s_chars = [...new Set(SURVIVOR_PERKS.map(p => p.character))].sort((a,b) => a === 'All' ? -1 : b === 'All' ? 1 : a.localeCompare(b));
-        let rouletteOwned = new Set(s_chars);
-
-        window.openRouletteInventory = function() {
-            const container = document.getElementById('rouletteInventoryCheckboxes');
-            container.innerHTML = '';
-            s_chars.forEach(char => {
-                const label = document.createElement('label');
-                label.className = 'char-checkbox-label';
-                const input = document.createElement('input');
-                input.type = 'checkbox';
-                input.value = char;
-                input.checked = rouletteOwned.has(char);
-                
-                if (char === 'All') {
-                    input.disabled = true; input.checked = true; rouletteOwned.add('All');
-                } else {
-                    input.addEventListener('change', (e) => {
-                        if (e.target.checked) rouletteOwned.add(char);
-                        else rouletteOwned.delete(char);
-                    });
-                }
-                label.appendChild(input);
-                label.appendChild(document.createTextNode(char));
-                container.appendChild(label);
-            });
-            document.getElementById('rouletteInventoryModal').classList.add('active');
-        };
-
-        window.closeRouletteInventory = function() {
-            document.getElementById('rouletteInventoryModal').classList.remove('active');
-            let available = SURVIVOR_PERKS.filter(p => rouletteOwned.has(p.character));
-            if (available.length < 16) {
-                alert("WARNING: You deselected too many characters! Defaulting to all characters.");
-                rouletteOwned = new Set(s_chars);
-            }
-        };
-
-        const s_tooltip = document.getElementById('s_custom-tooltip');
-        function s_attachTooltip(element, perkData) {
+        // Tooltip global logic
+        const tooltip = document.getElementById('custom-tooltip');
+        function attachTooltipEvents(element, perkData) {
             element.addEventListener('mouseenter', (e) => {
-                document.getElementById('s_tt-title').textContent = perkData.name;
-                document.getElementById('s_tt-char').textContent = perkData.character;
-                document.getElementById('s_tt-effect').innerHTML = perkData.effect.replace(/(\+\d+%|-\d+%|\d+s|\d+m|\d+%)/g, '<strong>$1</strong>');
-                s_tooltip.classList.add('visible');
-                s_posTooltip(e);
+                document.getElementById('tt-title').textContent = perkData.name;
+                document.getElementById('tt-char').textContent = perkData.character;
+                document.getElementById('tt-effect').innerHTML = perkData.effect.replace(/(\+\d+%|-\d+%|\d+s|\d+m|\d+%)/g, '<strong>$1</strong>');
+                tooltip.classList.add('visible');
+                positionTooltip(e);
             });
-            element.addEventListener('mousemove', s_posTooltip);
-            element.addEventListener('mouseleave', () => s_tooltip.classList.remove('visible'));
+            element.addEventListener('mousemove', positionTooltip);
+            element.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
         }
-        function s_posTooltip(e) {
+        function positionTooltip(e) {
             let x = e.clientX + 20, y = e.clientY + 20;
-            const ttRect = s_tooltip.getBoundingClientRect();
+            const ttRect = tooltip.getBoundingClientRect();
             if (x + ttRect.width > window.innerWidth) x = e.clientX - ttRect.width - 20;
             if (y + ttRect.height > window.innerHeight) y = e.clientY - ttRect.height - 20;
-            s_tooltip.style.left = `${x}px`; s_tooltip.style.top = `${y}px`;
+            tooltip.style.left = `${x}px`; tooltip.style.top = `${y}px`;
         }
 
-        window.initiateRouletteSpin = function() {
-            const displayArea = document.getElementById('roulettePerkDisplayArea');
-            const btn = document.getElementById('rouletteSpinBtn');
-            const partySize = parseInt(document.getElementById('roulettePartySize').value);
-            const numPerks = partySize * 4;
-            
-            displayArea.innerHTML = ''; 
-            btn.style.pointerEvents = 'none';
-            btn.textContent = "THE ENTITY IS CHOOSING...";
-
-            let availablePool = SURVIVOR_PERKS.filter(p => rouletteOwned.has(p.character));
-            
-            if (availablePool.length < numPerks) {
-                alert(`Error: Not enough perks in inventory.`);
-                btn.style.pointerEvents = 'all'; btn.textContent = "ROLL THE ENTITY'S DICE";
-                return;
+        // Toggle Campaign Logic
+        function switchCampaign(type) {
+            document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
+            if(type === 'killer') {
+                document.getElementById('btn-killer').classList.add('active');
+                document.getElementById('killer-campaign').style.display = 'block';
+                document.getElementById('survivor-campaign').style.display = 'none';
+            } else {
+                document.getElementById('btn-survivor').classList.add('active');
+                document.getElementById('killer-campaign').style.display = 'none';
+                document.getElementById('survivor-campaign').style.display = 'block';
             }
+        }
+        // Init default state
+        switchCampaign('killer');
 
-            const isGolden = Math.random() < 0.15;
-            const box = document.getElementById('rouletteRandomizerBox');
-            const banner = document.getElementById('rouletteGoldenBanner');
-            
-            if (isGolden) { box.classList.add('golden-active'); banner.style.display = 'block'; } 
-            else { box.classList.remove('golden-active'); banner.style.display = 'none'; }
+        // ==========================================
+        // KILLER CAMPAIGN LOGIC
+        // ==========================================
+        const KillersList = [
+            "The Shape", "The Cenobite", "The Slasher", "The Trickster", "The First", "The Krasue", "The Animatronic",
+            "The Ghoul", "The Houndmaster", "Dracula", "The Lich - Vecna", "The Unknown",
+            "The Good Guy - Chucky", "The Xenomorph", "The Singularity", "The Skull Merchant",
+            "The Knight", "The Mastermind", "The Dredge", "The Onryō – Sadako", "The Artist",
+            "The Nemesis", "The Twins", "The Blight", "The Executioner – Pyramid Head",
+            "The Deathslinger", "The Oni", "The Demogorgon", "The Ghost Face", "The Plague",
+            "The Legion", "The Spirit", "The Clown", "The Pig – Amanda Young",
+            "The Nightmare – Freddy Krueger", "The Cannibal – Leatherface", "The Doctor",
+            "The Hag", "The Huntress", "The Nurse", "The Hillbilly", "The Wraith", "The Trapper"
+        ];
 
-            let shuffled = [...availablePool];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            const selectedPerks = shuffled.slice(0, numPerks);
-
-            selectedPerks.forEach((perk, index) => {
-                const card = document.createElement('div');
-                card.className = 'perk-card-container';
-                const node = document.createElement('div');
-                node.className = 'perk-node';
-                const rhombus = document.createElement('div');
-                rhombus.className = 'rhombus-outer';
-                const img = document.createElement('img');
-                img.className = 'rhombus-inner-img';
-                img.alt = perk.name; img.src = perk.iconPath;
-                img.onerror = function() {
-                    this.style.display = 'none';
-                    const fallback = document.createElement('div');
-                    fallback.className = 'perk-fallback-badge';
-                    fallback.textContent = perk.name.replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase();
-                    rhombus.appendChild(fallback);
-                };
-
-                rhombus.appendChild(img);
-                node.appendChild(rhombus);
-
-                const label = document.createElement('div');
-                label.className = 'perk-name-label';
-                label.textContent = perk.name;
-
-                card.appendChild(node); card.appendChild(label);
-                s_attachTooltip(card, perk);
-                displayArea.appendChild(card);
-                setTimeout(() => card.classList.add('revealed'), index * 120);
-            });
-
-            setTimeout(() => {
-                btn.style.pointerEvents = 'all'; btn.textContent = "ROLL THE ENTITY'S DICE";
-            }, numPerks * 120 + 400);
+        const KillerPerksCategorized = {
+            INFO: ["A Nurse's Calling", "Alien Instinct", "Awakened Awareness", "Barbecue & Chilli", "Bitter Murmur", "Darkness Revealed", "Deathbound", "Deerstalker", "Discordance", "Gearhead", "Hoarder", "Human Greed", "I'm All Ears", "Infectious Fright", "Lethal Pursuer", "Nemesis", "Nowhere to Hide", "Phantom Fear", "Scourge Hook: Floods of Rage", "Scourge Hook: Hangman's Trick", "Scourge Hook: Jagged Compass", "Shattered Hope", "Spies from the Shadows", "Stridor", "Surveillance", "THWACK!", "Territorial Imperative", "Thrilling Tremors", "Tinkerer", "Ultimate Weapon", "Wandering Eye", "Weave Attunement", "Whispers", "Zanshin Tactics"],
+            CHASE: ["All-Shaking Thunder", "Bamboozle", "Bloodhound", "Brutal Strength", "Coup de Grâce", "Cruel Limits", "Dark Arrogance", "Dissolution", "Enduring", "Iron Grasp", "Lightborn", "Mad Grit", "Predator", "Spirit Fury", "Superior Anatomy", "Unrelenting"],
+            SPEED: ["Agitation", "Batteries Included", "Fire Up", "Forever Entwined", "Game Afoot", "Help Wanted", "Keep Them Waiting", "Machine Learning", "Play With Your Food", "Rampage", "Rapid Brutality", "Save the Best for Last", "Scourge Hook: Monstrous Shrine", "See How They Run", "Shadowborn", "Unbound"],
+            SLOWDOWN: ["Blood Echo", "Blood Warden", "Corrupt Intervention", "Coulrophobia", "Cull the Weak", "Dead Man's Switch", "Deadlock", "Dominance", "Dying Light", "Forced Hesitation", "Forced Penance", "Franklin's Demise", "Genetic Limits", "Grim Embrace", "Haywire", "Hysteria", "Knock Out", "Languid Touch", "Leverage", "Mindbreaker", "No Holds Barred", "No Quarter", "No Way Out", "None Are Free", "Overwhelming Presence", "Remember Me", "Scourge Hook: Gift of Pain", "Scourge Hook: Weeping Wounds", "Septic Touch", "Sloppy Butcher", "Terminus", "Thanatophobia", "Unnerving Presence"],
+            GEN: ["Call of Brine", "Eruption", "Merciless Storm", "Oppression", "Overcharge", "Pop Goes the Weasel", "Pain Resonance", "Surge", "Turn Back the Clock", "Undone"],
+            TERROR: ["Beast of Prey", "Dark Devotion", "Distressing", "Furtive Chase", "Insidious", "Monitor & Abuse", "Secret Project", "Silent Shadow", "Trail of Torment", "Unforeseen"],
+            EXPOSE: ["Dragon's Grip", "Friends 'til the End", "Hubris", "Iron Maiden", "Make Your Choice", "Rancor", "Ravenous", "Starstruck"],
+            HEX: ["Blood Favour", "Crowd Control", "Devour Hope", "Face the Darkness", "Fortune's Fool", "Haunted Ground", "Hive Mind", "Huntress Lullaby", "NOED", "Nothing but Misery", "Overture of Doom", "Pentimento", "Plaything", "Retribution", "Ruin", "Scared to Death", "Third Seal", "Thrill of the Hunt", "Two Can Play", "Undying", "Wretched Fate"]
         };
+
+        // Populate Accordions dynamically
+        const accContainer = document.getElementById('killer-accordions-container');
+        Object.keys(KillerPerksCategorized).forEach(category => {
+            let acc = document.createElement('div');
+            acc.className = 'perk-accordion';
+            acc.innerHTML = `
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <h4>${category}</h4><span class="accordion-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="perk-grid">
+                        ${KillerPerksCategorized[category].map(p => `<div class="perk-item">${p}</div>`).join('')}
+                    </div>
+                </div>
+            `;
+            accContainer.appendChild(acc);
+        });
+
+        function toggleAccordion(header) {
+            const accordion = header.parentElement;
+            const content = accordion.querySelector('.accordion-content');
+            document.querySelectorAll('.perk-accordion').forEach(acc => {
+                if (acc !== accordion) {
+                    acc.classList.remove('active');
+                    acc.querySelector('.accordion-content').style.maxHeight = null;
+                }
+            });
+            accordion.classList.toggle('active');
+            content.style.maxHeight = accordion.classList.contains('active') ? content.scrollHeight + "px" : null;
+        }
+
+        // Descent Loop Animation
+        function startDescentLoop() {
+            const slots = [ document.getElementById('loop-perk-1'), document.getElementById('loop-perk-2'), document.getElementById('loop-perk-3'), document.getElementById('loop-perk-4') ];
+            let currentIndex = 0;
+            setInterval(() => {
+                if (currentIndex >= slots.length) {
+                    slots.forEach(slot => slot.classList.remove('consumed'));
+                    currentIndex = 0; return;
+                }
+                slots[currentIndex].classList.add('consumed');
+                currentIndex++;
+            }, 1500);
+        }
+        startDescentLoop();
+
+        // Killer Modals
+        const killerChallengeData = {
+            'phantom': { title: "The Phantom of the Fog", meta: "Survivor // Difficulty: Extreme // 10 wins only Not A Streak", desc: "Imagine being a ghost in a horror anime. You aren't here to fight, and you definitely aren't here to run. You are here to vanish. Your ultimate goal is to escape and get 10 total wins under your belt. (Don't worry, it doesn't have to be a streak just 10 wins total!). But here is the massive catch: the Killer can never, ever know you exist. If the chase music starts playing even for a single second, your trial is immediately ruined and it counts as a loss. You have to creep through the tall grass, hold your breath while the killer walks right past you, and let your teammates take all the heat. You will rely heavily on your perks to hide your scratch marks, silence your grunts of pain, and keep your aura completely hidden. Play like a shadow.", perks: ["Distortion", "Urban Evasion", "Calm Spirit", "Iron Will"] },
+            'warden': { title: "The Entity's Warden", meta: "Killer // Difficulty: Hard // 10 wins only Not A Streak", desc: "Think of yourself as the final boss waiting deep inside your castle. When the match starts, look around and pick one specific area of the map. It could be the big main building, or maybe the creepy killer shack. That spot is now your kingdom. Your goal is to secure 10 total victories, but you are absolutely forbidden from hooking anyone outside of your kingdom. If you knock a survivor down on the complete opposite side of the map, you have to throw them over your shoulder and carry them all the way back to your chosen zone. It turns the game into a desperate tug-of-war. Will they wiggle out before you reach your dungeon? Your perk build is designed entirely around moving incredibly fast while carrying bodies, ensuring nobody escapes your grasp once they enter your territory.", perks: ["Agitation", "Iron Grasp", "Territorial Imperative", "Monstrous Shrine"] },
+            'purifier': { title: "The Hex Purifier", meta: "Mixed // Difficulty: Insane // 10 wins only Not A Streak", desc: "While your teammates are playing a normal game of Dead by Daylight, you are basically the magical support character on a secret side quest. You need 10 wins to complete this challenge, but you are not allowed to touch a single generator. Not even for one second! Your only true mission is to rid the map of dark magic. You must hunt down and crush all 5 bone totems hidden around the environment before the final generator pops. Since you aren't doing generators, you have to be the ultimate team player in other ways rescuing people from hooks, healing the injured, and cleansing totems as fast as humanly possible. Once the exit gates are finally powered by your team, your curse is lifted and you can help open the doors to escape.", perks: ["Counterforce", "Small Game", "Plunderer's Instinct", "We'll Make It"] }
+        };
+        function openKillerModal(id) {
+            const data = killerChallengeData[id];
+            document.getElementById('modalBody').innerHTML = `
+                <h2 style="font-size: 2.5rem; color: #fff; margin-bottom: 0.5rem; font-family: var(--font-title); text-shadow: 0 0 10px rgba(211,47,47,0.8);">${data.title}</h2>
+                <div style="color: var(--arterial-spray); font-weight: bold; margin-bottom: 2rem; border-bottom: 1px solid #333; padding-bottom: 1rem; font-family: var(--font-ui); font-size: 1.2rem;">${data.meta}</div>
+                <p style="font-size: 1.1rem; color: #ccc; font-family: var(--font-journal);">${data.desc}</p>
+                <h4 style="margin-top: 2rem; color: var(--arterial-spray); font-size: 1.2rem; text-transform: uppercase; font-family: var(--font-ui);">Mandatory Build</h4>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
+                    ${data.perks.map(perk => `<div style="background: rgba(255,255,255,0.05); border: 1px dashed #555; padding: 1rem 1.5rem; border-radius: 6px; flex: 1; text-align: center; min-width: 150px; font-family: var(--font-tracker); font-weight: bold;">${perk}</div>`).join('')}
+                </div>
+            `;
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+        function closeKillerModal() { document.getElementById('modalOverlay').classList.remove('active'); }
+
+        // Killer State & Tracker Logic
+        const KillerState = {
+            completedKillers: [], bannedPerks: {}, points: 0,
+            stats: { sacrificed: 0, lifelines: 0, losses: 0 },
+            currentKiller: null, selectedLoadout: [], activePerks: [], sacrificedThisRun: [],
+            updateUI() {
+                document.getElementById('stat-points').innerText = this.points;
+                document.getElementById('stat-killers').innerText = `${this.completedKillers.length} / 43`;
+                document.getElementById('stat-sacrificed').innerText = this.stats.sacrificed;
+                document.getElementById('stat-lifelines').innerText = this.stats.lifelines;
+                if (document.getElementById('t-roster').classList.contains('active')) KillerRosterUI.render();
+            },
+            resetRun() { this.selectedLoadout = []; this.activePerks = []; this.sacrificedThisRun = []; }
+        };
+        KillersList.forEach(k => { if (!KillerState.bannedPerks[k]) KillerState.bannedPerks[k] = []; });
+
+        const KillerTrackerApp = {
+            open() {
+                const win = document.getElementById('killer-tracker-window');
+                win.classList.add('active'); win.classList.remove('minimized');
+                this.showView('t-roster'); KillerState.updateUI();
+            },
+            close(e) { if(e) e.stopPropagation(); document.getElementById('killer-tracker-window').classList.remove('active'); },
+            toggleMinimize(e) { if (e.target.innerText === 'X') return; document.getElementById('killer-tracker-window').classList.toggle('minimized'); },
+            showView(viewId) {
+                document.getElementById('killer-tracker-window').querySelectorAll('.t-view').forEach(v => v.classList.remove('active'));
+                document.getElementById('killer-tracker-window').querySelectorAll('.tracker-nav button').forEach(b => b.classList.remove('active-btn'));
+                document.getElementById(viewId).classList.add('active');
+                const btn = document.getElementById(`nav-${viewId.split('-')[1]}`);
+                if (btn) btn.classList.add('active-btn');
+                if (viewId === 't-roster') KillerRosterUI.render();
+                if (viewId === 't-leaderboard') KillerLeaderboardUI.fetch();
+            }
+        };
+
+        const KillerRosterUI = {
+            render() {
+                const grid = document.getElementById('roster-grid'); grid.innerHTML = '';
+                KillersList.forEach(killer => {
+                    const el = document.createElement('div');
+                    el.className = `tracker-killer-card ${KillerState.completedKillers.includes(killer) ? 'completed' : ''}`;
+                    el.innerText = killer;
+                    el.onclick = () => {
+                        if (!KillerState.completedKillers.includes(killer)) {
+                            KillerState.currentKiller = killer; KillerState.resetRun();
+                            KillerTrackerApp.showView('t-builder');
+                            document.getElementById('nav-builder').style.display = 'block';
+                            document.getElementById('nav-trial').style.display = 'none';
+                            Builder.init();
+                        }
+                    };
+                    grid.appendChild(el);
+                });
+            }
+        };
+
+        const Builder = {
+            currentTab: "INFO",
+            init() {
+                document.getElementById('builder-killer-name').innerText = KillerState.currentKiller;
+                this.renderSidebar(); this.renderSlots(); this.switchTab("INFO");
+            },
+            renderSidebar() {
+                const sidebar = document.getElementById('schools-sidebar'); sidebar.innerHTML = '';
+                Object.keys(KillerPerksCategorized).forEach(school => {
+                    const btn = document.createElement('button'); btn.className = 'school-btn';
+                    btn.id = `tab-${school}`; btn.innerText = school;
+                    btn.onclick = () => this.switchTab(school);
+                    sidebar.appendChild(btn);
+                });
+                this.updateSidebarState();
+            },
+            updateSidebarState() {
+                const selectedSchools = KillerState.selectedLoadout.map(l => l.school);
+                const isFull = KillerState.selectedLoadout.length >= 4;
+                Object.keys(KillerPerksCategorized).forEach(school => {
+                    const btn = document.getElementById(`tab-${school}`);
+                    if (!btn) return;
+                    btn.classList.remove('locked', 'disabled');
+                    if (selectedSchools.includes(school)) btn.classList.add('locked');
+                    else if (isFull) btn.classList.add('disabled');
+                });
+            },
+            switchTab(school) {
+                document.querySelectorAll('.school-btn').forEach(b => b.classList.remove('active-tab'));
+                document.getElementById(`tab-${school}`).classList.add('active-tab');
+                this.currentTab = school; document.getElementById('perk-search').value = '';
+                this.renderMatrix(school);
+            },
+            renderMatrix(school, filter = '') {
+                const grid = document.getElementById('matrix-grid'); grid.innerHTML = '';
+                const banned = KillerState.bannedPerks[KillerState.currentKiller] || [];
+                const currentlySelectedPerk = KillerState.selectedLoadout.find(l => l.school === school)?.perk;
+
+                KillerPerksCategorized[school].forEach(perkName => {
+                    if (filter && !perkName.toLowerCase().includes(filter.toLowerCase())) return;
+                    const item = document.createElement('div');
+                    item.className = 'perk-item tracker-perk-item'; item.innerText = perkName;
+                    if (banned.includes(perkName)) item.classList.add('banned');
+                    if (currentlySelectedPerk === perkName) item.classList.add('selected');
+
+                    if (!banned.includes(perkName)) {
+                        item.onclick = () => {
+                            if (currentlySelectedPerk === perkName) KillerState.selectedLoadout = KillerState.selectedLoadout.filter(l => l.perk !== perkName);
+                            else {
+                                const existIdx = KillerState.selectedLoadout.findIndex(l => l.school === school);
+                                if (existIdx !== -1) KillerState.selectedLoadout[existIdx].perk = perkName;
+                                else if (KillerState.selectedLoadout.length < 4) KillerState.selectedLoadout.push({ school, perk: perkName });
+                            }
+                            this.renderMatrix(school, document.getElementById('perk-search').value);
+                            this.updateSidebarState(); this.renderSlots();
+                        };
+                    }
+                    grid.appendChild(item);
+                });
+            },
+            filterPerks() { this.renderMatrix(this.currentTab, document.getElementById('perk-search').value); },
+            renderSlots() {
+                for (let i = 0; i < 4; i++) {
+                    const slot = document.getElementById(`slot-${i}`);
+                    if (KillerState.selectedLoadout[i]) {
+                        slot.innerHTML = `<span class="school-label">${KillerState.selectedLoadout[i].school}</span>${KillerState.selectedLoadout[i].perk}`;
+                        slot.classList.add('filled');
+                    } else { slot.innerHTML = `Empty`; slot.classList.remove('filled'); }
+                }
+                document.getElementById('start-trial-btn').style.display = KillerState.selectedLoadout.length === 4 ? 'block' : 'none';
+            }
+        };
+
+        const Trial = {
+            isSacrificeMode: false,
+            init() {
+                document.getElementById('trial-killer-name').innerText = KillerState.currentKiller;
+                KillerState.activePerks = JSON.parse(JSON.stringify(KillerState.selectedLoadout));
+                this.isSacrificeMode = false; this.renderStage();
+            },
+            start() {
+                document.getElementById('nav-trial').style.display = 'block';
+                KillerTrackerApp.showView('t-trial'); this.init();
+            },
+            renderStage() {
+                const container = document.getElementById('trial-perks-container');
+                const msg = document.getElementById('trial-message');
+                const controls = document.getElementById('trial-controls');
+                container.innerHTML = '';
+
+                if (this.isSacrificeMode) {
+                    msg.innerText = "THE ENTITY DEMANDS A SACRIFICE. SELECT A PERK TO SHATTER.";
+                    msg.style.color = "var(--neon-red)"; controls.style.display = 'none';
+                    container.classList.add('sacrifice-mode');
+                } else {
+                    if (KillerState.activePerks.length === 0) {
+                        msg.innerText = "THE PERKLESS LIFELINE. WIN TO REGAIN HOPE."; msg.style.color = "#00ff66";
+                    } else {
+                        msg.innerText = "Survive. Kill. Appease."; msg.style.color = "var(--entity-orange)";
+                    }
+                    controls.style.display = 'flex'; container.classList.remove('sacrifice-mode');
+                }
+
+                for (let i = 0; i < 4; i++) {
+                    const el = document.createElement('div'); el.className = 'trial-perk';
+                    if (i < KillerState.activePerks.length) {
+                        const p = KillerState.activePerks[i];
+                        el.classList.add('active-perk');
+                        el.innerHTML = `<div class="school" style="color:var(--entity-orange); font-size:0.75rem; font-weight:bold;">${p.school}</div><div class="name" style="color:white; font-weight:bold;">${p.perk}</div>`;
+                        if (this.isSacrificeMode) el.onclick = () => this.executeSacrifice(i);
+                    } else {
+                        el.style.background = 'rgba(0,0,0,0.5)'; el.style.border = '1px dashed rgba(255,255,255,0.05)';
+                        el.innerHTML = `<div style="color: rgba(255,255,255,0.05); font-size: 3rem;">✖</div>`;
+                    }
+                    container.appendChild(el);
+                }
+            },
+            win() {
+                const pCount = KillerState.activePerks.length;
+                let pts = pCount === 4 ? 1000 : pCount === 3 ? 750 : pCount === 2 ? 500 : pCount === 1 ? 250 : 1500;
+                KillerState.points += pts;
+                if (pCount === 0) {
+                    KillerState.stats.lifelines++;
+                    alert(`Incredible! +1500 Points. You regain 1 perk and continue!`);
+                    if (KillerState.sacrificedThisRun.length > 0) { KillerState.activePerks.push(KillerState.sacrificedThisRun.pop()); this.renderStage(); }
+                    KillerState.updateUI(); return;
+                }
+                KillerState.completedKillers.push(KillerState.currentKiller);
+                KillerState.updateUI();
+                alert(`The Entity is pleased. +${pts} Points.`);
+                document.getElementById('nav-builder').style.display = 'none';
+                document.getElementById('nav-trial').style.display = 'none';
+                KillerTrackerApp.showView('t-roster');
+            },
+            lose() {
+                KillerState.points -= 100; KillerState.stats.losses++; KillerState.updateUI();
+                if (KillerState.activePerks.length === 0) {
+                    alert("THE ENTITY IS ENRAGED.\nYour 4 initial perks are banned for this killer forever. Start over.");
+                    KillerState.selectedLoadout.forEach(l => KillerState.bannedPerks[KillerState.currentKiller].push(l.perk));
+                    document.getElementById('nav-builder').style.display = 'none';
+                    document.getElementById('nav-trial').style.display = 'none';
+                    KillerTrackerApp.showView('t-roster'); return;
+                }
+                this.isSacrificeMode = true; this.renderStage();
+            },
+            executeSacrifice(index) {
+                const perkElements = document.querySelectorAll('.trial-perk');
+                perkElements[index].classList.add('perk-shattered');
+                setTimeout(() => {
+                    const sacrificed = KillerState.activePerks.splice(index, 1)[0];
+                    KillerState.sacrificedThisRun.push(sacrificed);
+                    KillerState.stats.sacrificed++; KillerState.updateUI();
+                    this.isSacrificeMode = false; this.renderStage();
+                }, 1100);
+            }
+        };
+
+        const KillerLeaderboardUI = {
+            fetch() { document.getElementById('leaderboard-list').innerHTML = 'No sacrifices recorded yet. (Mock Leaderboard)'; }
+        };
+
+
+        // ==========================================
+        // SURVIVOR CAMPAIGN LOGIC
+        // ==========================================
+        let SurvState = {
+            safeBank: 0, currentPot: 0, currentStreak: 0, ransomJail: [],
+            activeDraft: [], isGoldenMode: false, isJailbreakActive: false
+        };
+        const SURV_POT_STAGES = [0, 200, 500, 1000, 2000, 4000];
+        let survDecisionTimeout = null;
+        let survOwnedCharacters = new Set();
+        let survCharactersList = [...new Set(ALL_PERKS.map(p => p.character))].sort((a,b) => a === 'All' ? -1 : b === 'All' ? 1 : a.localeCompare(b));
+        survCharactersList.forEach(c => survOwnedCharacters.add(c)); // Start with all
+
+        const SurvTrackerApp = {
+            open() {
+                const win = document.getElementById('survivor-tracker-window');
+                win.classList.add('active'); win.classList.remove('minimized');
+                this.showView('s-view-dashboard'); this.updateUI();
+            },
+            close(e) { if(e) e.stopPropagation(); document.getElementById('survivor-tracker-window').classList.remove('active'); },
+            toggleMinimize(e) { if (e.target.innerText === 'X') return; document.getElementById('survivor-tracker-window').classList.toggle('minimized'); },
+            showView(viewId) {
+                document.getElementById('survivor-tracker-window').querySelectorAll('.t-view').forEach(v => v.classList.remove('active'));
+                document.getElementById('survivor-tracker-window').querySelectorAll('.tracker-nav button').forEach(b => b.classList.remove('active-btn'));
+                document.getElementById(viewId).classList.add('active');
+                const btnId = viewId.replace('view-', 'nav-');
+                if (document.getElementById(btnId)) document.getElementById(btnId).classList.add('active-btn');
+                
+                if (viewId === 's-view-dashboard') this.updateUI();
+                if (viewId === 's-view-roster') this.renderInventory();
+                if (viewId === 's-view-leaderboard') document.getElementById('surv-leaderboard-list').innerHTML = "Loading Leaderboard... (Mock Data)";
+            },
+            updateUI() {
+                document.getElementById('surv-stat-safe').textContent = SurvState.safeBank;
+                document.getElementById('surv-stat-pot').textContent = SurvState.currentPot;
+                document.getElementById('surv-stat-streak').textContent = SurvState.currentStreak;
+                document.getElementById('surv-stat-jail').textContent = SurvState.ransomJail.length;
+                let percent = Math.min(100, (SurvState.safeBank / 20000) * 100);
+                document.getElementById('surv-goal-progress').style.width = `${percent}%`;
+                document.getElementById('surv-goal-text').textContent = `${SurvState.safeBank} / 20,000 Pts`;
+                document.getElementById('surv-btnJailbreak').style.display = SurvState.ransomJail.length > 0 ? 'inline-block' : 'none';
+            },
+            renderInventory() {
+                const container = document.getElementById('surv-inventoryGrid');
+                if(container.children.length > 0) return; 
+                survCharactersList.forEach(char => {
+                    const label = document.createElement('label'); label.className = 'char-checkbox-label';
+                    const input = document.createElement('input'); input.type = 'checkbox';
+                    input.checked = survOwnedCharacters.has(char);
+                    if (char === 'All') { input.disabled = true; input.checked = true; }
+                    else {
+                        input.addEventListener('change', (e) => {
+                            if (e.target.checked) survOwnedCharacters.add(char);
+                            else survOwnedCharacters.delete(char);
+                        });
+                    }
+                    label.appendChild(input); label.appendChild(document.createTextNode(char));
+                    container.appendChild(label);
+                });
+            },
+            startDraft(isDoubleDown = false) {
+                document.getElementById('surv-decisionPanel').classList.remove('active');
+                clearInterval(survDecisionTimeout);
+
+                const displayArea = document.getElementById('surv-perkDisplayArea');
+                const btnInitiate = document.getElementById('surv-btnInitiate');
+                const partySize = parseInt(document.getElementById('surv-party-size').value);
+                const numPerks = partySize * 4;
+                
+                document.getElementById('surv-actionZoneInitial').style.display = 'none';
+                document.getElementById('surv-actionZoneMatch').style.display = 'none';
+                displayArea.innerHTML = ''; 
+
+                let availablePool = ALL_PERKS.filter(p => survOwnedCharacters.has(p.character) && !SurvState.ransomJail.includes(p.name));
+                if (availablePool.length < numPerks) {
+                    alert(`CRITICAL ERROR: Not enough perks in inventory to supply ${numPerks} perks!`);
+                    document.getElementById('surv-actionZoneInitial').style.display = 'block';
+                    return;
+                }
+
+                SurvState.isGoldenMode = Math.random() < 0.15;
+                if (SurvState.isGoldenMode) {
+                    displayArea.classList.add('surv-randomizer-active');
+                    document.getElementById('surv-goldenBanner').style.display = 'block';
+                } else {
+                    displayArea.classList.remove('surv-randomizer-active');
+                    document.getElementById('surv-goldenBanner').style.display = 'none';
+                }
+
+                let shuffled = [...availablePool].sort(() => 0.5 - Math.random());
+                SurvState.activeDraft = shuffled.slice(0, numPerks);
+
+                SurvState.activeDraft.forEach((perk, index) => {
+                    const card = document.createElement('div'); card.className = 'perk-card-container';
+                    const node = document.createElement('div'); node.className = 'perk-node';
+                    const rhombus = document.createElement('div'); rhombus.className = 'rhombus-outer';
+                    const img = document.createElement('img'); img.className = 'rhombus-inner-img'; img.alt = perk.name; img.src = perk.iconPath;
+                    img.onerror = function() { this.style.display='none'; const fb = document.createElement('div'); fallback.className='perk-fallback-badge'; fb.textContent=perk.name.replace(/[^a-zA-Z]/g, '').substring(0,3).toUpperCase(); rhombus.appendChild(fb); };
+                    rhombus.appendChild(img); node.appendChild(rhombus);
+                    const label = document.createElement('div'); label.className = 'perk-name-label'; label.textContent = perk.name;
+                    card.appendChild(node); card.appendChild(label);
+                    attachTooltipEvents(card, perk);
+                    displayArea.appendChild(card);
+                    setTimeout(() => card.classList.add('revealed'), index * 120);
+                });
+
+                setTimeout(() => { document.getElementById('surv-actionZoneMatch').style.display = 'flex'; }, numPerks * 120 + 400);
+            },
+            initiateJailbreak() {
+                SurvState.isJailbreakActive = true;
+                this.startDraft();
+            },
+            resolveMatch(outcome) {
+                document.getElementById('surv-actionZoneMatch').style.display = 'none';
+                if(outcome === 'win') {
+                    if(SurvState.isJailbreakActive) {
+                        SurvState.ransomJail = []; SurvState.isJailbreakActive = false;
+                        alert("JAILBREAK SUCCESSFUL: All perks freed.");
+                        this.resetToInitialState();
+                    } else {
+                        SurvState.currentStreak = Math.min(5, SurvState.currentStreak + 1);
+                        let earned = SURV_POT_STAGES[SurvState.currentStreak];
+                        if (SurvState.isGoldenMode) earned *= 3;
+                        SurvState.currentPot = earned;
+                        this.triggerDecisionPhase();
+                    }
+                } else {
+                    if(SurvState.isJailbreakActive) {
+                        SurvState.safeBank = Math.max(0, SurvState.safeBank - 1000);
+                        SurvState.isJailbreakActive = false;
+                    }
+                    SurvState.activeDraft.forEach(p => SurvState.ransomJail.push(p.name));
+                    SurvState.currentStreak = 0; SurvState.currentPot = 0; SurvState.activeDraft = [];
+                    this.resetToInitialState();
+                }
+            },
+            triggerDecisionPhase() {
+                const panel = document.getElementById('surv-decisionPanel');
+                const potValue = document.getElementById('surv-decisionPotValue');
+                const timerFill = document.getElementById('surv-decisionTimer');
+                const cashOutBtn = document.getElementById('surv-btnCashOut');
+                
+                panel.classList.add('active');
+                potValue.textContent = `Pot: ${SurvState.currentPot} Pts`;
+                
+                cashOutBtn.style.display = SurvState.isGoldenMode ? 'none' : 'inline-block';
+
+                timerFill.style.transition = 'none'; timerFill.style.transform = 'scaleX(1)';
+                setTimeout(() => { timerFill.style.transition = 'transform 60s linear'; timerFill.style.transform = 'scaleX(0)'; }, 50);
+
+                survDecisionTimeout = setTimeout(() => { if(panel.classList.contains('active')) this.startDraft(true); }, 60000);
+            },
+            executeCashOut() {
+                SurvState.safeBank += SurvState.currentPot; SurvState.currentPot = 0; SurvState.currentStreak = 0; SurvState.activeDraft = [];
+                document.getElementById('surv-decisionPanel').classList.remove('active'); clearInterval(survDecisionTimeout);
+                this.resetToInitialState();
+            },
+            resetToInitialState() {
+                document.getElementById('surv-perkDisplayArea').innerHTML = '<p style="color: var(--text-muted); width: 100%; text-align: center; margin-top: 50px;">Awaiting algorithmic input...</p>';
+                document.getElementById('surv-perkDisplayArea').classList.remove('surv-randomizer-active');
+                document.getElementById('surv-goldenBanner').style.display = 'none';
+                document.getElementById('surv-actionZoneInitial').style.display = 'block';
+                this.updateUI();
+            }
+        };
+
     </script>
 </body>
 

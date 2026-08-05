@@ -4,9 +4,353 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DBD Challenges - The Entity's Descent & Roulette</title>
-    <!-- Linking the CSS File -->
-    <link rel="stylesheet" href="../assets/css/challenges.css">
+    <title>DBD Challenges - The Entity's Realm</title>
+
+    <style>
+        /* ==========================================================================
+           ROOT VARIABLES & PREMIUM THEME DEFINITIONS
+           ========================================================================== */
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,700;1,400&family=Teko:wght@500;700&family=Nosifer&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap');
+
+        :root {
+            /* Core Colors */
+            --bg-dark: #050508;
+            --bg-void: #0a0505;
+            --entity-red: #d32f2f;
+            --entity-blood: #9a031e;
+            --entity-glow: rgba(211, 47, 47, 0.8);
+            --neon-glow: 0 0 20px rgba(211, 47, 47, 0.7), 0 0 40px rgba(154, 3, 30, 0.5);
+            --arterial-spray: #ff0505;
+            --dried-blood: #3a0000;
+            --pitch-black: #000000;
+            --bone-white: #ffffff;
+            --muted-bone: #b8a5a5;
+            --entity-orange: #ff5500;
+            --gold-ascension: #e5b824;
+            --gold-glow: 0 0 20px rgba(229, 184, 36, 0.7), 0 0 40px rgba(229, 184, 36, 0.5);
+
+            /* UI Elements */
+            --glass-bg: rgba(15, 10, 15, 0.65);
+            --glass-border: rgba(211, 47, 47, 0.25);
+            --steel-grey: #1a1a24;
+            --text-light: #f0f0f5;
+            --text-muted: #888899;
+
+            /* Typography & Animation Variables */
+            --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --font-mono: 'Courier New', Courier, monospace;
+            --font-title: 'Nosifer', display;
+            --font-ui: 'Teko', sans-serif;
+            --font-journal: 'Crimson Pro', serif;
+            --font-tracker: 'Montserrat', sans-serif;
+            --transition-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --transition-bounce: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --smooth-curve: cubic-bezier(0.25, 1, 0.3, 1);
+        }
+
+        /* ==========================================================================
+           GLOBAL RESETS & BASE STYLES
+           ========================================================================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
+        ::selection { background: var(--arterial-spray); color: var(--pitch-black); text-shadow: none; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #331111; border-radius: 4px; transition: background 0.3s ease; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--entity-red); }
+
+        body, html {
+            width: 100%; max-width: 100vw; min-height: 100%; background-color: var(--bg-dark);
+            color: var(--text-light); font-family: var(--font-main); overflow-x: hidden; scroll-behavior: smooth;
+        }
+
+        .fog-overlay {
+            position: fixed; top: 0; left: 0; width: 200vw; height: 100vh;
+            background: transparent url('https://www.transparenttextures.com/patterns/stardust.png') repeat;
+            opacity: 0.12; animation: driftFog 60s linear infinite; pointer-events: none; z-index: -1; mix-blend-mode: screen;
+        }
+
+        .bg-gradient {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at 50% 10%, #2a0808 0%, var(--bg-dark) 60%); z-index: -2;
+        }
+
+        .beta-banner {
+            background: linear-gradient(90deg, rgba(211, 47, 47, 0) 0%, rgba(211, 47, 47, 0.2) 50%, rgba(211, 47, 47, 0) 100%);
+            color: var(--entity-red); text-align: center; padding: clamp(0.5rem, 2vw, 0.8rem);
+            font-size: clamp(0.7rem, 2vw, 0.85rem); letter-spacing: clamp(1px, 1vw, 3px);
+            text-transform: uppercase; font-weight: 800; border-bottom: 1px solid rgba(211, 47, 47, 0.4); animation: pulseBanner 2s infinite;
+        }
+
+        /* ==========================================================================
+           KEYFRAME ANIMATIONS
+           ========================================================================== */
+        @keyframes driftFog { 0% { transform: translateX(0); } 100% { transform: translateX(-50vw); } }
+        @keyframes pulseBanner { 0% { text-shadow: 0 0 5px var(--entity-red); } 50% { text-shadow: 0 0 15px var(--entity-red), 0 0 30px var(--entity-blood); } 100% { text-shadow: 0 0 5px var(--entity-red); } }
+        @keyframes glitchText {
+            0% { text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75), -0.025em -0.05em 0 rgba(0, 255, 0, 0.75), 0.025em 0.05em 0 rgba(0, 0, 255, 0.75); }
+            14% { text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75), -0.025em -0.05em 0 rgba(0, 255, 0, 0.75), 0.025em 0.05em 0 rgba(0, 0, 255, 0.75); }
+            15% { text-shadow: -0.05em -0.025em 0 rgba(255, 0, 0, 0.75), 0.025em 0.025em 0 rgba(0, 255, 0, 0.75), -0.05em -0.05em 0 rgba(0, 0, 255, 0.75); }
+            49% { text-shadow: -0.05em -0.025em 0 rgba(255, 0, 0, 0.75), 0.025em 0.025em 0 rgba(0, 255, 0, 0.75), -0.05em -0.05em 0 rgba(0, 0, 255, 0.75); }
+            50% { text-shadow: 0.025em 0.05em 0 rgba(255, 0, 0, 0.75), 0.05em 0 0 rgba(0, 255, 0, 0.75), 0 -0.05em 0 rgba(0, 0, 255, 0.75); }
+            99% { text-shadow: 0.025em 0.05em 0 rgba(255, 0, 0, 0.75), 0.05em 0 0 rgba(0, 255, 0, 0.75), 0 -0.05em 0 rgba(0, 0, 255, 0.75); }
+            100% { text-shadow: -0.025em 0 0 rgba(255, 0, 0, 0.75), -0.025em -0.025em 0 rgba(0, 255, 0, 0.75), -0.025em -0.05em 0 rgba(0, 0, 255, 0.75); }
+        }
+        @keyframes entityBreathe { 0% { box-shadow: 0 0 20px rgba(154, 3, 30, 0.2); border-color: rgba(211, 47, 47, 0.3); } 50% { box-shadow: 0 0 40px rgba(154, 3, 30, 0.6); border-color: rgba(211, 47, 47, 0.8); } 100% { box-shadow: 0 0 20px rgba(154, 3, 30, 0.2); border-color: rgba(211, 47, 47, 0.3); } }
+        @keyframes floatCard { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+        @keyframes pulseGold { 0% { box-shadow: 0 0 10px rgba(229,184,36,0.2); } 50% { box-shadow: 0 0 25px rgba(229,184,36,0.6); } 100% { box-shadow: 0 0 10px rgba(229,184,36,0.2); } }
+
+        /* ==========================================================================
+           NAVIGATION BAR
+           ========================================================================== */
+        .navbar {
+            position: sticky; top: 0; left: 0; width: 100%; min-height: 70px; height: auto; padding: 10px 15px;
+            display: flex; justify-content: center; align-items: center;
+            background: linear-gradient(180deg, rgba(0, 0, 0, .98) 0%, rgba(12, 0, 0, .92) 60%, rgba(22, 0, 0, .96) 100%);
+            backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+            border-bottom: 2px solid rgba(110, 25, 25, .7); z-index: 1000;
+            animation: organicHeartbeatBorder 4s ease-in-out infinite; box-shadow: 0 4px 18px rgba(0, 0, 0, .55);
+        }
+        .nav-links { display: flex; justify-content: center; align-items: center; gap: clamp(10px, 3vw, 42px); flex-wrap: wrap; margin: 0; padding: 5px 0; list-style: none; }
+        .navbar li a {
+            position: relative; display: inline-flex; align-items: center; justify-content: center; padding: clamp(5px, 1.5vw, 8px) clamp(10px, 2vw, 16px);
+            font-family: var(--font-ui, 'Segoe UI', sans-serif); font-size: clamp(0.85rem, 2.5vw, 1.15rem); font-weight: 700;
+            text-transform: uppercase; letter-spacing: clamp(1px, 1vw, 3px); text-decoration: none; color: var(--muted-bone, #888899);
+            transition: color .35s ease, text-shadow .35s ease, transform .35s ease; white-space: nowrap;
+        }
+        .navbar li a::before {
+            content: ""; position: absolute; left: 50%; top: 50%; width: 0%; height: 3px; background: var(--arterial-spray, #ff0505);
+            transform: translate(-50%, -50%) rotate(-4deg); opacity: 0; border-radius: 20px;
+            box-shadow: 0 0 10px var(--arterial-spray, #ff0505), 0 0 20px rgba(255, 30, 30, .5);
+            transition: width .45s cubic-bezier(.22, 1, .36, 1), opacity .3s ease;
+        }
+        .navbar li a:hover, .navbar li a.active { color: var(--bone-white, #ffffff); transform: translateY(-2px); text-shadow: 0 0 8px rgba(255, 255, 255, .3), 0 0 18px rgba(255, 40, 40, .7); }
+        .navbar li a:hover::before, .navbar li a.active::before { width: 110%; opacity: 1; }
+        .navbar li a:active { transform: scale(.96); }
+
+        @keyframes organicHeartbeatBorder {
+            0%, 100% { border-bottom-color: #4d1111; box-shadow: 0 4px 18px rgba(0, 0, 0, .55); }
+            10%, 50% { border-bottom-color: #ff2d2d; box-shadow: 0 4px 18px rgba(0, 0, 0, .55), 0 0 12px rgba(255, 40, 40, .35); }
+            20%, 60% { border-bottom-color: #6e1616; }
+        }
+
+        .auth-links { position: absolute; right: clamp(15px, 4vw, 40px); display: flex; align-items: center; gap: clamp(8px, 2vw, 15px); }
+        .auth-links a { transition: transform .3s ease, box-shadow .3s ease, opacity .3s ease; }
+        .auth-links a:hover { transform: translateY(-2px); box-shadow: 0 0 18px rgba(255, 45, 45, .45); }
+
+        @media(max-width: 800px) {
+            .auth-links { position: relative; right: 0; justify-content: center; width: 100%; margin-top: 10px; }
+            .navbar { flex-direction: column; padding-bottom: 15px; }
+        }
+
+        /* ==========================================================================
+           PREMIUM ADD-ON: ROLE TOGGLE
+           ========================================================================== */
+        .role-toggle-container { display: flex; justify-content: center; margin: 2.5rem auto 1rem auto; position: relative; z-index: 10; }
+        .role-toggle {
+            background: rgba(10, 5, 5, 0.85); border: 1px solid var(--glass-border); border-radius: 50px;
+            display: flex; position: relative; padding: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 15px rgba(255, 0, 0, 0.15); width: clamp(280px, 50vw, 400px);
+        }
+        .toggle-btn {
+            flex: 1; background: transparent; color: var(--text-muted); border: none; padding: 12px 20px; font-family: var(--font-ui);
+            font-size: clamp(1.1rem, 2.5vw, 1.4rem); font-weight: bold; letter-spacing: 2px; cursor: pointer; position: relative;
+            z-index: 2; transition: color 0.4s ease, text-shadow 0.4s ease; text-transform: uppercase; text-align: center;
+        }
+        .toggle-btn.active { color: #fff; text-shadow: 0 0 12px rgba(255, 255, 255, 0.8); }
+        .toggle-slider {
+            position: absolute; top: 5px; left: 5px; width: calc(50% - 5px); height: calc(100% - 10px);
+            background: linear-gradient(135deg, var(--entity-red), var(--dried-blood)); border-radius: 40px; transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            z-index: 1; box-shadow: var(--neon-glow);
+        }
+
+        /* ==========================================================================
+           CHALLENGE VIEW TOGGLING ANIMATION
+           ========================================================================== */
+        .challenge-realm { display: none; opacity: 0; transition: opacity 0.5s ease; }
+        .challenge-realm.active-realm { display: block; animation: realmFadeIn 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        @keyframes realmFadeIn {
+            0% { opacity: 0; transform: translateY(20px); filter: blur(5px); }
+            100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+
+        /* ==========================================================================
+           COMMON HERO & CONTAINER STYLES
+           ========================================================================== */
+        .entity-gauntlet-container { font-family: var(--font-mono); position: relative; line-height: 1.6; width: 100%; }
+        .descent-hero {
+            text-align: center; padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 5vw, 2rem);
+            background: radial-gradient(circle at center, rgba(30, 10, 10, 0.8) 0%, transparent 70%);
+            position: relative; z-index: 2; border-bottom: 2px solid var(--glass-border); border-top: 2px solid var(--glass-border); margin-bottom: clamp(2rem, 5vw, 3rem);
+        }
+        .descent-hero p.quote { font-size: clamp(1rem, 2.5vw, 1.2rem); font-style: italic; color: #aaa; letter-spacing: 1px; text-shadow: 0 0 5px rgba(0, 0, 0, 0.8); padding: 0 10px; }
+        
+        .open-tracker-btn {
+            background: linear-gradient(135deg, var(--dried-blood), #110000); color: var(--bone-white); border: 1px solid var(--arterial-spray);
+            padding: 15px 40px; font-family: var(--font-ui); font-size: 1.5rem; letter-spacing: 4px; text-transform: uppercase; font-weight: bold;
+            box-shadow: 0 0 20px rgba(255, 5, 5, 0.4); border-radius: 4px; transition: all 0.3s var(--smooth-curve); margin: 20px 0; position: relative; z-index: 100; cursor: pointer; display: inline-block;
+        }
+        .open-tracker-btn:hover { transform: translateY(-5px) scale(1.05); background: linear-gradient(135deg, var(--arterial-spray), var(--dried-blood)); box-shadow: 0 10px 40px rgba(255, 5, 5, 0.8); color: white; }
+
+        .descent-section {
+            padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 5vw, 2rem); max-width: 1200px; width: 95%; margin: 0 auto clamp(2rem, 5vw, 3rem) auto;
+            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; backdrop-filter: blur(10px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6); position: relative; z-index: 2;
+        }
+        .section-header { color: var(--entity-red); font-size: clamp(1.8rem, 5vw, 2.5rem); text-transform: uppercase; letter-spacing: 3px; border-left: 6px solid var(--entity-red); padding-left: clamp(10px, 3vw, 20px); margin-bottom: 1.5rem; text-shadow: var(--neon-glow); }
+        .section-desc { font-size: clamp(1rem, 2.5vw, 1.1rem); color: var(--text-muted); margin-bottom: clamp(2rem, 5vw, 3rem); line-height: 1.8; }
+
+        /* ==========================================================================
+           KILLER SPECIFIC STYLES (ACCORDIONS, ALTAR, ASCENSION)
+           ========================================================================== */
+        .perk-accordion-wrapper { display: flex; flex-direction: column; gap: 15px; }
+        .perk-accordion { background: rgba(10, 10, 15, 0.8); border: 1px solid #333; border-radius: 8px; overflow: hidden; transition: var(--transition-smooth); }
+        .perk-accordion:hover { border-color: var(--entity-red); box-shadow: 0 0 15px rgba(211, 47, 47, 0.2); }
+        .accordion-header { padding: clamp(15px, 4vw, 20px) clamp(15px, 4vw, 30px); display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: linear-gradient(90deg, rgba(20, 20, 30, 1) 0%, rgba(10, 10, 15, 1) 100%); user-select: none; transition: var(--transition-smooth); }
+        .accordion-header h4 { font-size: clamp(1.1rem, 3vw, 1.4rem); color: #fff; letter-spacing: 2px; text-transform: uppercase; display: flex; align-items: center; gap: 15px; }
+        .accordion-header h4::before { content: ''; display: inline-block; width: clamp(8px, 2vw, 12px); height: clamp(8px, 2vw, 12px); background: var(--entity-red); border-radius: 50%; box-shadow: 0 0 10px var(--entity-red); }
+        .accordion-icon { font-size: clamp(1.2rem, 3vw, 1.5rem); color: var(--entity-red); transition: transform 0.4s ease; }
+        .perk-accordion.active .accordion-icon { transform: rotate(180deg); }
+        .perk-accordion.active .accordion-header { border-bottom: 1px solid var(--glass-border); }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.6s cubic-bezier(0.25, 1, 0.5, 1); background: #08080a; }
+        .perk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: clamp(10px, 3vw, 15px); padding: clamp(15px, 4vw, 30px); }
+        .perk-item { background: #111116; border: 1px dashed #444; padding: 12px 15px; border-radius: 6px; font-size: clamp(0.85rem, 2vw, 0.95rem); color: #ccc; text-align: center; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; min-height: 60px; }
+        .perk-item:hover { border-color: var(--entity-red); background: rgba(211, 47, 47, 0.1); color: #fff; transform: scale(1.05); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); cursor: default; }
+
+        .descent-altar { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: clamp(20px, 5vw, 60px); margin: clamp(2rem, 6vw, 4rem) 0; padding: clamp(20px, 5vw, 40px) 0; position: relative; }
+        .descent-altar::before { content: ''; position: absolute; top: 50%; left: 10%; right: 10%; height: 2px; background: linear-gradient(90deg, transparent, var(--entity-red), transparent); z-index: 0; opacity: 0.5; }
+        .altar-slot { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: clamp(10px, 3vw, 20px); }
+        .perk-diamond { width: clamp(60px, 15vw, 80px); height: clamp(60px, 15vw, 80px); background: linear-gradient(135deg, #222 0%, #0a0a0a 100%); border: 2px solid #555; transform: rotate(45deg); display: flex; justify-content: center; align-items: center; transition: var(--transition-bounce); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.8); position: relative; }
+        .perk-diamond span { transform: rotate(-45deg); font-weight: bold; color: #aaa; font-size: clamp(1rem, 2.5vw, 1.2rem); font-family: var(--font-main); }
+        .slot-label { color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; font-size: clamp(0.75rem, 2vw, 0.85rem); font-weight: bold; transition: var(--transition-smooth); }
+        .altar-slot.consumed .perk-diamond { background: var(--entity-blood); border-color: #ff0000; box-shadow: 0 0 30px var(--entity-red), inset 0 0 20px #000; transform: rotate(45deg) scale(0.8); animation: shake 0.5s ease-in-out; }
+        .altar-slot.consumed .perk-diamond span { color: #000; text-shadow: none; }
+        .altar-slot.consumed .slot-label { color: var(--entity-red); text-shadow: 0 0 10px var(--entity-red); }
+        @keyframes shake { 0%, 100% { transform: rotate(45deg) scale(0.8) translate(0, 0); } 25% { transform: rotate(45deg) scale(0.8) translate(5px, 5px); } 50% { transform: rotate(45deg) scale(0.8) translate(-5px, -5px); } 75% { transform: rotate(45deg) scale(0.8) translate(5px, -5px); } }
+
+        .ascension-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(15px, 4vw, 20px); }
+        .ascension-card { background: rgba(20, 20, 25, 0.8); border: 1px solid #333; padding: clamp(20px, 5vw, 30px); border-radius: 12px; text-align: center; transition: var(--transition-smooth); position: relative; overflow: hidden; animation: floatCard 6s infinite ease-in-out; }
+        .ascension-card:nth-child(2) { animation-delay: 1.5s; } .ascension-card:nth-child(3) { animation-delay: 3s; } .ascension-card:nth-child(4) { animation-delay: 4.5s; }
+        .ascension-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(229, 184, 36, 0.1) 0%, transparent 100%); opacity: 0; transition: var(--transition-smooth); pointer-events: none; }
+        .ascension-card:hover { border-color: var(--gold-ascension); transform: translateY(-15px) scale(1.02); box-shadow: 0 15px 30px rgba(229, 184, 36, 0.15); }
+        .ascension-card:hover::after { opacity: 1; }
+        .tier-num { font-size: clamp(2.5rem, 6vw, 3rem); color: var(--gold-ascension); font-weight: 900; opacity: 0.3; position: absolute; top: -10px; right: 10px; }
+        .ascension-card h4 { font-size: clamp(1.1rem, 3vw, 1.3rem); color: #fff; margin-bottom: 15px; position: relative; z-index: 1; font-family: var(--font-main); }
+        .ascension-card p { color: var(--text-muted); font-size: clamp(0.85rem, 2vw, 0.95rem); position: relative; z-index: 1; }
+
+        .challenge-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: clamp(1.5rem, 4vw, 2.5rem); width: 95%; max-width: 1200px; margin: 0 auto; padding-bottom: 4rem; }
+        .challenge-card { background: linear-gradient(145deg, #1a1a24 0%, #0d0d12 100%); border: 1px solid #333; border-radius: 12px; padding: clamp(1.5rem, 5vw, 2.5rem); cursor: pointer; transition: var(--transition-bounce); position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+        .challenge-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--entity-red); transform: scaleX(0); transition: transform 0.4s ease; transform-origin: left; }
+        .challenge-card:hover { transform: translateY(-10px); border-color: var(--entity-red); box-shadow: var(--neon-glow); animation: entityBreathe 3s infinite; }
+        .challenge-card:hover::before { transform: scaleX(1); }
+        .card-type { font-size: clamp(0.75rem, 2vw, 0.85rem); text-transform: uppercase; color: var(--entity-red); letter-spacing: 2px; margin-bottom: 1rem; font-weight: bold; font-family: var(--font-main); }
+        .card-title { font-size: clamp(1.4rem, 4vw, 1.8rem); color: #fff; margin-bottom: 1rem; font-family: var(--font-main); }
+        .realm-section-title { text-align: center; font-family: var(--font-ui); color: var(--text-light); font-size: clamp(2rem, 5vw, 3.5rem); text-transform: uppercase; letter-spacing: 4px; margin: 3rem auto 2rem auto; text-shadow: 0 0 15px rgba(211,47,47,0.5); border-bottom: 2px solid var(--glass-border); padding-bottom: 10px; width: 90%; max-width: 1200px; }
+
+        /* ==========================================================================
+           SURVIVOR ROULETTE SPECIFIC STYLES
+           ========================================================================== */
+        .rules-wrapper { display: flex; flex-direction: column; gap: 2.5rem; margin-bottom: 3rem; }
+        .rule-card {
+            background: var(--glass-bg); border-left: 4px solid var(--entity-red);
+            border-right: 1px solid rgba(255,255,255,0.05); border-top: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.05); padding: 2.5rem; border-radius: 4px 12px 12px 4px;
+            backdrop-filter: blur(12px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); transition: var(--transition-smooth);
+            display: flex; flex-direction: column;
+        }
+        .rule-card:hover { transform: translateX(10px); border-left-color: var(--entity-blood); }
+        .rule-card.gold-tier { border-left-color: var(--gold-ascension); }
+        .rule-card.gold-tier:hover { border-left-color: #fff; }
+        .rule-header { display: flex; align-items: center; gap: 15px; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; }
+        .rule-number { font-family: var(--font-mono); font-size: 1.8rem; font-weight: bold; color: var(--entity-red); text-shadow: var(--neon-glow); }
+        .rule-card.gold-tier .rule-number { color: var(--gold-ascension); text-shadow: var(--gold-glow); }
+        .rule-title { font-size: 1.6rem; color: #fff; text-transform: uppercase; letter-spacing: 2px; }
+        .rule-content p { font-size: 1.1rem; line-height: 1.8; color: var(--text-muted); margin-bottom: 1rem; }
+        .rule-content strong { color: #fff; }
+        
+        .highlight-box { background: rgba(0,0,0,0.4); padding: 1.5rem; border-radius: 8px; margin-top: 1.5rem; border: 1px dashed rgba(255,255,255,0.2); }
+        .highlight-box h4 { color: var(--entity-red); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px; }
+        .rule-card.gold-tier .highlight-box h4 { color: var(--gold-ascension); }
+        
+        .win-table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: rgba(0,0,0,0.3); border-radius: 8px; overflow: hidden; }
+        .win-table th, .win-table td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .win-table th { background: rgba(211, 47, 47, 0.2); color: #fff; }
+        
+        .controls-bar { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-bottom: 2rem; padding: 1rem; background: rgba(20, 10, 10, 0.8); border-radius: 8px; border: 1px solid var(--glass-border); }
+        .custom-select { background: #111; color: #fff; border: 1px solid var(--entity-red); padding: 12px 20px; font-size: 1.1rem; border-radius: 4px; font-family: var(--font-main); outline: none; cursor: pointer; box-shadow: inset 0 0 10px rgba(0,0,0,0.8); }
+        .inventory-btn { background: transparent; color: #ccc; border: 1px dashed var(--entity-red); padding: 12px 20px; font-size: 1.1rem; border-radius: 4px; cursor: pointer; transition: var(--transition-smooth); }
+        .inventory-btn:hover { background: rgba(211, 47, 47, 0.1); color: #fff; border-style: solid; }
+        
+        .randomizer-section { background: linear-gradient(180deg, #100a0a 0%, #050508 100%); border: 1px solid var(--glass-border); border-radius: 16px; padding: 4rem 2rem; text-align: center; box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 30px 60px rgba(0,0,0,0.9); position: relative; overflow: hidden; transition: var(--transition-smooth); }
+        .randomizer-section.golden-active { border-color: var(--gold-ascension); box-shadow: inset 0 0 50px rgba(229, 184, 36, 0.1), 0 30px 60px rgba(0,0,0,0.9); }
+        .randomizer-section::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--entity-red); box-shadow: var(--neon-glow); transition: var(--transition-smooth); }
+        .randomizer-section.golden-active::before { background: var(--gold-ascension); box-shadow: var(--gold-glow); }
+        
+        .spin-btn { background: linear-gradient(45deg, #7a0000 0%, #d32f2f 100%); color: #fff; border: 2px solid #ff4d4d; padding: 1.2rem 3rem; font-size: 1.3rem; font-weight: bold; text-transform: uppercase; letter-spacing: 4px; border-radius: 4px; cursor: pointer; transition: var(--transition-bounce); box-shadow: 0 10px 20px rgba(0,0,0,0.5), 0 0 15px rgba(211, 47, 47, 0.4); margin-bottom: 2rem; position: relative; overflow: hidden; z-index: 1; }
+        .spin-btn::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); transition: all 0.5s ease; z-index: -1; }
+        .spin-btn:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 15px 25px rgba(0,0,0,0.6), 0 0 30px rgba(211, 47, 47, 0.8); border-color: #fff; }
+        .spin-btn:hover::after { left: 100%; }
+        .spin-btn:active { transform: scale(0.95); }
+        
+        .golden-banner { display: none; background: rgba(229, 184, 36, 0.15); border: 1px solid var(--gold-ascension); color: var(--gold-ascension); padding: 1rem; margin: 0 auto 2rem auto; max-width: 800px; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; animation: pulseGold 2s infinite; }
+        
+        .perk-display-area { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 3.5rem 2.5rem; min-height: 320px; padding: 2rem 1rem; }
+        .perk-card-container { display: flex; flex-direction: column; align-items: center; width: 120px; opacity: 0; transform: translateY(30px); transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .perk-card-container.revealed { opacity: 1; transform: translateY(0); }
+        .perk-node { position: relative; width: 85px; height: 85px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
+        .rhombus-outer { width: 75px; height: 75px; background: linear-gradient(135deg, #2a2a35 0%, #0d0d12 100%); border: 2px solid #555; transform: rotate(45deg); position: absolute; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.6); transition: var(--transition-bounce); display: flex; justify-content: center; align-items: center; cursor: pointer; overflow: hidden; }
+        .perk-card-container:hover .rhombus-outer { border-color: var(--entity-red); box-shadow: inset 0 0 20px rgba(211, 47, 47, 0.4), 0 0 25px rgba(211, 47, 47, 0.7); transform: rotate(45deg) scale(1.12); z-index: 10; }
+        .randomizer-section.golden-active .perk-card-container:hover .rhombus-outer { border-color: var(--gold-ascension); box-shadow: inset 0 0 20px rgba(229, 184, 36, 0.4), 0 0 25px rgba(229, 184, 36, 0.7); }
+        .rhombus-inner-img { width: 135%; height: 135%; object-fit: contain; transform: rotate(-45deg); filter: drop-shadow(0px 0px 4px rgba(0,0,0,0.8)); pointer-events: none; transition: filter 0.3s ease; }
+        .perk-card-container:hover .rhombus-inner-img { filter: drop-shadow(0px 0px 8px rgba(211, 47, 47, 0.9)) brightness(1.25); }
+        .perk-fallback-badge { position: absolute; transform: rotate(-45deg); color: var(--gold-ascension); font-family: var(--font-mono); font-weight: 900; font-size: 0.85rem; letter-spacing: 1px; text-align: center; pointer-events: none; }
+        .perk-name-label { color: #d0d0dd; font-family: var(--font-main); font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; text-align: center; line-height: 1.3; width: 100%; word-wrap: break-word; text-shadow: 0 2px 4px rgba(0,0,0,0.9); margin-top: 85px; transition: var(--transition-smooth); }
+        .perk-card-container:hover .perk-name-label { color: #ffffff; text-shadow: 0 0 10px var(--entity-red); }
+
+        /* ==========================================================================
+           MODALS (INFO, INVENTORY, IFRAMES)
+           ========================================================================== */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(12px); display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: var(--transition-smooth); z-index: 2000; }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        .modal-content { background: linear-gradient(180deg, #15151a 0%, #050508 100%); border: 1px solid var(--glass-border); border-radius: 16px; width: 95%; max-width: 850px; padding: clamp(1.5rem, 5vw, 3rem); position: relative; transform: scale(0.95) translateY(20px); transition: var(--transition-bounce); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(211, 47, 47, 0.1); max-height: 90vh; overflow-y: auto; font-family: var(--font-journal); }
+        .modal-overlay.active .modal-content { transform: scale(1) translateY(0); }
+        .close-btn { position: absolute; top: clamp(1rem, 3vw, 1.5rem); right: clamp(1.5rem, 4vw, 2rem); font-size: clamp(2rem, 5vw, 2.5rem); color: #666; cursor: pointer; transition: color 0.2s; line-height: 1; z-index: 10;}
+        .close-btn:hover { color: var(--entity-red); text-shadow: 0 0 10px red; }
+
+        /* Tooltip */
+        .custom-tooltip { position: fixed; background: rgba(10, 10, 15, 0.95); border: 1px solid var(--entity-red); border-radius: 8px; width: 320px; padding: 1.5rem; pointer-events: none; opacity: 0; z-index: 9999; box-shadow: 0 15px 35px rgba(0,0,0,0.9), inset 0 0 15px rgba(211, 47, 47, 0.2); backdrop-filter: blur(12px); transform: scale(0.95) translateY(10px); transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; gap: 10px; font-family: var(--font-main); }
+        .custom-tooltip.visible { opacity: 1; transform: scale(1) translateY(0); }
+        .tt-header { border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .tt-title { color: #fff; font-size: 1.2rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .tt-char { color: var(--entity-red); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; }
+        .tt-effect { color: #ccc; font-size: 0.9rem; line-height: 1.5; margin-top: 5px; }
+        .tt-effect strong { color: #fff; }
+
+        /* Inventory Content Elements */
+        .inventory-body { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;}
+        .char-checkbox-label { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 4px; cursor: pointer; border: 1px solid transparent; transition: 0.2s; font-family: var(--font-main); color: var(--text-light); }
+        .char-checkbox-label:hover { background: rgba(255,255,255,0.08); border-color: #555; }
+        .char-checkbox-label input[type="checkbox"] { appearance: none; width: 18px; height: 18px; background: #222; border: 1px solid #555; border-radius: 3px; cursor: pointer; position: relative; }
+        .char-checkbox-label input[type="checkbox"]:checked { background: var(--entity-red); border-color: var(--entity-red); }
+        .char-checkbox-label input[type="checkbox"]:checked::after { content: 'X'; position: absolute; color: #fff; font-size: 12px; font-weight: bold; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .save-btn { background: var(--entity-red); color: #fff; border: none; padding: 10px 24px; font-size: 1.1rem; font-weight: bold; border-radius: 4px; cursor: pointer; text-transform: uppercase; margin-top: 20px; float: right; font-family: var(--font-main); }
+        .save-btn:hover { background: var(--entity-blood); }
+
+        /* ==========================================================================
+           IFRAME POPUPS (KILLER & ROULETTE DASHBOARDS)
+           ========================================================================== */
+        .tracker-popup {
+            position: fixed; top: 90px; right: 20px; width: 90vw; max-width: 1100px; height: 80vh;
+            background: rgba(10, 2, 2, 0.95); border: 2px solid #3a0000; z-index: 5000; border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(255, 0, 0, 0.2);
+            display: none; flex-direction: column; transition: all 0.4s cubic-bezier(0.25, 1, 0.3, 1); overflow: hidden;
+        }
+        .tracker-popup.active { display: flex; animation: slideUpFade 0.5s ease-out; }
+        .tracker-popup.minimized { height: 60px !important; width: 350px !important; top: auto !important; bottom: 20px !important; cursor: pointer; }
+        
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 
 <body>
@@ -20,127 +364,88 @@
 
     <!-- Responsive Navbar -->
     <nav class="navbar">
-
         <ul class="nav-links">
             <li><a href="../index.html">Lobby</a></li>
             <li><a href="../pages/Randomizer.html">Randomizer</a></li>
             <li><a href="../pages/Challenges.html" class="active">Challenges</a></li>
             <li><a href="../pages/killers.html">Killer Wheel</a></li>
             <li><a href="../pages/CreatorsLounge.html">Creators</a></li>
-
         </ul>
         <div id="authContainer" class="auth-links">
-            <a href="../pages/login.html"
-                style="color: var(--text-light); text-decoration: none; font-weight: bold; font-size: 0.9rem; letter-spacing: 1px;">LOGIN</a>
-            <a href="../pages/register.html"
-                style="background: var(--entity-red); color: #fff; text-decoration: none; padding: 10px 24px; border-radius: 6px; font-weight: bold; font-size: 0.9rem; letter-spacing: 1px; box-shadow: 0 0 10px rgba(211,47,47,0.5);">REGISTER</a>
+            <a href="../pages/login.html" style="color: var(--text-light); text-decoration: none; font-weight: bold; font-size: 0.9rem; letter-spacing: 1px;">LOGIN</a>
+            <a href="../pages/register.html" style="background: var(--entity-red); color: #fff; text-decoration: none; padding: 10px 24px; border-radius: 6px; font-weight: bold; font-size: 0.9rem; letter-spacing: 1px; box-shadow: 0 0 10px rgba(211,47,47,0.5);">REGISTER</a>
         </div>
     </nav>
 
-    <!-- PREMIUM ADD-ON: ROLE TOGGLE -->
-    <div
-        style="display: flex; justify-content: center; margin: 2.5rem auto 1rem auto; position: relative; z-index: 10;">
-        <div
-            style="background: rgba(10, 5, 5, 0.85); border: 1px solid var(--glass-border); border-radius: 50px; display: flex; position: relative; padding: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 15px rgba(255, 0, 0, 0.15); width: clamp(280px, 50vw, 400px);">
-            <div class="toggle-slider"
-                style="position: absolute; top: 5px; left: 5px; width: calc(50% - 5px); height: calc(100% - 10px); background: linear-gradient(135deg, var(--entity-red), var(--entity-blood)); border-radius: 40px; transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1); z-index: 1; box-shadow: var(--neon-glow);">
-            </div>
-            <button class="toggle-btn active" onclick="switchRole('killer', this)"
-                style="flex: 1; background: transparent; color: #fff; border: none; padding: 12px 20px; font-family: var(--font-main); font-size: clamp(1.1rem, 2.5vw, 1.4rem); font-weight: bold; letter-spacing: 2px; cursor: pointer; position: relative; z-index: 2; transition: 0.4s; text-transform: uppercase; text-shadow: 0 0 12px rgba(255, 255, 255, 0.8);">KILLER</button>
-            <button class="toggle-btn" onclick="switchRole('survivor', this)"
-                style="flex: 1; background: transparent; color: var(--text-muted); border: none; padding: 12px 20px; font-family: var(--font-main); font-size: clamp(1.1rem, 2.5vw, 1.4rem); font-weight: bold; letter-spacing: 2px; cursor: pointer; position: relative; z-index: 2; transition: 0.4s; text-transform: uppercase;">SURVIVOR</button>
+    <!-- ==========================================================================
+         PREMIUM ADD-ON: ROLE TOGGLE
+         ========================================================================== -->
+    <div class="role-toggle-container">
+        <div class="role-toggle">
+            <div class="toggle-slider"></div>
+            <button class="toggle-btn active" onclick="switchRole('killer', this)">KILLER</button>
+            <button class="toggle-btn" onclick="switchRole('survivor', this)">SURVIVOR</button>
         </div>
     </div>
 
 
-    <!-- CHALLENGE VIEWS WRAPPER -->
+    <!-- ==========================================================================
+         CHALLENGE VIEWS WRAPPER
+         ========================================================================== -->
     <div id="challenge-views-wrapper">
 
-        <!-- ================= KILLER VIEW (DESCENT) ================= -->
-        <div id="view-killer" style="display: block;">
+        <!-- ==========================================================================
+             KILLER VIEW (DESCENT)
+             ========================================================================== -->
+        <div id="view-killer" class="challenge-realm active-realm">
             <section class="entity-gauntlet-container">
                 <!-- Hero Section -->
                 <div class="descent-hero">
                     <h1 class="glitch-text" data-text="THE ENTITY'S DESCENT">THE ENTITY'S DESCENT</h1>
-                    <h2
-                        style="color: #ccc; letter-spacing: 4px; font-size: 1.5rem; margin-bottom: 2rem; text-transform: uppercase;">
+                    <h2 style="color: #ccc; letter-spacing: 4px; font-size: 1.5rem; margin-bottom: 2rem; text-transform: uppercase;">
                         A Story of Survival and Sacrifice</h2>
-                    <p class="quote">"The Entity doesn't want you to be perfect. It just wants to see how much pain you
-                        can take."</p>
-                    <p style="margin-top: 1rem; color: #888; font-family: var(--font-mono);">Time to finish: 15–25 Hours
+                    <p class="quote">"The Entity doesn't want you to be perfect. It just wants to see how much pain you can take."</p>
+                    <p style="margin-top: 1rem; color: #888; font-family: var(--font-journal);">Time to finish: 15–25 Hours
                         (Over 30 Hours if you dare to try the hardest modes)</p>
 
-                    <button
-                        style="background: linear-gradient(135deg, var(--entity-blood), #110000); color: #fff; border: 1px solid var(--entity-red); padding: 15px 40px; font-family: var(--font-mono); font-size: 1.2rem; letter-spacing: 4px; text-transform: uppercase; font-weight: bold; box-shadow: 0 0 20px rgba(211, 47, 47, 0.4); border-radius: 4px; transition: all 0.3s cubic-bezier(0.25, 1, 0.3, 1); margin: 2rem auto; display: inline-block; cursor: pointer;"
-                        onclick="checkAuthAndOpenTracker()">Access Personal Tracker</button>
+                    <button class="open-tracker-btn" onclick="TrackerApp.checkAuthAndOpen()">Access Personal Tracker</button>
 
-                    <p style="color: #eee; font-size: 1.1rem; max-width: 800px; margin: 1rem auto; line-height: 1.6;">
-                        Welcome to the fog! This is a massive, long-form challenge where every single choice matters.
-                        Your
-                        ultimate goal? <strong>Win a game with every single Killer.</strong> But there is a twist: if
-                        you lose a
-                        match, the game isn't over. Instead, things just get darker and harder. Here is how your story
-                        unfolds.
+                    <p style="color: #eee; font-size: 1.1rem; max-width: 800px; margin: 1rem auto; line-height: 1.6; font-family: var(--font-journal);">
+                        Welcome to the fog! This is a massive, long-form challenge where every single choice matters. Your
+                        ultimate goal? <strong>Win a game with every single Killer.</strong> But there is a twist: if you lose a
+                        match, the game isn't over. Instead, things just get darker and harder. Here is how your story unfolds.
                     </p>
                 </div>
 
                 <!-- How to Play / Step 1 -->
                 <div class="descent-section">
                     <h3 class="section-header">Step 1: Choose Your Weapons</h3>
-                    <p class="section-desc">Before your Killer steps into the trial, you have to build their loadout.
-                        Think of
+                    <p class="section-desc">Before your Killer steps into the trial, you have to build their loadout. Think of
                         the perks in Dead by Daylight as 8 different "schools of magic" (we call them
-                        <strong>Disciplines</strong>). You are only allowed to pick <strong>four different
-                            schools</strong>. You
+                        <strong>Disciplines</strong>). You are only allowed to pick <strong>four different schools</strong>. You
                         cannot pick the same one twice! Once you have your four schools, choose exactly <strong>one
-                            perk</strong> from each.
-                    </p>
+                            perk</strong> from each.</p>
 
-                    <!-- Premium Accordion Data -->
                     <div class="perk-accordion-wrapper">
                         <!-- INFO -->
                         <div class="perk-accordion">
                             <div class="accordion-header" onclick="toggleAccordion(this)">
-                                <h4>INFO <span style="font-size:0.8rem; color:#888; font-weight:normal;">(Finding &
-                                        Tracking Survivors)</span></h4>
+                                <h4>INFO <span style="font-size:0.8rem; color:#888; font-weight:normal; font-family:var(--font-journal);">(Finding & Tracking Survivors)</span></h4>
                                 <span class="accordion-icon">▼</span>
                             </div>
                             <div class="accordion-content">
                                 <div class="perk-grid">
-                                    <div class="perk-item">A Nurse's Calling</div>
-                                    <div class="perk-item">Alien Instinct</div>
-                                    <div class="perk-item">Awakened Awareness</div>
-                                    <div class="perk-item">Barbecue & Chilli</div>
-                                    <div class="perk-item">Bitter Murmur</div>
-                                    <div class="perk-item">Darkness Revealed</div>
-                                    <div class="perk-item">Deathbound</div>
-                                    <div class="perk-item">Deerstalker</div>
-                                    <div class="perk-item">Discordance</div>
-                                    <div class="perk-item">Gearhead</div>
-                                    <div class="perk-item">Hoarder</div>
-                                    <div class="perk-item">Human Greed</div>
-                                    <div class="perk-item">I'm All Ears</div>
-                                    <div class="perk-item">Infectious Fright</div>
-                                    <div class="perk-item">Lethal Pursuer</div>
-                                    <div class="perk-item">Nemesis</div>
-                                    <div class="perk-item">Nowhere to Hide</div>
-                                    <div class="perk-item">Phantom Fear</div>
-                                    <div class="perk-item">Scourge Hook: Floods of Rage</div>
-                                    <div class="perk-item">Scourge Hook: Hangman's Trick</div>
-                                    <div class="perk-item">Scourge Hook: Jagged Compass</div>
-                                    <div class="perk-item">Shattered Hope</div>
-                                    <div class="perk-item">Spies from the Shadows</div>
-                                    <div class="perk-item">Stridor</div>
-                                    <div class="perk-item">Surveillance</div>
-                                    <div class="perk-item">THWACK!</div>
-                                    <div class="perk-item">Territorial Imperative</div>
-                                    <div class="perk-item">Thrilling Tremors</div>
-                                    <div class="perk-item">Tinkerer</div>
-                                    <div class="perk-item">Ultimate Weapon</div>
-                                    <div class="perk-item">Wandering Eye</div>
-                                    <div class="perk-item">Weave Attunement</div>
-                                    <div class="perk-item">Whispers</div>
-                                    <div class="perk-item">Zanshin Tactics</div>
+                                    <div class="perk-item">A Nurse's Calling</div><div class="perk-item">Alien Instinct</div><div class="perk-item">Awakened Awareness</div>
+                                    <div class="perk-item">Barbecue & Chilli</div><div class="perk-item">Bitter Murmur</div><div class="perk-item">Darkness Revealed</div>
+                                    <div class="perk-item">Deathbound</div><div class="perk-item">Deerstalker</div><div class="perk-item">Discordance</div>
+                                    <div class="perk-item">Gearhead</div><div class="perk-item">Hoarder</div><div class="perk-item">Human Greed</div>
+                                    <div class="perk-item">I'm All Ears</div><div class="perk-item">Infectious Fright</div><div class="perk-item">Lethal Pursuer</div>
+                                    <div class="perk-item">Nemesis</div><div class="perk-item">Nowhere to Hide</div><div class="perk-item">Phantom Fear</div>
+                                    <div class="perk-item">Scourge Hook: Floods of Rage</div><div class="perk-item">Scourge Hook: Hangman's Trick</div><div class="perk-item">Scourge Hook: Jagged Compass</div>
+                                    <div class="perk-item">Shattered Hope</div><div class="perk-item">Spies from the Shadows</div><div class="perk-item">Stridor</div>
+                                    <div class="perk-item">Surveillance</div><div class="perk-item">THWACK!</div><div class="perk-item">Territorial Imperative</div>
+                                    <div class="perk-item">Thrilling Tremors</div><div class="perk-item">Tinkerer</div><div class="perk-item">Ultimate Weapon</div>
+                                    <div class="perk-item">Wandering Eye</div><div class="perk-item">Weave Attunement</div><div class="perk-item">Whispers</div><div class="perk-item">Zanshin Tactics</div>
                                 </div>
                             </div>
                         </div>
@@ -148,28 +453,16 @@
                         <!-- CHASE -->
                         <div class="perk-accordion">
                             <div class="accordion-header" onclick="toggleAccordion(this)">
-                                <h4>CHASE <span style="font-size:0.8rem; color:#888; font-weight:normal;">(Stopping
-                                        Loops & Brutality)</span></h4>
+                                <h4>CHASE <span style="font-size:0.8rem; color:#888; font-weight:normal; font-family:var(--font-journal);">(Stopping Loops & Brutality)</span></h4>
                                 <span class="accordion-icon">▼</span>
                             </div>
                             <div class="accordion-content">
                                 <div class="perk-grid">
-                                    <div class="perk-item">All-Shaking Thunder</div>
-                                    <div class="perk-item">Bamboozle</div>
-                                    <div class="perk-item">Bloodhound</div>
-                                    <div class="perk-item">Brutal Strength</div>
-                                    <div class="perk-item">Coup de Grâce</div>
-                                    <div class="perk-item">Cruel Limits</div>
-                                    <div class="perk-item">Dark Arrogance</div>
-                                    <div class="perk-item">Dissolution</div>
-                                    <div class="perk-item">Enduring</div>
-                                    <div class="perk-item">Iron Grasp</div>
-                                    <div class="perk-item">Lightborn</div>
-                                    <div class="perk-item">Mad Grit</div>
-                                    <div class="perk-item">Predator</div>
-                                    <div class="perk-item">Spirit Fury</div>
-                                    <div class="perk-item">Superior Anatomy</div>
-                                    <div class="perk-item">Unrelenting</div>
+                                    <div class="perk-item">All-Shaking Thunder</div><div class="perk-item">Bamboozle</div><div class="perk-item">Bloodhound</div>
+                                    <div class="perk-item">Brutal Strength</div><div class="perk-item">Coup de Grâce</div><div class="perk-item">Cruel Limits</div>
+                                    <div class="perk-item">Dark Arrogance</div><div class="perk-item">Dissolution</div><div class="perk-item">Enduring</div>
+                                    <div class="perk-item">Iron Grasp</div><div class="perk-item">Lightborn</div><div class="perk-item">Mad Grit</div>
+                                    <div class="perk-item">Predator</div><div class="perk-item">Spirit Fury</div><div class="perk-item">Superior Anatomy</div><div class="perk-item">Unrelenting</div>
                                 </div>
                             </div>
                         </div>
@@ -177,28 +470,16 @@
                         <!-- SPEED -->
                         <div class="perk-accordion">
                             <div class="accordion-header" onclick="toggleAccordion(this)">
-                                <h4>SPEED <span style="font-size:0.8rem; color:#888; font-weight:normal;">(Moving Faster
-                                        & Haste)</span></h4>
+                                <h4>SPEED <span style="font-size:0.8rem; color:#888; font-weight:normal; font-family:var(--font-journal);">(Moving Faster & Haste)</span></h4>
                                 <span class="accordion-icon">▼</span>
                             </div>
                             <div class="accordion-content">
                                 <div class="perk-grid">
-                                    <div class="perk-item">Agitation</div>
-                                    <div class="perk-item">Batteries Included</div>
-                                    <div class="perk-item">Fire Up</div>
-                                    <div class="perk-item">Forever Entwined</div>
-                                    <div class="perk-item">Game Afoot</div>
-                                    <div class="perk-item">Help Wanted</div>
-                                    <div class="perk-item">Keep Them Waiting</div>
-                                    <div class="perk-item">Machine Learning</div>
-                                    <div class="perk-item">Play With Your Food</div>
-                                    <div class="perk-item">Rampage</div>
-                                    <div class="perk-item">Rapid Brutality</div>
-                                    <div class="perk-item">Save the Best for Last</div>
-                                    <div class="perk-item">Scourge Hook: Monstrous Shrine</div>
-                                    <div class="perk-item">See How They Run</div>
-                                    <div class="perk-item">Shadowborn</div>
-                                    <div class="perk-item">Unbound</div>
+                                    <div class="perk-item">Agitation</div><div class="perk-item">Batteries Included</div><div class="perk-item">Fire Up</div>
+                                    <div class="perk-item">Forever Entwined</div><div class="perk-item">Game Afoot</div><div class="perk-item">Help Wanted</div>
+                                    <div class="perk-item">Keep Them Waiting</div><div class="perk-item">Machine Learning</div><div class="perk-item">Play With Your Food</div>
+                                    <div class="perk-item">Rampage</div><div class="perk-item">Rapid Brutality</div><div class="perk-item">Save the Best for Last</div>
+                                    <div class="perk-item">Scourge Hook: Monstrous Shrine</div><div class="perk-item">See How They Run</div><div class="perk-item">Shadowborn</div><div class="perk-item">Unbound</div>
                                 </div>
                             </div>
                         </div>
@@ -206,45 +487,22 @@
                         <!-- SLOWDOWN -->
                         <div class="perk-accordion">
                             <div class="accordion-header" onclick="toggleAccordion(this)">
-                                <h4>SLOWDOWN <span style="font-size:0.8rem; color:#888; font-weight:normal;">(Stopping
-                                        Healing & Actions)</span></h4>
+                                <h4>SLOWDOWN <span style="font-size:0.8rem; color:#888; font-weight:normal; font-family:var(--font-journal);">(Stopping Healing & Actions)</span></h4>
                                 <span class="accordion-icon">▼</span>
                             </div>
                             <div class="accordion-content">
                                 <div class="perk-grid">
-                                    <div class="perk-item">Blood Echo</div>
-                                    <div class="perk-item">Blood Warden</div>
-                                    <div class="perk-item">Corrupt Intervention</div>
-                                    <div class="perk-item">Coulrophobia</div>
-                                    <div class="perk-item">Cull the Weak</div>
-                                    <div class="perk-item">Dead Man's Switch</div>
-                                    <div class="perk-item">Deadlock</div>
-                                    <div class="perk-item">Dominance</div>
-                                    <div class="perk-item">Dying Light</div>
-                                    <div class="perk-item">Forced Hesitation</div>
-                                    <div class="perk-item">Forced Penance</div>
-                                    <div class="perk-item">Franklin's Demise</div>
-                                    <div class="perk-item">Genetic Limits</div>
-                                    <div class="perk-item">Grim Embrace</div>
-                                    <div class="perk-item">Haywire</div>
-                                    <div class="perk-item">Hysteria</div>
-                                    <div class="perk-item">Knock Out</div>
-                                    <div class="perk-item">Languid Touch</div>
-                                    <div class="perk-item">Leverage</div>
-                                    <div class="perk-item">Mindbreaker</div>
-                                    <div class="perk-item">No Holds Barred</div>
-                                    <div class="perk-item">No Quarter</div>
-                                    <div class="perk-item">No Way Out</div>
-                                    <div class="perk-item">None Are Free</div>
-                                    <div class="perk-item">Overwhelming Presence</div>
-                                    <div class="perk-item">Remember Me</div>
-                                    <div class="perk-item">Scourge Hook: Gift of Pain</div>
-                                    <div class="perk-item">Scourge Hook: Weeping Wounds</div>
-                                    <div class="perk-item">Septic Touch</div>
-                                    <div class="perk-item">Sloppy Butcher</div>
-                                    <div class="perk-item">Terminus</div>
-                                    <div class="perk-item">Thanatophobia</div>
-                                    <div class="perk-item">Unnerving Presence</div>
+                                    <div class="perk-item">Blood Echo</div><div class="perk-item">Blood Warden</div><div class="perk-item">Corrupt Intervention</div>
+                                    <div class="perk-item">Coulrophobia</div><div class="perk-item">Cull the Weak</div><div class="perk-item">Dead Man's Switch</div>
+                                    <div class="perk-item">Deadlock</div><div class="perk-item">Dominance</div><div class="perk-item">Dying Light</div>
+                                    <div class="perk-item">Forced Hesitation</div><div class="perk-item">Forced Penance</div><div class="perk-item">Franklin's Demise</div>
+                                    <div class="perk-item">Genetic Limits</div><div class="perk-item">Grim Embrace</div><div class="perk-item">Haywire</div>
+                                    <div class="perk-item">Hysteria</div><div class="perk-item">Knock Out</div><div class="perk-item">Languid Touch</div>
+                                    <div class="perk-item">Leverage</div><div class="perk-item">Mindbreaker</div><div class="perk-item">No Holds Barred</div>
+                                    <div class="perk-item">No Quarter</div><div class="perk-item">No Way Out</div><div class="perk-item">None Are Free</div>
+                                    <div class="perk-item">Overwhelming Presence</div><div class="perk-item">Remember Me</div><div class="perk-item">Scourge Hook: Gift of Pain</div>
+                                    <div class="perk-item">Scourge Hook: Weeping Wounds</div><div class="perk-item">Septic Touch</div><div class="perk-item">Sloppy Butcher</div>
+                                    <div class="perk-item">Terminus</div><div class="perk-item">Thanatophobia</div><div class="perk-item">Unnerving Presence</div>
                                 </div>
                             </div>
                         </div>
@@ -252,22 +510,14 @@
                         <!-- GEN -->
                         <div class="perk-accordion">
                             <div class="accordion-header" onclick="toggleAccordion(this)">
-                                <h4>GEN <span style="font-size:0.8rem; color:#888; font-weight:normal;">(Blowing Up
-                                        Generators)</span></h4>
+                                <h4>GEN <span style="font-size:0.8rem; color:#888; font-weight:normal; font-family:var(--font-journal);">(Blowing Up Generators)</span></h4>
                                 <span class="accordion-icon">▼</span>
                             </div>
                             <div class="accordion-content">
                                 <div class="perk-grid">
-                                    <div class="perk-item">Call of Brine</div>
-                                    <div class="perk-item">Eruption</div>
-                                    <div class="perk-item">Merciless Storm</div>
-                                    <div class="perk-item">Oppression</div>
-                                    <div class="perk-item">Overcharge</div>
-                                    <div class="perk-item">Pop Goes the Weasel</div>
-                                    <div class="perk-item">Pain Resonance</div>
-                                    <div class="perk-item">Surge</div>
-                                    <div class="perk-item">Turn Back the Clock</div>
-                                    <div class="perk-item">Undone</div>
+                                    <div class="perk-item">Call of Brine</div><div class="perk-item">Eruption</div><div class="perk-item">Merciless Storm</div>
+                                    <div class="perk-item">Oppression</div><div class="perk-item">Overcharge</div><div class="perk-item">Pop Goes the Weasel</div>
+                                    <div class="perk-item">Pain Resonance</div><div class="perk-item">Surge</div><div class="perk-item">Turn Back the Clock</div><div class="perk-item">Undone</div>
                                 </div>
                             </div>
                         </div>
@@ -275,22 +525,14 @@
                         <!-- TERROR -->
                         <div class="perk-accordion">
                             <div class="accordion-header" onclick="toggleAccordion(this)">
-                                <h4>TERROR <span style="font-size:0.8rem; color:#888; font-weight:normal;">(Being Sneaky
-                                        & Scary)</span></h4>
+                                <h4>TERROR <span style="font-size:0.8rem; color:#888; font-weight:normal; font-family:var(--font-journal);">(Being Sneaky & Scary)</span></h4>
                                 <span class="accordion-icon">▼</span>
                             </div>
                             <div class="accordion-content">
                                 <div class="perk-grid">
-                                    <div class="perk-item">Beast of Prey</div>
-                                    <div class="perk-item">Dark Devotion</div>
-                                    <div class="perk-item">Distressing</div>
-                                    <div class="perk-item">Furtive Chase</div>
-                                    <div class="perk-item">Insidious</div>
-                                    <div class="perk-item">Monitor & Abuse</div>
-                                    <div class="perk-item">Secret Project</div>
-                                    <div class="perk-item">Silent Shadow</div>
-                                    <div class="perk-item">Trail of Torment</div>
-                                    <div class="perk-item">Unforeseen</div>
+                                    <div class="perk-item">Beast of Prey</div><div class="perk-item">Dark Devotion</div><div class="perk-item">Distressing</div>
+                                    <div class="perk-item">Furtive Chase</div><div class="perk-item">Insidious</div><div class="perk-item">Monitor & Abuse</div>
+                                    <div class="perk-item">Secret Project</div><div class="perk-item">Silent Shadow</div><div class="perk-item">Trail of Torment</div><div class="perk-item">Unforeseen</div>
                                 </div>
                             </div>
                         </div>
@@ -298,20 +540,14 @@
                         <!-- EXPOSE -->
                         <div class="perk-accordion">
                             <div class="accordion-header" onclick="toggleAccordion(this)">
-                                <h4>EXPOSE <span style="font-size:0.8rem; color:#888; font-weight:normal;">(One-Hit
-                                        Downs)</span></h4>
+                                <h4>EXPOSE <span style="font-size:0.8rem; color:#888; font-weight:normal; font-family:var(--font-journal);">(One-Hit Downs)</span></h4>
                                 <span class="accordion-icon">▼</span>
                             </div>
                             <div class="accordion-content">
                                 <div class="perk-grid">
-                                    <div class="perk-item">Dragon's Grip</div>
-                                    <div class="perk-item">Friends 'til the End</div>
-                                    <div class="perk-item">Hubris</div>
-                                    <div class="perk-item">Iron Maiden</div>
-                                    <div class="perk-item">Make Your Choice</div>
-                                    <div class="perk-item">Rancor</div>
-                                    <div class="perk-item">Ravenous</div>
-                                    <div class="perk-item">Starstruck</div>
+                                    <div class="perk-item">Dragon's Grip</div><div class="perk-item">Friends 'til the End</div><div class="perk-item">Hubris</div>
+                                    <div class="perk-item">Iron Maiden</div><div class="perk-item">Make Your Choice</div><div class="perk-item">Rancor</div>
+                                    <div class="perk-item">Ravenous</div><div class="perk-item">Starstruck</div>
                                 </div>
                             </div>
                         </div>
@@ -319,33 +555,18 @@
                         <!-- HEX -->
                         <div class="perk-accordion">
                             <div class="accordion-header" onclick="toggleAccordion(this)">
-                                <h4>HEX <span style="font-size:0.8rem; color:#888; font-weight:normal;">(Powerful
-                                        Totems, High Risk)</span></h4>
+                                <h4>HEX <span style="font-size:0.8rem; color:#888; font-weight:normal; font-family:var(--font-journal);">(Powerful Totems, High Risk)</span></h4>
                                 <span class="accordion-icon">▼</span>
                             </div>
                             <div class="accordion-content">
                                 <div class="perk-grid">
-                                    <div class="perk-item">Blood Favour</div>
-                                    <div class="perk-item">Crowd Control</div>
-                                    <div class="perk-item">Devour Hope</div>
-                                    <div class="perk-item">Face the Darkness</div>
-                                    <div class="perk-item">Fortune's Fool</div>
-                                    <div class="perk-item">Haunted Ground</div>
-                                    <div class="perk-item">Hive Mind</div>
-                                    <div class="perk-item">Huntress Lullaby</div>
-                                    <div class="perk-item">NOED</div>
-                                    <div class="perk-item">Nothing but Misery</div>
-                                    <div class="perk-item">Overture of Doom</div>
-                                    <div class="perk-item">Pentimento</div>
-                                    <div class="perk-item">Plaything</div>
-                                    <div class="perk-item">Retribution</div>
-                                    <div class="perk-item">Ruin</div>
-                                    <div class="perk-item">Scared to Death</div>
-                                    <div class="perk-item">Third Seal</div>
-                                    <div class="perk-item">Thrill of the Hunt</div>
-                                    <div class="perk-item">Two Can Play</div>
-                                    <div class="perk-item">Undying</div>
-                                    <div class="perk-item">Wretched Fate</div>
+                                    <div class="perk-item">Blood Favour</div><div class="perk-item">Crowd Control</div><div class="perk-item">Devour Hope</div>
+                                    <div class="perk-item">Face the Darkness</div><div class="perk-item">Fortune's Fool</div><div class="perk-item">Haunted Ground</div>
+                                    <div class="perk-item">Hive Mind</div><div class="perk-item">Huntress Lullaby</div><div class="perk-item">NOED</div>
+                                    <div class="perk-item">Nothing but Misery</div><div class="perk-item">Overture of Doom</div><div class="perk-item">Pentimento</div>
+                                    <div class="perk-item">Plaything</div><div class="perk-item">Retribution</div><div class="perk-item">Ruin</div>
+                                    <div class="perk-item">Scared to Death</div><div class="perk-item">Third Seal</div><div class="perk-item">Thrill of the Hunt</div>
+                                    <div class="perk-item">Two Can Play</div><div class="perk-item">Undying</div><div class="perk-item">Wretched Fate</div>
                                 </div>
                             </div>
                         </div>
@@ -355,13 +576,10 @@
                 <!-- Step 2: The Descent Mechanic (Looping Animation) -->
                 <div class="descent-section">
                     <h3 class="section-header">Step 2: The Downward Spiral</h3>
-                    <p class="section-desc">You start your first game feeling powerful with all 4 of your chosen perks.
-                        If you
+                    <p class="section-desc">You start your first game feeling powerful with all 4 of your chosen perks. If you
                         win, congratulations! That Killer is completely finished. But if you lose? You begin <strong>The
-                            Descent</strong>. The Entity demands a sacrifice. You must throw away one of your perks
-                        forever. You
-                        get to choose which one to lose, but you are now weaker. If you lose again, you lose another
-                        perk. And
+                            Descent</strong>. The Entity demands a sacrifice. You must throw away one of your perks forever. You
+                        get to choose which one to lose, but you are now weaker. If you lose again, you lose another perk. And
                         another.</p>
 
                     <div class="descent-altar" id="descentLoopContainer">
@@ -383,276 +601,209 @@
                         </div>
                     </div>
 
-                    <div
-                        style="background: rgba(0,0,0,0.5); padding: 20px; border-left: 4px solid var(--entity-red); border-radius: 4px; margin-top: 30px;">
-                        <h4
-                            style="color: #fff; margin-bottom: 10px; font-size: 1.2rem; font-family: var(--font-main); text-transform: uppercase;">
+                    <div style="background: rgba(0,0,0,0.5); padding: 20px; border-left: 4px solid var(--entity-red); border-radius: 4px; margin-top: 30px;">
+                        <h4 style="color: #fff; margin-bottom: 10px; font-size: 1.2rem; font-family: var(--font-ui); text-transform: uppercase;">
                             The Last Hope: The Perkless Lifeline</h4>
-                        <p style="color: #aaa; font-size: 0.95rem; line-height: 1.6;">What
-                            happens when you lose all your perks? The Entity gives you one final chance to prove
-                            yourself. You
-                            must play a game with <strong>no perks at all</strong>. <br><br>If you somehow survive and
-                            win this
-                            test, you get to climb back up! You earn back 1 perk and get to keep trying.<br><br>But if
-                            you lose
-                            this final test? The Entity gets angry. Those 4 perks you originally picked are now
-                            <strong>banned
-                                forever</strong> for that specific Killer. You have to start their story all over again
-                            by
-                            drafting 4 brand new perks.
-                        </p>
+                        <p style="color: #aaa; font-size: 0.95rem; line-height: 1.6; font-family: var(--font-journal);">What
+                            happens when you lose all your perks? The Entity gives you one final chance to prove yourself. You
+                            must play a game with <strong>no perks at all</strong>. <br><br>If you somehow survive and win this
+                            test, you get to climb back up! You earn back 1 perk and get to keep trying.<br><br>But if you lose
+                            this final test? The Entity gets angry. Those 4 perks you originally picked are now <strong>banned
+                                forever</strong> for that specific Killer. You have to start their story all over again by
+                            drafting 4 brand new perks.</p>
                     </div>
                 </div>
 
                 <!-- Ascension Tiers -->
                 <div class="descent-section">
                     <h3 class="section-header">The True Nightmare: Ascension Tiers</h3>
-                    <p class="section-desc">Did you manage to win a game with every single Killer? Amazing! But the
-                        story isn't
+                    <p class="section-desc">Did you manage to win a game with every single Killer? Amazing! But the story isn't
                         over. Now, you unlock the endgame. These are terrifying new rules that change everything.</p>
 
                     <div class="ascension-grid">
                         <div class="ascension-card">
                             <div class="tier-num">I</div>
                             <h4>Weakened Tools</h4>
-                            <p>You are no longer allowed to use strong items. Only the weakest Brown and Yellow add-ons
-                                are
+                            <p>You are no longer allowed to use strong items. Only the weakest Brown and Yellow add-ons are
                                 allowed.</p>
                         </div>
                         <div class="ascension-card">
                             <div class="tier-num">II</div>
                             <h4>The Entity's Choice</h4>
-                            <p>Before you even pick your perks, the Entity randomly bans two whole Disciplines. You have
-                                to make
+                            <p>Before you even pick your perks, the Entity randomly bans two whole Disciplines. You have to make
                                 do with what's left.</p>
                         </div>
                         <div class="ascension-card">
                             <div class="tier-num">III</div>
                             <h4>A Fast Fall</h4>
-                            <p>The punishment for losing is much faster. If you lose once, you drop straight down to 2
-                                perks.
+                            <p>The punishment for losing is much faster. If you lose once, you drop straight down to 2 perks.
                                 Lose again, and you are immediately at zero.</p>
                         </div>
                         <div class="ascension-card">
                             <div class="tier-num">IV</div>
                             <h4>Perfect or Nothing</h4>
-                            <p>A normal win isn't good enough anymore. If even one survivor escapes (through the gates
-                                or the
+                            <p>A normal win isn't good enough anymore. If even one survivor escapes (through the gates or the
                                 hatch), it counts as a loss. You must kill all four.</p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <h2
-                style="text-align: center; font-size: clamp(2rem, 5vw, 3.5rem); text-transform: uppercase; letter-spacing: 4px; margin: 3rem auto 2rem auto; text-shadow: 0 0 15px rgba(211,47,47,0.5); border-bottom: 2px solid var(--glass-border); padding-bottom: 10px; width: 90%; max-width: 1200px;">
-                Other Killer Challenges</h2>
-            <div style="width: 95%; max-width: 1200px; margin: 0 auto; padding-bottom: 4rem;">
-                <p style="color:var(--text-muted); text-align:center; width:100%; font-style:italic;">More nightmares
-                    coming soon. The Entity is currently scheming...</p>
+            <h2 class="realm-section-title">Other Killer Challenges</h2>
+            <div class="challenge-grid" id="killer-grid">
+                <div class="challenge-card" onclick="openModal('warden')">
+                    <span class="card-type">Killer Campaign</span>
+                    <h3 class="card-title">The Entity's Warden</h3>
+                    <p style="color: var(--muted-bone); font-size: 0.95rem; font-family: var(--font-journal);">Total
+                        territorial dominance. Confine your prey.</p>
+                </div>
+                <div class="challenge-card" onclick="openModal('purifier')">
+                    <span class="card-type">Saboteur Campaign</span>
+                    <h3 class="card-title">The Hex Purifier</h3>
+                    <p style="color: var(--muted-bone); font-size: 0.95rem; font-family: var(--font-journal);">Cleanse the
+                        realm. Touch no generators until the end.</p>
+                </div>
+                <p style="color:var(--text-muted); text-align:center; width:100%; font-style:italic; grid-column: 1 / -1;">More nightmares coming soon. The Entity is currently scheming...</p>
             </div>
         </div>
 
-        <!-- ================= SURVIVOR VIEW (ROULETTE) ================= -->
-        <div id="view-survivor" style="display: none;">
-            
+        <!-- ==========================================================================
+             SURVIVOR VIEW (ROULETTE)
+             ========================================================================== -->
+        <div id="view-survivor" class="challenge-realm">
             <section class="entity-gauntlet-container">
-                <div class="descent-hero">
+                
+                <header class="descent-hero">
                     <h1 class="glitch-text" data-text="THE ENTITY'S ROULETTE">THE ENTITY'S ROULETTE</h1>
-                    <h2
-                        style="color: #ccc; letter-spacing: 4px; font-size: 1.5rem; margin-bottom: 2rem; text-transform: uppercase;">
-                        A 30-Hour Test of Greed, Survival, and Chance</h2>
-                    <p class="quote">"Spin the wheel. Risk your life. Escape or die trying."</p>
-                    <button
-                        style="background: linear-gradient(135deg, var(--entity-blood), #110000); color: #fff; border: 1px solid var(--entity-red); padding: 15px 40px; font-family: var(--font-mono); font-size: 1.2rem; letter-spacing: 4px; text-transform: uppercase; font-weight: bold; box-shadow: 0 0 20px rgba(211, 47, 47, 0.4); border-radius: 4px; transition: all 0.3s cubic-bezier(0.25, 1, 0.3, 1); margin: 2rem auto; display: inline-block; cursor: pointer;"
-                        onclick="checkAuthAndOpenRouletteTracker()">Access Personal Tracker</button>
-                </div>
-            </section>
+                    <p class="subtitle" style="margin-bottom: 2rem;">A 30-Hour Test of Greed, Survival, and Chance</p>
+                    <button class="open-tracker-btn" onclick="RouletteTrackerApp.checkAuthAndOpen()">Access Personal Tracker Dashboard</button>
+                </header>
 
-            <main class="survivor-container">
-
-                <!-- Dynamic Rules Section -->
-                <section class="rules-wrapper">
-
-                    <div class="rule-card">
-                        <div class="rule-header">
-                            <span class="rule-number">GOAL</span>
-                            <h2 class="rule-title">Survive or Perish</h2>
-                        </div>
+                <div class="descent-section">
+                    <!-- Rule 1: Goal -->
+                    <div class="rule-card" style="margin-bottom: 2rem;">
+                        <div class="rule-header"><span class="rule-number">GOAL</span><h2 class="rule-title">Survive or Perish</h2></div>
                         <div class="rule-content">
-                            <p>The goal is simple: your team must reach <strong>20,000 Safe Points</strong> to win
-                                the whole challenge.</p>
-                            <p>The rules adapt depending on how many friends are playing with you. There are no ties
-                                in this game. If a tie happens, the Killer wins, and you lose.</p>
-
+                            <p>The goal is simple: your team must reach <strong>20,000 Safe Points</strong> to win the whole challenge.</p>
+                            <p>The rules adapt depending on how many friends are playing with you. There are no ties in this game. If a tie happens, the Killer wins, and you lose.</p>
                             <table class="win-table">
-                                <tr>
-                                    <th>Party Size</th>
-                                    <th>Win Condition</th>
-                                    <th>Loss Condition</th>
-                                </tr>
-                                <tr>
-                                    <td><strong>Squad (4 Players)</strong></td>
-                                    <td>3 or 4 Survivors escape</td>
-                                    <td>0, 1, or 2 Survivors escape</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Trio (3 Players)</strong></td>
-                                    <td>2 or 3 Survivors escape</td>
-                                    <td>0 or 1 Survivor escapes</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Duo (2 Players)</strong></td>
-                                    <td>BOTH Survivors must escape</td>
-                                    <td>0 or 1 Survivor escapes</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Solo (1 Player)</strong></td>
-                                    <td>YOU must escape (Hatch or Gates)</td>
-                                    <td>You die (Random teammates do not matter)</td>
-                                </tr>
+                                <tr><th>Party Size</th><th>Win Condition</th><th>Loss Condition</th></tr>
+                                <tr><td><strong>Squad (4 Players)</strong></td><td>3 or 4 Survivors escape</td><td>0, 1, or 2 escape</td></tr>
+                                <tr><td><strong>Trio (3 Players)</strong></td><td>2 or 3 Survivors escape</td><td>0 or 1 escape</td></tr>
+                                <tr><td><strong>Duo (2 Players)</strong></td><td>BOTH Survivors escape</td><td>0 or 1 escape</td></tr>
+                                <tr><td><strong>Solo (1 Player)</strong></td><td>YOU must escape</td><td>You die</td></tr>
                             </table>
-
                             <div class="highlight-box">
                                 <h4>Example</h4>
-                                <p>If you are playing as a Duo (2 players), it is hardcore mode. Both of you must
-                                    survive the match to win. If one of you escapes, but the other dies trying to
-                                    save you, the entire match counts as a Loss.</p>
+                                <p>If you are playing as a Duo (2 players), it is hardcore mode. Both of you must survive the match to win. If one of you escapes, but the other dies trying to save you, the entire match counts as a Loss.</p>
                             </div>
                         </div>
                     </div>
-
-                    <div class="rule-card">
-                        <div class="rule-header">
-                            <span class="rule-number">01</span>
-                            <h2 class="rule-title">Perk Selection</h2>
-                        </div>
+                    
+                    <!-- Rule 2: Perks -->
+                    <div class="rule-card" style="margin-bottom: 2rem;">
+                        <div class="rule-header"><span class="rule-number">01</span><h2 class="rule-title">Perk Selection</h2></div>
                         <div class="rule-content">
-                            <p>Before you play, you must click the button below to spin for random perks. The system
-                                will give exactly <strong>4 perks for each person playing</strong>.</p>
-                            <p>Don't own all the characters in the game? No problem. Click the "Manage Perk
-                                Inventory" button to turn off the characters you do not have. The game will never
-                                give you a perk you cannot equip.</p>
+                            <p>Before you play, spin for random perks. The system will give exactly <strong>4 perks for each person playing</strong>.</p>
+                            <p>Use the "Manage Perk Inventory" button to turn off characters you do not own. The game will never give you a perk you cannot equip.</p>
                             <div class="highlight-box">
                                 <h4>Example</h4>
-                                <p>If you are playing as a Trio (3 players), the wheel will give you 12 random
-                                    perks. You and your friends look at all 12 perks and decide who gets which ones.
-                                    Player 1 could take all the healing perks, while Player 2 takes the running
-                                    perks. You build the team strategy together.</p>
+                                <p>If you are playing as a Trio (3 players), the wheel will give you 12 random perks. You and your friends look at all 12 perks and decide who gets which ones. Player 1 could take all the healing perks, while Player 2 takes the running perks. You build the team strategy together.</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="rule-card">
-                        <div class="rule-header">
-                            <span class="rule-number">02</span>
-                            <h2 class="rule-title">The Ban System: Ransom Jail</h2>
-                        </div>
+                    <!-- Rule 3: Bans -->
+                    <div class="rule-card" style="margin-bottom: 2rem;">
+                        <div class="rule-header"><span class="rule-number">02</span><h2 class="rule-title">The Ban System</h2></div>
                         <div class="rule-content">
-                            <p>If you lose a game, you do not just lose points. The perks your team used are locked
-                                away in <strong>Ransom Jail</strong>. You cannot use them again. As more perks go to
-                                jail, you have fewer options left.</p>
-                            <p>But you can try to rescue them! Before a game starts, tell your team you are doing a
-                                <strong>Jailbreak Match</strong>. You spin for new perks and play. If you win, all
-                                trapped perks are free. If you lose, you lose 1,000 points from your bank, and your
-                                new perks get locked in jail too.
-                            </p>
-                            <p><em>Changed Party Sizes? The jail remembers your locked perks. Even if your friends
-                                    log off, you can do a Solo Jailbreak match to free the perks for later!</em></p>
-                            <div class="highlight-box">
-                                <h4>Example</h4>
-                                <p>You lose a game while using Sprint Burst and Adrenaline. Those perks are now
-                                    locked in jail. Two games later, you decide to do a "Jailbreak Match" and you
-                                    win. Sprint Burst and Adrenaline are now free and can show up on the wheel
-                                    again.</p>
-                            </div>
+                            <p>If you lose, the perks your team used are locked away in <strong>Ransom Jail</strong>.</p>
+                            <p>To free them, play a <strong>Jailbreak Match</strong>. Win to free them, lose to lose 1,000 Safe Points and trap your new perks too.</p>
+                            <p><em>Changed Party Sizes? The jail remembers your locked perks. Even if your friends log off, you can do a Solo Jailbreak match to free the perks for later!</em></p>
                         </div>
                     </div>
 
-                    <div class="rule-card">
-                        <div class="rule-header">
-                            <span class="rule-number">03</span>
-                            <h2 class="rule-title">The Checkpoint System: Cash Out or Spin</h2>
-                        </div>
+                    <!-- Rule 4: Cash Out -->
+                    <div class="rule-card" style="margin-bottom: 2rem;">
+                        <div class="rule-header"><span class="rule-number">03</span><h2 class="rule-title">Cash Out or Spin</h2></div>
                         <div class="rule-content">
-                            <p>When you win, you earn points in a temporary 'Pot'. You have exactly 60 seconds to
-                                make a choice:</p>
-                            <p>Win 1: 200 pts | Win 2: 500 pts | Win 3: 1,000 pts | Win 4: 2,000 pts | Win 5: 4,000
-                                pts</p>
-                            <p><strong>Choice A: Cash Out (Safe).</strong> Save the points to your Safe Bank. They
-                                are yours forever, but your winning streak goes back to zero.</p>
-                            <p><strong>Choice B: Spin Again (Greed).</strong> Risk it! Leave the points in the Pot
-                                and play another match. Win, and the points grow huge. Lose, and you lose all Pot
-                                points, plus your perks go to jail.</p>
-                            <div class="highlight-box">
-                                <h4>Example</h4>
-                                <p>You win your first match and get 200 points. You choose "Spin Again". You win the
-                                    second match, so the Pot grows to 500 points. Now you choose "Cash Out". Those
-                                    500 points are added to your Safe Bank forever. Next time you win, you will
-                                    start back at 200 points.</p>
-                            </div>
+                            <p>When you win, you earn points in a temporary 'Pot'. You have exactly 60 seconds to make a choice:</p>
+                            <p>Win 1: 200 pts | Win 2: 500 pts | Win 3: 1,000 pts | Win 4: 2,000 pts | Win 5: 4,000 pts</p>
+                            <p><strong>Choice A: Cash Out.</strong> Save points to Safe Bank forever, reset streak to zero.</p>
+                            <p><strong>Choice B: Spin Again.</strong> Risk the Pot points in another match to grow the multiplier.</p>
                         </div>
                     </div>
 
+                    <!-- Rule 5: Gold -->
                     <div class="rule-card gold-tier">
-                        <div class="rule-header">
-                            <span class="rule-number">04</span>
-                            <h2 class="rule-title">The Golden Spin</h2>
-                        </div>
+                        <div class="rule-header"><span class="rule-number">04</span><h2 class="rule-title">The Golden Spin</h2></div>
                         <div class="rule-content">
-                            <p>Every time you spin for new perks, there is a small chance the screen will turn Gold.
-                                This is a <strong>Golden Spin!</strong></p>
-                            <p>When this happens, the points for your next match are multiplied by three. But there
-                                is a massive catch: <strong>You are not allowed to "Cash Out" after a Golden Spin
-                                    game.</strong> You must play at least one more game after it and risk all those
-                                points.</p>
-                            <div class="highlight-box">
-                                <h4>Example</h4>
-                                <p>You are on a 2-game win streak (500 points in the Pot). You spin the wheel and
-                                    get a Golden Spin! You win the match, earning you 3,000 points (1,000 points for
-                                    winning game 3, multiplied by 3). But you cannot save them yet! You MUST hit
-                                    "Spin Again" and risk all 3,000 points in the next game.</p>
-                            </div>
+                            <p>A <strong>Golden Spin!</strong> multiplies your next win points by three.</p>
+                            <p><strong>You are not allowed to "Cash Out" after a Golden Spin game.</strong> You must play one more game.</p>
                         </div>
                     </div>
-                </section>
+                </div>
 
-                <!-- Controls & Randomizer Section -->
-                <div class="controls-bar">
-                    <select id="party-size" class="custom-select">
+                <div class="controls-bar" style="max-width: 1200px; width: 95%; margin: 0 auto 2rem auto;">
+                    <select id="roulettePartySize" class="custom-select">
                         <option value="4">Squad (4 Players - 16 Perks)</option>
                         <option value="3">Trio (3 Players - 12 Perks)</option>
                         <option value="2">Duo (2 Players - 8 Perks)</option>
                         <option value="1">Solo (1 Player - 4 Perks)</option>
                     </select>
-
                     <button class="inventory-btn" onclick="openRouletteInventory()">Manage Perk Inventory</button>
                 </div>
 
-                <section class="randomizer-section" id="randomizerBox">
-                    <h2 style="font-size: 2.5rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">
-                        The Algorithm</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 2rem;">Summon the Entity to draft your team's
-                        loadout.</p>
+                <div class="descent-section randomizer-section" id="rouletteRandomizerBox">
+                    <h2 style="font-size: 2.5rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">The Algorithm</h2>
+                    <div class="golden-banner" id="rouletteGoldenBanner">WARNING: GOLDEN TICKET TRIGGERED! Points Tripled. Cash Out Forbidden!</div>
+                    <button class="spin-btn" id="rouletteSpinBtn" onclick="initiateRouletteSpin()">Roll the Entity's Dice</button>
+                    <div class="perk-display-area" id="roulettePerkDisplayArea"></div>
+                </div>
+            </section>
+            
+            <h2 class="realm-section-title">Other Survivor Challenges</h2>
+            <div class="challenge-grid" id="survivor-grid">
+                <div class="challenge-card" onclick="openModal('phantom')">
+                    <span class="card-type">Survivor Campaign</span>
+                    <h3 class="card-title">The Phantom of the Fog</h3>
+                    <p style="color: var(--muted-bone); font-size: 0.95rem; font-family: var(--font-journal);">Complete
+                        pacifism. Never trigger a chase sequence.</p>
+                </div>
+            </div>
+            
+            <!-- Tooltip & Modals for Survivor -->
+            <div id="s_custom-tooltip" class="custom-tooltip">
+                <div class="tt-header">
+                    <div class="tt-title" id="s_tt-title">Perk Name</div>
+                    <div class="tt-char" id="s_tt-char">Character Name</div>
+                </div>
+                <div class="tt-effect" id="s_tt-effect">Effect description</div>
+            </div>
 
-                    <div class="golden-banner" id="goldenBanner">
-                        WARNING: GOLDEN TICKET TRIGGERED! Points Tripled. Cash Out Forbidden!
+            <div class="modal-overlay" id="rouletteInventoryModal">
+                <div class="modal-content">
+                    <div class="modal-header" style="border-bottom: 1px solid #333; padding-bottom: 15px; display:flex; justify-content:space-between; align-items:center;">
+                        <h2 style="color: #fff; text-transform: uppercase; letter-spacing: 2px; font-size: 1.5rem; margin:0;">Survivor Inventory</h2>
+                        <span class="close-btn" style="position:static;" onclick="closeRouletteInventory()">&times;</span>
                     </div>
-
-                    <button class="spin-btn" id="spinBtn" onclick="initiateRouletteSpin()">Roll the Entity's
-                        Dice</button>
-
-                    <!-- Display Area for Rhombus Perks -->
-                    <div class="perk-display-area" id="perkDisplayArea">
-                        <!-- Perks render here -->
+                    <div style="padding: 10px 0; color: var(--text-muted); font-size: 0.9rem;">
+                        Uncheck the characters you DO NOT own. Their perks will be removed from the randomizer pool. "All" includes general non-teachable perks.
                     </div>
-                </section>
-            </main>
+                    <div class="inventory-body" id="rouletteInventoryCheckboxes"></div>
+                    <div style="border-top: 1px solid #333; margin-top: 15px; padding-top: 15px;">
+                        <button class="save-btn" onclick="closeRouletteInventory()">Save & Apply</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
 
-    <!-- CHALLENGE INFO MODAL POPUP (Killer) -->
+    <!-- ==========================================================================
+         KILLER MODALS AND TRACKER UI
+         ========================================================================== -->
+    <!-- CHALLENGE INFO MODAL POPUP (SHARED) -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal()">&times;</span>
@@ -662,41 +813,12 @@
         </div>
     </div>
 
-    <!-- Custom Floating Tooltip (Survivor) -->
-    <div id="custom-tooltip">
-        <div class="tt-header">
-            <div class="tt-title" id="tt-title">Perk Name</div>
-            <div class="tt-char" id="tt-char">Character Name</div>
-        </div>
-        <div class="tt-effect" id="tt-effect">Effect description</div>
-    </div>
-
-    <!-- Inventory Modal (Survivor) -->
-    <div class="modal-overlay" id="rouletteInventoryModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Survivor Inventory</h2>
-                <span class="close-btn" onclick="closeRouletteInventory()">&times;</span>
-            </div>
-            <div style="padding: 10px 1.5rem; color: var(--text-muted); font-size: 0.9rem; background: #1a1a1a;">
-                Uncheck the characters you DO NOT own. Their perks will be removed from the randomizer pool. "All"
-                includes general non-teachable perks.
-            </div>
-            <div class="modal-body inventory-body" id="inventoryCheckboxes">
-                <!-- Checkboxes inject here -->
-            </div>
-            <div class="modal-footer">
-                <button class="save-btn" onclick="closeRouletteInventory()">Save & Apply</button>
-            </div>
-        </div>
-    </div>
-
     <!-- ==========================================================================
          THE TRACKER WINDOWS (IFRAME POPUPS)
          ========================================================================== -->
     
     <!-- 1. KILLER TRACKER WINDOW -->
-    <div id="tracker-window" class="tracker-popup">
+    <div id="killer-tracker-popup" class="tracker-popup">
         <div style="height: 60px; background: linear-gradient(90deg, #2a0000, #000); border-bottom: 1px solid #ff0505; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; flex-shrink: 0;"
             onclick="TrackerApp.toggleMinimize(event)">
             <h3 style="color: #ffffff; font-family: 'Teko', sans-serif; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; margin: 0;">
@@ -706,13 +828,13 @@
                 <span onclick="TrackerApp.close(event)" style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer;">X</span>
             </div>
         </div>
-        <div style="flex: 1; overflow-y: auto; background: var(--bg-dark);">
+        <div style="flex: 1; overflow: hidden; background: var(--bg-dark);">
             <iframe id="killer-iframe" src="" style="width: 100%; height: 100%; border: none;"></iframe>
         </div>
     </div>
 
     <!-- 2. SURVIVOR ROULETTE DASHBOARD WINDOW -->
-    <div id="roulette-tracker-window" class="tracker-popup">
+    <div id="roulette-tracker-popup" class="tracker-popup">
         <div style="height: 60px; background: linear-gradient(90deg, #2a0000, #000); border-bottom: 1px solid #ff0505; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; flex-shrink: 0;"
             onclick="RouletteTrackerApp.toggleMinimize(event)">
             <h3 style="color: #ffffff; font-family: 'Teko', sans-serif; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; margin: 0;">
@@ -722,11 +844,10 @@
                 <span onclick="RouletteTrackerApp.close(event)" style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer;">X</span>
             </div>
         </div>
-        <div style="flex: 1; overflow-y: auto; background: var(--bg-dark);">
+        <div style="flex: 1; overflow: hidden; background: var(--bg-dark);">
             <iframe id="roulette-iframe" src="" style="width: 100%; height: 100%; border: none;"></iframe>
         </div>
     </div>
-
 
     <!-- JAVASCRIPT LOGIC -->
     <!-- 1. The Session Bouncer -->
@@ -736,6 +857,7 @@
     <script>
         // --- ADD-ON: PREMIUM TOGGLE LOGIC ---
         window.switchRole = function (role, btnElement) {
+            // Update Toggle Visuals (Text Color)
             document.querySelectorAll('.toggle-btn').forEach(btn => {
                 btn.classList.remove('active');
                 btn.style.color = "var(--text-muted)";
@@ -745,6 +867,7 @@
             btnElement.style.color = "#fff";
             btnElement.style.textShadow = "0 0 12px rgba(255, 255, 255, 0.8)";
 
+            // Move the background slider
             const slider = document.querySelector('.toggle-slider');
             if (role === 'killer') {
                 slider.style.transform = 'translateX(0)';
@@ -752,13 +875,19 @@
                 slider.style.transform = 'translateX(100%)';
             }
 
+            // Hide both views initially
             document.getElementById('view-killer').style.display = 'none';
+            document.getElementById('view-killer').classList.remove('active-realm');
             document.getElementById('view-survivor').style.display = 'none';
+            document.getElementById('view-survivor').classList.remove('active-realm');
 
+            // Show the correct view with a slight delay for the animation
             if (role === 'killer') {
                 document.getElementById('view-killer').style.display = 'block';
+                setTimeout(() => document.getElementById('view-killer').classList.add('active-realm'), 50);
             } else {
                 document.getElementById('view-survivor').style.display = 'block';
+                setTimeout(() => document.getElementById('view-survivor').classList.add('active-realm'), 50);
             }
         };
 
@@ -808,22 +937,22 @@
             window.startDescentLoop();
         }
 
-        const modal = document.getElementById('modalOverlay');
-        const modalBody = document.getElementById('modalBody');
-
-        window.closeModal = function () {
-            modal.classList.remove('active');
-        }
-    </script>
-
-    <!-- SURVIVOR (ROULETTE) & WINDOW CONTROLLER JAVASCRIPT LOGIC -->
-    <script>
-        // --- Killer Tracker Controller ---
+        // --- IFRAME TRACKER CONTROLLERS ---
         const TrackerApp = {
+            checkAuthAndOpen() {
+                const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+                if (isLoggedIn) {
+                    this.open();
+                } else {
+                    alert("The Entity requires your soul first. Please login or register to access the tracker.");
+                    window.location.href = '../pages/login.html';
+                }
+            },
             open() {
-                const win = document.getElementById('tracker-window');
+                const win = document.getElementById('killer-tracker-popup');
                 const iframe = document.getElementById('killer-iframe');
                 
+                // Loads dashboard.html only when opened to save resources
                 if (!iframe.src || iframe.src === window.location.href) {
                     iframe.src = 'dashboard.html'; 
                 }
@@ -833,20 +962,29 @@
             },
             close(e) {
                 if (e) e.stopPropagation();
-                document.getElementById('tracker-window').classList.remove('active');
+                document.getElementById('killer-tracker-popup').classList.remove('active');
             },
             toggleMinimize(e) {
                 if (e && e.target.innerText === 'X') return;
-                document.getElementById('tracker-window').classList.toggle('minimized');
+                document.getElementById('killer-tracker-popup').classList.toggle('minimized');
             }
         };
 
-        // --- Roulette Tracker Controller ---
         const RouletteTrackerApp = {
+            checkAuthAndOpen() {
+                const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+                if (isLoggedIn) {
+                    this.open();
+                } else {
+                    alert("The Entity requires your soul first. Please login or register to access the tracker.");
+                    window.location.href = '../pages/login.html';
+                }
+            },
             open() {
-                const win = document.getElementById('roulette-tracker-window');
+                const win = document.getElementById('roulette-tracker-popup');
                 const iframe = document.getElementById('roulette-iframe');
                 
+                // Loads roulette_dashboard.html only when opened to save resources
                 if (!iframe.src || iframe.src === window.location.href) {
                     iframe.src = 'roulette_dashboard.html'; 
                 }
@@ -856,35 +994,68 @@
             },
             close(e) {
                 if (e) e.stopPropagation();
-                document.getElementById('roulette-tracker-window').classList.remove('active');
+                document.getElementById('roulette-tracker-popup').classList.remove('active');
             },
             toggleMinimize(e) {
                 if (e && e.target.innerText === 'X') return;
-                document.getElementById('roulette-tracker-window').classList.toggle('minimized');
+                document.getElementById('roulette-tracker-popup').classList.toggle('minimized');
             }
         };
 
-        // --- Auth & Trigger Functions ---
-        window.checkAuthAndOpenTracker = function () {
-            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-            if (isLoggedIn) {
-                TrackerApp.open();
-            } else {
-                alert("The Entity requires your soul first. Please login or register to access the tracker.");
-                window.location.href = '../pages/login.html';
+        window.TrackerApp = TrackerApp;
+        window.RouletteTrackerApp = RouletteTrackerApp;
+
+        // --- MODAL DATA LOGIC ---
+        const challengeData = {
+            'phantom': {
+                title: "The Phantom of the Fog",
+                meta: "Survivor // Difficulty: Extreme // 10 wins only Not A Streak",
+                desc: "Imagine being a ghost in a horror anime. You aren't here to fight, and you definitely aren't here to run. You are here to vanish. Your ultimate goal is to escape and get 10 total wins under your belt. (Don't worry, it doesn't have to be a streak just 10 wins total!). But here is the massive catch: the Killer can never, ever know you exist. If the chase music starts playing even for a single second, your trial is immediately ruined and it counts as a loss. You have to creep through the tall grass, hold your breath while the killer walks right past you, and let your teammates take all the heat. You will rely heavily on your perks to hide your scratch marks, silence your grunts of pain, and keep your aura completely hidden. Play like a shadow.",
+                perks: ["Distortion", "Urban Evasion", "Calm Spirit", "Iron Will"]
+            },
+            'warden': {
+                title: "The Entity's Warden",
+                meta: "Killer // Difficulty: Hard // 10 wins only Not A Streak",
+                desc: "Think of yourself as the final boss waiting deep inside your castle. When the match starts, look around and pick one specific area of the map. It could be the big main building, or maybe the creepy killer shack. That spot is now your kingdom. Your goal is to secure 10 total victories, but you are absolutely forbidden from hooking anyone outside of your kingdom. If you knock a survivor down on the complete opposite side of the map, you have to throw them over your shoulder and carry them all the way back to your chosen zone. It turns the game into a desperate tug-of-war. Will they wiggle out before you reach your dungeon? Your perk build is designed entirely around moving incredibly fast while carrying bodies, ensuring nobody escapes your grasp once they enter your territory.",
+                perks: ["Agitation", "Iron Grasp", "Territorial Imperative", "Monstrous Shrine"]
+            },
+            'purifier': {
+                title: "The Hex Purifier",
+                meta: "Mixed // Difficulty: Insane // 10 wins only Not A Streak",
+                desc: "While your teammates are playing a normal game of Dead by Daylight, you are basically the magical support character on a secret side quest. You need 10 wins to complete this challenge, but you are not allowed to touch a single generator. Not even for one second! Your only true mission is to rid the map of dark magic. You must hunt down and crush all 5 bone totems hidden around the environment before the final generator pops. Since you aren't doing generators, you have to be the ultimate team player in other ways rescuing people from hooks, healing the injured, and cleansing totems as fast as humanly possible. Once the exit gates are finally powered by your team, your curse is lifted and you can help open the doors to escape.",
+                perks: ["Counterforce", "Small Game", "Plunderer's Instinct", "We'll Make It"]
             }
         };
 
-        function checkAuthAndOpenRouletteTracker() {
-            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-            if (isLoggedIn) {
-                RouletteTrackerApp.open();
-            } else {
-                alert("The Entity requires your soul first. Please login or register to access the tracker.");
-                window.location.href = '../pages/login.html';
-            }
+        const modal = document.getElementById('modalOverlay');
+        const modalBody = document.getElementById('modalBody');
+
+        window.openModal = function (challengeId) {
+            if(!challengeData[challengeId]) return;
+            const data = challengeData[challengeId];
+            modalBody.innerHTML = `
+                <h2 style="font-size: 2.5rem; color: #fff; margin-bottom: 0.5rem; font-family: var(--font-title); text-shadow: 0 0 10px rgba(211,47,47,0.8);">${data.title}</h2>
+                <div style="color: var(--arterial-spray); font-weight: bold; margin-bottom: 2rem; border-bottom: 1px solid #333; padding-bottom: 1rem; font-family: var(--font-ui); font-size: 1.2rem;">${data.meta}</div>
+                <p style="font-size: 1.1rem; color: #ccc; font-family: var(--font-journal);">${data.desc}</p>
+                <h4 style="margin-top: 2rem; color: var(--arterial-spray); font-size: 1.2rem; text-transform: uppercase; font-family: var(--font-ui);">Mandatory Build</h4>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
+                    ${data.perks.map(perk => `<div style="background: rgba(255,255,255,0.05); border: 1px dashed #555; padding: 1rem 1.5rem; border-radius: 6px; flex: 1; text-align: center; min-width: 150px; font-family: var(--font-tracker); font-weight: bold;">${perk}</div>`).join('')}
+                </div>
+            `;
+            modal.classList.add('active');
         }
 
+        window.closeModal = function () {
+            modal.classList.remove('active');
+        }
+
+        window.onclick = (e) => {
+            if (e.target == modal) window.closeModal();
+        }
+    </script>
+
+    <!-- SURVIVOR (ROULETTE) JAVASCRIPT LOGIC -->
+    <script>
         // --- Survivor Randomizer Logic ---
         const survivorRawPerkData = `
 A Place For Us|Kwon Tae-young|When finishing healing another Survivor, both gain the Elusive Status Effect.
@@ -1064,44 +1235,44 @@ Will to Live|All|After unhook, escape Killer's grasp if grabbed.
 Windows of Opportunity|Kate Denson|See Auras of all Pallets and Windows nearby.
 Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`;
 
-        const iconFilenames = [
-            "IconPerks_aceInTheHole.webp", "IconPerks_adrenaline.webp", "IconPerks_aftercare.webp", "IconPerks_alert.webp",
-            "IconPerks_anyMeansNecessary.webp", "IconPerks_appraisal.webp", "IconPerks_autodidact.webp", "IconPerks_babysitter.webp",
-            "IconPerks_backgroundPlayer.webp", "IconPerks_balancedLanding.webp", "IconPerks_bardicInspiration.webp", "IconPerks_betterThanNew.webp",
-            "IconPerks_betterTogether.webp", "IconPerks_biteTheBullet.webp", "IconPerks_blastMine.webp", "IconPerks_bloodPact.webp",
-            "IconPerks_bloodRush.webp", "IconPerks_boilOver.webp", "IconPerks_bond.webp", "IconPerks_boonCircleOfHealing.webp",
-            "IconPerks_boonDarkTheory.webp", "IconPerks_boonExponential.webp", "IconPerks_boonIllumination.webp", "IconPerks_boonShadowStep.webp",
-            "IconPerks_borrowedTime.webp", "IconPerks_botanyKnowledge.webp", "IconPerks_breakdown.webp", "IconPerks_breakout.webp",
-            "IconPerks_buckleUp.webp", "IconPerks_builtToLast.webp", "IconPerks_calmSpirit.webp", "IconPerks_camaraderie.webp",
-            "IconPerks_championOfLight.webp", "IconPerks_chemicalTrap.webp", "IconPerks_clairvoyance.webp", "IconPerks_cleanBreak.webp",
-            "IconPerks_correctiveAction.webp", "IconPerks_counterforce.webp", "IconPerks_cutLoose.webp", "IconPerks_danceWithMe.webp",
-            "IconPerks_darkSense.webp", "IconPerks_deadHard.webp", "IconPerks_deadline.webp", "IconPerks_deception.webp",
-            "IconPerks_decisiveStrike.webp", "IconPerks_dejaVu.webp", "IconPerks_deliverance.webp", "IconPerks_desperateMeasures.webp",
-            "IconPerks_detectivesHunch.webp", "IconPerks_distortion.webp", "IconPerks_diversion.webp", "IconPerks_dramaturgy.webp",
-            "IconPerks_empathicConnection.webp", "IconPerks_empathy.webp", "IconPerks_Exultation.webp", "IconPerks_EyesOfBelmont.webp",
-            "IconPerks_fastTrack.webp", "IconPerks_finesse.webp", "IconPerks_fixated.webp", "IconPerks_flashbang.webp",
-            "IconPerks_flipFlop.webp", "IconPerks_fogwise.webp", "IconPerks_forThePeople.webp", "IconPerks_friendlyCompetition.webp",
-            "IconPerks_hardened.webp", "IconPerks_headOn.webp", "IconPerks_hope.webp", "IconPerks_hyperfocus.webp",
-            "IconPerks_iconperksDejavu.webp", "IconPerks_innerFocus.webp", "IconPerks_innerStrength.webp", "IconPerks_invocationTreacherousCrows.webp",
-            "IconPerks_invocationWeavingSpiders.webp", "IconPerks_ironWill.webp", "IconPerks_kindred.webp", "IconPerks_leader.webp",
-            "IconPerks_leftBehind.webp", "IconPerks_lightFooted.webp", "IconPerks_lightweight.webp", "IconPerks_lithe.webp",
-            "IconPerks_lowProfile.webp", "IconPerks_luckyBreak.webp", "IconPerks_luckyStar.webp", "IconPerks_madeForThis.webp",
-            "IconPerks_mettleOfMan.webp", "IconPerks_mirroredIllusion.webp", "IconPerks_MomentOfGlory.webp", "IconPerks_noMither.webp",
-            "IconPerks_noOneLeftBehind.webp", "IconPerks_objectOfObsession.webp", "IconPerks_offTheRecord.webp", "IconPerks_openHanded.webp",
-            "IconPerks_overcome.webp", "IconPerks_overzealous.webp", "IconPerks_parentalGuidance.webp", "IconPerks_pharmacy.webp",
-            "IconPerks_plotTwist.webp", "IconPerks_plunderersInstinct.webp", "IconPerks_poised.webp", "IconPerks_potentialEnergy.webp",
-            "IconPerks_powerStruggle.webp", "IconPerks_premonition.webp", "IconPerks_proveThyself.webp", "IconPerks_quickGambit.webp",
-            "IconPerks_quick&Quiet.webp", "IconPerks_reactiveHealing.webp", "IconPerks_reassurance.webp", "IconPerks_redHerring.webp",
-            "IconPerks_repressedAlliance.webp", "IconPerks_residualManifest.webp", "IconPerks_resilience.webp", "IconPerks_resurgence.webp",
-            "IconPerks_rookieSpirit.webp", "IconPerks_saboteur.webp", "IconPerks_scavenger.webp", "IconPerks_scenePartner.webp",
-            "IconPerks_secondWind.webp", "IconPerks_selfCare.webp", "IconPerks_selfPreservation.webp", "IconPerks_shoulderTheBurden.webp",
-            "IconPerks_slipperyMeat.webp", "IconPerks_smallGame.webp", "IconPerks_smashHit.webp", "IconPerks_soleSurvivor.webp",
-            "IconPerks_solidarity.webp", "IconPerks_soulGuard.webp", "IconPerks_specialist.webp", "IconPerks_spineChill.webp",
-            "IconPerks_sprintBurst.webp", "IconPerks_stakeOut.webp", "IconPerks_stillSight.webp", "IconPerks_streetwise.webp",
-            "IconPerks_strengthInShadows.webp", "IconPerks_teamworkCollectiveStealth.webp", "IconPerks_teamworkPowerOfTwo.webp",
-            "IconPerks_technician.webp", "IconPerks_tenacity.webp", "IconPerks_thisIsNotHappening.webp", "IconPerks_troubleshooter.webp",
-            "IconPerks_unbreakable.webp", "IconPerks_upTheAnte.webp", "IconPerks_urbanEvasion.webp", "IconPerks_vigil.webp",
-            "IconPerks_visionary.webp", "IconPerks_wakeUp.webp", "IconPerks_wellMakeIt.webp", "IconPerks_wereGonnaLiveForever.webp",
+        const s_iconFilenames = [
+            "IconPerks_aceInTheHole.webp", "IconPerks_adrenaline.webp", "IconPerks_aftercare.webp", "IconPerks_alert.webp", 
+            "IconPerks_anyMeansNecessary.webp", "IconPerks_appraisal.webp", "IconPerks_autodidact.webp", "IconPerks_babysitter.webp", 
+            "IconPerks_backgroundPlayer.webp", "IconPerks_balancedLanding.webp", "IconPerks_bardicInspiration.webp", "IconPerks_betterThanNew.webp", 
+            "IconPerks_betterTogether.webp", "IconPerks_biteTheBullet.webp", "IconPerks_blastMine.webp", "IconPerks_bloodPact.webp", 
+            "IconPerks_bloodRush.webp", "IconPerks_boilOver.webp", "IconPerks_bond.webp", "IconPerks_boonCircleOfHealing.webp", 
+            "IconPerks_boonDarkTheory.webp", "IconPerks_boonExponential.webp", "IconPerks_boonIllumination.webp", "IconPerks_boonShadowStep.webp", 
+            "IconPerks_borrowedTime.webp", "IconPerks_botanyKnowledge.webp", "IconPerks_breakdown.webp", "IconPerks_breakout.webp", 
+            "IconPerks_buckleUp.webp", "IconPerks_builtToLast.webp", "IconPerks_calmSpirit.webp", "IconPerks_camaraderie.webp", 
+            "IconPerks_championOfLight.webp", "IconPerks_chemicalTrap.webp", "IconPerks_clairvoyance.webp", "IconPerks_cleanBreak.webp", 
+            "IconPerks_correctiveAction.webp", "IconPerks_counterforce.webp", "IconPerks_cutLoose.webp", "IconPerks_danceWithMe.webp", 
+            "IconPerks_darkSense.webp", "IconPerks_deadHard.webp", "IconPerks_deadline.webp", "IconPerks_deception.webp", 
+            "IconPerks_decisiveStrike.webp", "IconPerks_dejaVu.webp", "IconPerks_deliverance.webp", "IconPerks_desperateMeasures.webp", 
+            "IconPerks_detectivesHunch.webp", "IconPerks_distortion.webp", "IconPerks_diversion.webp", "IconPerks_dramaturgy.webp", 
+            "IconPerks_empathicConnection.webp", "IconPerks_empathy.webp", "IconPerks_Exultation.webp", "IconPerks_EyesOfBelmont.webp", 
+            "IconPerks_fastTrack.webp", "IconPerks_finesse.webp", "IconPerks_fixated.webp", "IconPerks_flashbang.webp", 
+            "IconPerks_flipFlop.webp", "IconPerks_fogwise.webp", "IconPerks_forThePeople.webp", "IconPerks_friendlyCompetition.webp", 
+            "IconPerks_hardened.webp", "IconPerks_headOn.webp", "IconPerks_hope.webp", "IconPerks_hyperfocus.webp", 
+            "IconPerks_iconperksDejavu.webp", "IconPerks_innerFocus.webp", "IconPerks_innerStrength.webp", "IconPerks_invocationTreacherousCrows.webp", 
+            "IconPerks_invocationWeavingSpiders.webp", "IconPerks_ironWill.webp", "IconPerks_kindred.webp", "IconPerks_leader.webp", 
+            "IconPerks_leftBehind.webp", "IconPerks_lightFooted.webp", "IconPerks_lightweight.webp", "IconPerks_lithe.webp", 
+            "IconPerks_lowProfile.webp", "IconPerks_luckyBreak.webp", "IconPerks_luckyStar.webp", "IconPerks_madeForThis.webp", 
+            "IconPerks_mettleOfMan.webp", "IconPerks_mirroredIllusion.webp", "IconPerks_MomentOfGlory.webp", "IconPerks_noMither.webp", 
+            "IconPerks_noOneLeftBehind.webp", "IconPerks_objectOfObsession.webp", "IconPerks_offTheRecord.webp", "IconPerks_openHanded.webp", 
+            "IconPerks_overcome.webp", "IconPerks_overzealous.webp", "IconPerks_parentalGuidance.webp", "IconPerks_pharmacy.webp", 
+            "IconPerks_plotTwist.webp", "IconPerks_plunderersInstinct.webp", "IconPerks_poised.webp", "IconPerks_potentialEnergy.webp", 
+            "IconPerks_powerStruggle.webp", "IconPerks_premonition.webp", "IconPerks_proveThyself.webp", "IconPerks_quickGambit.webp", 
+            "IconPerks_quick&Quiet.webp", "IconPerks_reactiveHealing.webp", "IconPerks_reassurance.webp", "IconPerks_redHerring.webp", 
+            "IconPerks_repressedAlliance.webp", "IconPerks_residualManifest.webp", "IconPerks_resilience.webp", "IconPerks_resurgence.webp", 
+            "IconPerks_rookieSpirit.webp", "IconPerks_saboteur.webp", "IconPerks_scavenger.webp", "IconPerks_scenePartner.webp", 
+            "IconPerks_secondWind.webp", "IconPerks_selfCare.webp", "IconPerks_selfPreservation.webp", "IconPerks_shoulderTheBurden.webp", 
+            "IconPerks_slipperyMeat.webp", "IconPerks_smallGame.webp", "IconPerks_smashHit.webp", "IconPerks_soleSurvivor.webp", 
+            "IconPerks_solidarity.webp", "IconPerks_soulGuard.webp", "IconPerks_specialist.webp", "IconPerks_spineChill.webp", 
+            "IconPerks_sprintBurst.webp", "IconPerks_stakeOut.webp", "IconPerks_stillSight.webp", "IconPerks_streetwise.webp", 
+            "IconPerks_strengthInShadows.webp", "IconPerks_teamworkCollectiveStealth.webp", "IconPerks_teamworkPowerOfTwo.webp", 
+            "IconPerks_technician.webp", "IconPerks_tenacity.webp", "IconPerks_thisIsNotHappening.webp", "IconPerks_troubleshooter.webp", 
+            "IconPerks_unbreakable.webp", "IconPerks_upTheAnte.webp", "IconPerks_urbanEvasion.webp", "IconPerks_vigil.webp", 
+            "IconPerks_visionary.webp", "IconPerks_wakeUp.webp", "IconPerks_wellMakeIt.webp", "IconPerks_wereGonnaLiveForever.webp", 
             "IconPerks_wicked.webp", "IconPerks_windowsOfOpportunity.webp", "IconPerks_wiretap.webp"
         ];
 
@@ -1118,7 +1289,7 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                 'objectofobsession': 'IconPerks_objectOfObsession.webp'
             };
             if (overrides[normPerk]) return overrides[normPerk];
-            for (let file of iconFilenames) {
+            for (let file of s_iconFilenames) {
                 let cleanFile = file.replace('IconPerks_', '').replace('.webp', '').toLowerCase().replace(/[^a-z0-9]/g, '');
                 if (cleanFile === normPerk || cleanFile.includes(normPerk) || normPerk.includes(cleanFile)) return file;
             }
@@ -1128,9 +1299,9 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
 
         const SURVIVOR_PERKS = [];
         survivorRawPerkData.trim().split('\n').forEach(line => {
-            if (!line.trim()) return;
+            if(!line.trim()) return;
             const parts = line.split('|');
-            if (parts.length === 3) {
+            if(parts.length === 3) {
                 SURVIVOR_PERKS.push({
                     name: parts[0].trim(),
                     character: parts[1].trim(),
@@ -1140,11 +1311,11 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
             }
         });
 
-        let s_chars = [...new Set(SURVIVOR_PERKS.map(p => p.character))].sort((a, b) => a === 'All' ? -1 : b === 'All' ? 1 : a.localeCompare(b));
+        let s_chars = [...new Set(SURVIVOR_PERKS.map(p => p.character))].sort((a,b) => a === 'All' ? -1 : b === 'All' ? 1 : a.localeCompare(b));
         let rouletteOwned = new Set(s_chars);
 
-        function openRouletteInventory() {
-            const container = document.getElementById('inventoryCheckboxes');
+        window.openRouletteInventory = function() {
+            const container = document.getElementById('rouletteInventoryCheckboxes');
             container.innerHTML = '';
             s_chars.forEach(char => {
                 const label = document.createElement('label');
@@ -1153,7 +1324,7 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                 input.type = 'checkbox';
                 input.value = char;
                 input.checked = rouletteOwned.has(char);
-
+                
                 if (char === 'All') {
                     input.disabled = true; input.checked = true; rouletteOwned.add('All');
                 } else {
@@ -1167,23 +1338,23 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                 container.appendChild(label);
             });
             document.getElementById('rouletteInventoryModal').classList.add('active');
-        }
+        };
 
-        function closeRouletteInventory() {
+        window.closeRouletteInventory = function() {
             document.getElementById('rouletteInventoryModal').classList.remove('active');
             let available = SURVIVOR_PERKS.filter(p => rouletteOwned.has(p.character));
             if (available.length < 16) {
-                alert("WARNING: You deselected too many characters! You must have at least 16 perks available in the pool. Defaulting to all characters.");
+                alert("WARNING: You deselected too many characters! Defaulting to all characters.");
                 rouletteOwned = new Set(s_chars);
             }
-        }
+        };
 
-        const s_tooltip = document.getElementById('custom-tooltip');
+        const s_tooltip = document.getElementById('s_custom-tooltip');
         function s_attachTooltip(element, perkData) {
             element.addEventListener('mouseenter', (e) => {
-                document.getElementById('tt-title').textContent = perkData.name;
-                document.getElementById('tt-char').textContent = perkData.character;
-                document.getElementById('tt-effect').innerHTML = perkData.effect.replace(/(\+\d+%|-\d+%|\d+s|\d+m|\d+%)/g, '<strong>$1</strong>');
+                document.getElementById('s_tt-title').textContent = perkData.name;
+                document.getElementById('s_tt-char').textContent = perkData.character;
+                document.getElementById('s_tt-effect').innerHTML = perkData.effect.replace(/(\+\d+%|-\d+%|\d+s|\d+m|\d+%)/g, '<strong>$1</strong>');
                 s_tooltip.classList.add('visible');
                 s_posTooltip(e);
             });
@@ -1198,29 +1369,29 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
             s_tooltip.style.left = `${x}px`; s_tooltip.style.top = `${y}px`;
         }
 
-        function initiateRouletteSpin() {
-            const displayArea = document.getElementById('perkDisplayArea');
-            const btn = document.getElementById('spinBtn');
-            const partySize = parseInt(document.getElementById('party-size').value);
+        window.initiateRouletteSpin = function() {
+            const displayArea = document.getElementById('roulettePerkDisplayArea');
+            const btn = document.getElementById('rouletteSpinBtn');
+            const partySize = parseInt(document.getElementById('roulettePartySize').value);
             const numPerks = partySize * 4;
-
-            displayArea.innerHTML = '';
+            
+            displayArea.innerHTML = ''; 
             btn.style.pointerEvents = 'none';
             btn.textContent = "THE ENTITY IS CHOOSING...";
 
             let availablePool = SURVIVOR_PERKS.filter(p => rouletteOwned.has(p.character));
-
+            
             if (availablePool.length < numPerks) {
-                alert(`Error: Not enough perks in inventory to supply ${numPerks} perks! Please manage your inventory.`);
+                alert(`Error: Not enough perks in inventory.`);
                 btn.style.pointerEvents = 'all'; btn.textContent = "ROLL THE ENTITY'S DICE";
                 return;
             }
 
             const isGolden = Math.random() < 0.15;
-            const box = document.getElementById('randomizerBox');
-            const banner = document.getElementById('goldenBanner');
-
-            if (isGolden) { box.classList.add('golden-active'); banner.style.display = 'block'; }
+            const box = document.getElementById('rouletteRandomizerBox');
+            const banner = document.getElementById('rouletteGoldenBanner');
+            
+            if (isGolden) { box.classList.add('golden-active'); banner.style.display = 'block'; } 
             else { box.classList.remove('golden-active'); banner.style.display = 'none'; }
 
             let shuffled = [...availablePool];
@@ -1240,7 +1411,7 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                 const img = document.createElement('img');
                 img.className = 'rhombus-inner-img';
                 img.alt = perk.name; img.src = perk.iconPath;
-                img.onerror = function () {
+                img.onerror = function() {
                     this.style.display = 'none';
                     const fallback = document.createElement('div');
                     fallback.className = 'perk-fallback-badge';
@@ -1264,7 +1435,7 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
             setTimeout(() => {
                 btn.style.pointerEvents = 'all'; btn.textContent = "ROLL THE ENTITY'S DICE";
             }, numPerks * 120 + 400);
-        }
+        };
     </script>
 </body>
 

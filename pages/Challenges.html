@@ -695,39 +695,37 @@
          THE TRACKER WINDOW (MINIMIZABLE APP UI)
          ========================================================================== -->
     
+    <!-- ==========================================================================
+         THE TRACKER WINDOWS (IFRAME POPUPS)
+         ========================================================================== -->
+    
     <!-- 1. KILLER TRACKER WINDOW -->
     <div id="tracker-window" class="tracker-popup">
         <div style="height: 60px; background: linear-gradient(90deg, #2a0000, #000); border-bottom: 1px solid #ff0505; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; flex-shrink: 0;"
             onclick="TrackerApp.toggleMinimize(event)">
             <h3 style="color: #ffffff; font-family: 'Teko', sans-serif; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; margin: 0;">
-                Entity's <span style="color: #ff0505;">Terminal</span></h3>
+                Killer <span style="color: #ff0505;">Dashboard</span></h3>
             <div>
-                <span style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer; transition: color 0.2s;">_</span>
-                <span onclick="TrackerApp.close(event)" style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer; transition: color 0.2s;">X</span>
+                <span style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer;">_</span>
+                <span onclick="TrackerApp.close(event)" style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer;">X</span>
             </div>
         </div>
-        <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative;">
-            <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; padding: 15px; background: rgba(0, 0, 0, 0.5); border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                <button id="nav-roster" onclick="TrackerApp.showView('t-roster')" style="background: #3a0000; color: white; border: 1px solid #ff0505; padding: 8px 15px; cursor: pointer; font-weight: bold; text-transform: uppercase;">Roster</button>
-            </div>
-            <div id="t-roster" style="flex: 1; padding: 20px; overflow-y: auto;">
-                <div id="roster-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; padding-bottom: 50px;"></div>
-            </div>
+        <div style="flex: 1; overflow: hidden; background: var(--bg-dark);">
+            <iframe id="killer-iframe" src="" style="width: 100%; height: 100%; border: none;"></iframe>
         </div>
     </div>
 
-    <!-- 2. SURVIVOR ROULETTE DASHBOARD WINDOW (IFRAME) -->
+    <!-- 2. SURVIVOR ROULETTE DASHBOARD WINDOW -->
     <div id="roulette-tracker-window" class="tracker-popup">
         <div style="height: 60px; background: linear-gradient(90deg, #2a0000, #000); border-bottom: 1px solid #ff0505; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; flex-shrink: 0;"
             onclick="RouletteTrackerApp.toggleMinimize(event)">
             <h3 style="color: #ffffff; font-family: 'Teko', sans-serif; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; margin: 0;">
                 Roulette <span style="color: #ff0505;">Dashboard</span></h3>
             <div>
-                <span style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer; transition: color 0.2s;">_</span>
-                <span onclick="RouletteTrackerApp.close(event)" style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer; transition: color 0.2s;">X</span>
+                <span style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer;">_</span>
+                <span onclick="RouletteTrackerApp.close(event)" style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer;">X</span>
             </div>
         </div>
-        <!-- Iframe loads the separate HTML file seamlessly inside this div -->
         <div style="flex: 1; overflow: hidden; background: var(--bg-dark);">
             <iframe id="roulette-iframe" src="" style="width: 100%; height: 100%; border: none;"></iframe>
         </div>
@@ -829,28 +827,73 @@
     <!-- SURVIVOR (ROULETTE) JAVASCRIPT LOGIC -->
     <script>
         // Redirect Logic for Roulette
-        function checkAuthAndOpenRouletteTracker() {
-            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-            if (isLoggedIn) {
-                window.location.href = 'roulette_dashboard.html';
-            } else {
-                alert("The Entity requires your soul first. Please login or register to access the tracker.");
-                window.location.href = '../pages/login.html';
+       const TrackerApp = {
+            open() {
+                const win = document.getElementById('tracker-window');
+                const iframe = document.getElementById('killer-iframe');
+                
+                // Loads killer_dashboard.html when opened
+                if (!iframe.src || iframe.src === window.location.href) {
+                    iframe.src = 'killer_dashboard.html'; 
+                }
+                
+                win.classList.add('active');
+                win.classList.remove('minimized');
+            },
+            close(e) {
+                if (e) e.stopPropagation();
+                document.getElementById('tracker-window').classList.remove('active');
+            },
+            toggleMinimize(e) {
+                if (e && e.target.innerText === 'X') return;
+                document.getElementById('tracker-window').classList.toggle('minimized');
             }
-        }
+        };
 
-        // Redirect Logic for Descent
+        // --- Roulette Tracker Controller ---
+        const RouletteTrackerApp = {
+            open() {
+                const win = document.getElementById('roulette-tracker-window');
+                const iframe = document.getElementById('roulette-iframe');
+                
+                // Loads roulette_dashboard.html when opened
+                if (!iframe.src || iframe.src === window.location.href) {
+                    iframe.src = 'roulette_dashboard.html'; 
+                }
+                
+                win.classList.add('active');
+                win.classList.remove('minimized');
+            },
+            close(e) {
+                if (e) e.stopPropagation();
+                document.getElementById('roulette-tracker-window').classList.remove('active');
+            },
+            toggleMinimize(e) {
+                if (e && e.target.innerText === 'X') return;
+                document.getElementById('roulette-tracker-window').classList.toggle('minimized');
+            }
+        };
+
+        // --- Auth & Trigger Functions ---
         window.checkAuthAndOpenTracker = function () {
             const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
             if (isLoggedIn) {
-                // Ensure TrackerApp exists via your firebase module if present
-                if (typeof TrackerApp !== 'undefined') TrackerApp.open();
-                else alert("Tracker Module Loaded Externally.");
+                TrackerApp.open();
             } else {
                 alert("The Entity requires your soul first. Please login or register to access the tracker.");
                 window.location.href = '../pages/login.html';
             }
         };
+
+        function checkAuthAndOpenRouletteTracker() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
+                RouletteTrackerApp.open();
+            } else {
+                alert("The Entity requires your soul first. Please login or register to access the tracker.");
+                window.location.href = '../pages/login.html';
+            }
+        }
 
         // --- Survivor Randomizer Logic ---
         const survivorRawPerkData = `

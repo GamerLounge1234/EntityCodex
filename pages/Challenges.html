@@ -20,14 +20,12 @@
 
     <!-- Responsive Navbar -->
     <nav class="navbar">
-
         <ul class="nav-links">
             <li><a href="../index.html">Lobby</a></li>
             <li><a href="../pages/Randomizer.html">Randomizer</a></li>
             <li><a href="../pages/Challenges.html" class="active">Challenges</a></li>
             <li><a href="../pages/killers.html">Killer Wheel</a></li>
             <li><a href="../pages/CreatorsLounge.html">Creators</a></li>
-
         </ul>
         <div id="authContainer" class="auth-links">
             <a href="../pages/login.html"
@@ -70,7 +68,6 @@
                     <p style="margin-top: 1rem; color: #888; font-family: var(--font-mono);">Time to finish: 15–25 Hours
                         (Over 30 Hours if you dare to try the hardest modes)</p>
 
-                    <!-- Ensure you add styles inline to this specific button if not caught by css -->
                     <button
                         style="background: linear-gradient(135deg, var(--entity-blood), #110000); color: #fff; border: 1px solid var(--entity-red); padding: 15px 40px; font-family: var(--font-mono); font-size: 1.2rem; letter-spacing: 4px; text-transform: uppercase; font-weight: bold; box-shadow: 0 0 20px rgba(211, 47, 47, 0.4); border-radius: 4px; transition: all 0.3s cubic-bezier(0.25, 1, 0.3, 1); margin: 2rem auto; display: inline-block; cursor: pointer;"
                         onclick="checkAuthAndOpenTracker()">Access Personal Tracker</button>
@@ -456,21 +453,20 @@
 
         <!-- ================= SURVIVOR VIEW (ROULETTE) ================= -->
         <div id="view-survivor" style="display: none;">
+            <section class="entity-gauntlet-container">
+                <div class="descent-hero">
+                    <h1 class="glitch-text" data-text="THE ENTITY'S ROULETTE">THE ENTITY'S ROULETTE</h1>
+                    <h2
+                        style="color: #ccc; letter-spacing: 4px; font-size: 1.5rem; margin-bottom: 2rem; text-transform: uppercase;">
+                        A 30-Hour Test of Greed, Survival, and Chance</h2>
+                    <p class="quote">"Spin the wheel. Risk your life. Escape or die trying."</p>
+                    <button
+                        style="background: linear-gradient(135deg, var(--entity-blood), #110000); color: #fff; border: 1px solid var(--entity-red); padding: 15px 40px; font-family: var(--font-mono); font-size: 1.2rem; letter-spacing: 4px; text-transform: uppercase; font-weight: bold; box-shadow: 0 0 20px rgba(211, 47, 47, 0.4); border-radius: 4px; transition: all 0.3s cubic-bezier(0.25, 1, 0.3, 1); margin: 2rem auto; display: inline-block; cursor: pointer;"
+                        onclick="checkAuthAndOpenRouletteTracker()">Access Personal Tracker Dashboard</button>
+                </div>
+            </section>
+
             <main class="survivor-container">
-
-                <section class="entity-gauntlet-container">
-                    <div class="descent-hero">
-                        <h1 class="glitch-text" data-text="THE ENTITY'S ROULETTE">THE ENTITY'S ROULETTE</h1>
-                        <h2
-                            style="color: #ccc; letter-spacing: 4px; font-size: 1.5rem; margin-bottom: 2rem; text-transform: uppercase;">
-                            A 30-Hour Test of Greed, Survival, and Chance</h2>
-                        <p class="quote">"Spin the wheel. Risk your life. Escape or die trying."</p>
-                        <button
-                            style="background: linear-gradient(135deg, var(--entity-blood), #110000); color: #fff; border: 1px solid var(--entity-red); padding: 15px 40px; font-family: var(--font-mono); font-size: 1.2rem; letter-spacing: 4px; text-transform: uppercase; font-weight: bold; box-shadow: 0 0 20px rgba(211, 47, 47, 0.4); border-radius: 4px; transition: all 0.3s cubic-bezier(0.25, 1, 0.3, 1); margin: 2rem auto; display: inline-block; cursor: pointer;"
-                            onclick="checkAuthAndOpenRouletteTracker()">Access Personal Tracker</button>
-                    </div>
-                </section>
-
                 <!-- Dynamic Rules Section -->
                 <section class="rules-wrapper">
 
@@ -692,10 +688,6 @@
     </div>
 
     <!-- ==========================================================================
-         THE TRACKER WINDOW (MINIMIZABLE APP UI)
-         ========================================================================== -->
-    
-    <!-- ==========================================================================
          THE TRACKER WINDOWS (IFRAME POPUPS)
          ========================================================================== -->
     
@@ -706,7 +698,7 @@
             <h3 style="color: #ffffff; font-family: 'Teko', sans-serif; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; margin: 0;">
                 Killer <span style="color: #ff0505;">Dashboard</span></h3>
             <div>
-                <span style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer;">_</span>
+                <span style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer;" onclick="TrackerApp.toggleMinimize(event)">_</span>
                 <span onclick="TrackerApp.close(event)" style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer;">X</span>
             </div>
         </div>
@@ -722,7 +714,7 @@
             <h3 style="color: #ffffff; font-family: 'Teko', sans-serif; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; margin: 0;">
                 Roulette <span style="color: #ff0505;">Dashboard</span></h3>
             <div>
-                <span style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer;">_</span>
+                <span style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer;" onclick="RouletteTrackerApp.toggleMinimize(event)">_</span>
                 <span onclick="RouletteTrackerApp.close(event)" style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer;">X</span>
             </div>
         </div>
@@ -740,7 +732,6 @@
     <script>
         // --- ADD-ON: PREMIUM TOGGLE LOGIC ---
         window.switchRole = function (role, btnElement) {
-            // Update Toggle Visuals (Text Color)
             document.querySelectorAll('.toggle-btn').forEach(btn => {
                 btn.classList.remove('active');
                 btn.style.color = "var(--text-muted)";
@@ -750,7 +741,6 @@
             btnElement.style.color = "#fff";
             btnElement.style.textShadow = "0 0 12px rgba(255, 255, 255, 0.8)";
 
-            // Move the background slider
             const slider = document.querySelector('.toggle-slider');
             if (role === 'killer') {
                 slider.style.transform = 'translateX(0)';
@@ -758,11 +748,9 @@
                 slider.style.transform = 'translateX(100%)';
             }
 
-            // Hide both views initially
             document.getElementById('view-killer').style.display = 'none';
             document.getElementById('view-survivor').style.display = 'none';
 
-            // Show the correct view
             if (role === 'killer') {
                 document.getElementById('view-killer').style.display = 'block';
             } else {
@@ -824,19 +812,15 @@
         }
     </script>
 
-    <!-- SURVIVOR (ROULETTE) JAVASCRIPT LOGIC -->
+    <!-- SURVIVOR & KILLER DASHBOARD WINDOW CONTROLLERS -->
     <script>
-        // Redirect Logic for Roulette
-       const TrackerApp = {
+        const TrackerApp = {
             open() {
                 const win = document.getElementById('tracker-window');
                 const iframe = document.getElementById('killer-iframe');
-                
-                // Loads killer_dashboard.html when opened
                 if (!iframe.src || iframe.src === window.location.href) {
                     iframe.src = 'dashboard.html'; 
                 }
-                
                 win.classList.add('active');
                 win.classList.remove('minimized');
             },
@@ -845,22 +829,18 @@
                 document.getElementById('tracker-window').classList.remove('active');
             },
             toggleMinimize(e) {
-                if (e && e.target.innerText === 'X') return;
+                if (e) e.stopPropagation();
                 document.getElementById('tracker-window').classList.toggle('minimized');
             }
         };
 
-        // --- Roulette Tracker Controller ---
         const RouletteTrackerApp = {
             open() {
                 const win = document.getElementById('roulette-tracker-window');
                 const iframe = document.getElementById('roulette-iframe');
-                
-                // Loads roulette_dashboard.html when opened
                 if (!iframe.src || iframe.src === window.location.href) {
                     iframe.src = 'roulette_dashboard.html'; 
                 }
-                
                 win.classList.add('active');
                 win.classList.remove('minimized');
             },
@@ -869,12 +849,11 @@
                 document.getElementById('roulette-tracker-window').classList.remove('active');
             },
             toggleMinimize(e) {
-                if (e && e.target.innerText === 'X') return;
+                if (e) e.stopPropagation();
                 document.getElementById('roulette-tracker-window').classList.toggle('minimized');
             }
         };
 
-        // --- Auth & Trigger Functions ---
         window.checkAuthAndOpenTracker = function () {
             const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
             if (isLoggedIn) {

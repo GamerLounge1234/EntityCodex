@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Entity's Roulette - Operations Dashboard</title>
+    <!-- Placeholder for your existing Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth-compat.js"></script>
+
+    <style>
+        /* ==========================================================================
+           ROOT VARIABLES & PREMIUM THEME
+           ========================================================================== */
+        :root {
+            --bg-dark: #050508;
+            --bg-void: #0a0505;
+            --bg-panel: #111116;
+            --entity-red: #d32f2f;
+            --entity-blood: #9a031e;
+            --neon-glow: 0 0 20px rgba(211, 47, 47, 0.7), 0 0 40px rgba(154, 3, 30, 0.5);
+            --gold-ascension: #e5b824;
+            --gold-glow: 0 0 20px rgba(229, 184, 36, 0.7), 0 0 40px rgba(229, 184, 36, 0.5);
+            --glass-bg: rgba(15, 10, 15, 0.75);
+            --glass-border: rgba(211, 47, 47, 0.35);
+            --text-light: #f0f0f5;
+            --text-muted: #888899;
+            --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --font-mono: 'Courier New', Courier, monospace;
+            --transition-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --transition-bounce: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body, html {
+            width: 100%; height: 100%;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: var(--font-main);
+            overflow: hidden; /* App layout, scrolling handled in main-content */
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-void); }
+        ::-webkit-scrollbar-thumb { background: #331111; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--entity-red); }
+
+        /* ==========================================================================
+           BACKGROUND EFFECTS
+           ========================================================================== */
+        .fog-overlay {
+            position: fixed; top: 0; left: 0; width: 200vw; height: 100vh;
+            background: transparent url('https://www.transparenttextures.com/patterns/stardust.png') repeat;
+            opacity: 0.12; animation: driftFog 60s linear infinite;
+            pointer-events: none; z-index: -1; mix-blend-mode: screen;
+        }
+        .bg-gradient {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at 50% 10%, #1a0505 0%, var(--bg-dark) 80%);
+            z-index: -2;
+        }
+        @keyframes driftFog { 0% { transform: translateX(0); } 100% { transform: translateX(-50vw); } }
+
+        /* ==========================================================================
+           APP LAYOUT (SIDEBAR & MAIN)
+           ========================================================================== */
+        .app-container {
+            display: flex; height: 100vh; width: 100vw;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px; background: rgba(5, 5, 8, 0.95);
+            border-right: 1px solid var(--glass-border);
+            display: flex; flex-direction: column; padding: 2rem 0;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.8); z-index: 100;
+        }
+        .brand {
+            padding: 0 2rem 2rem 2rem; border-bottom: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 2rem;
+        }
+        .brand h1 {
+            font-family: var(--font-mono); font-size: 1.5rem; color: var(--entity-red);
+            text-transform: uppercase; letter-spacing: 2px; text-shadow: var(--neon-glow);
+        }
+        
+        .nav-menu { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+        .nav-item {
+            padding: 1rem 2rem; font-size: 1.1rem; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
+            transition: var(--transition-smooth); border-left: 4px solid transparent;
+        }
+        .nav-item:hover { background: rgba(211, 47, 47, 0.05); color: #fff; }
+        .nav-item.active {
+            background: rgba(211, 47, 47, 0.1); color: #fff;
+            border-left-color: var(--entity-red); text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        .user-profile {
+            margin-top: auto; padding: 2rem; border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .user-email { font-size: 0.9rem; color: #aaa; margin-bottom: 1rem; word-break: break-all; }
+        .btn-signout {
+            width: 100%; padding: 10px; background: transparent; color: var(--entity-red);
+            border: 1px solid var(--entity-red); border-radius: 4px; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
+        }
+        .btn-signout:hover { background: var(--entity-red); color: #fff; box-shadow: var(--neon-glow); }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1; overflow-y: auto; padding: 3rem 4rem; position: relative;
+        }
+        .view-section {
+            display: none; opacity: 0; transform: translateY(20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .view-section.active { display: block; opacity: 1; transform: translateY(0); }
+
+        .section-title {
+            font-family: var(--font-mono); font-size: 2.5rem; color: #fff;
+            text-transform: uppercase; letter-spacing: 4px; margin-bottom: 2rem;
+            border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 1rem;
+        }
+
+        /* ==========================================================================
+           DASHBOARD ANALYTICS (GRID)
+           ========================================================================== */
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 2rem; margin-bottom: 3rem;
+        }
+        .stat-card {
+            background: var(--bg-panel); border: 1px solid rgba(255,255,255,0.05);
+            padding: 2rem; border-radius: 8px; position: relative; overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5); transition: var(--transition-smooth);
+        }
+        .stat-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+            background: var(--entity-red); transform: scaleX(0); transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+        .stat-card:hover { transform: translateY(-5px); border-color: rgba(211,47,47,0.3); }
+        .stat-card:hover::before { transform: scaleX(1); }
+        .stat-title { color: var(--text-muted); text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; margin-bottom: 10px; }
+        .stat-value { color: #fff; font-size: 2.5rem; font-weight: bold; font-family: var(--font-mono); }
+        .stat-value.highlight { color: var(--entity-red); text-shadow: 0 0 15px rgba(211,47,47,0.5); }
+
+        /* Master Goal Progress Bar */
+        .goal-container {
+            background: var(--bg-panel); padding: 3rem; border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.05); text-align: center;
+        }
+        .goal-title { font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2rem; color: #fff; }
+        .progress-track {
+            width: 100%; height: 20px; background: #000; border-radius: 10px;
+            border: 1px solid #333; overflow: hidden; position: relative; margin-bottom: 1rem;
+        }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, #7a0000 0%, var(--entity-red) 100%);
+            width: 0%; transition: width 1s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 0 20px var(--entity-red);
+        }
+        .goal-numbers { display: flex; justify-content: space-between; color: var(--text-muted); font-family: var(--font-mono); }
+
+        /* ==========================================================================
+           TRIAL INTERFACE (PLAY SECTION)
+           ========================================================================== */
+        .controls-bar {
+            display: flex; justify-content: center; align-items: center; gap: 20px;
+            background: var(--bg-panel); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .custom-select {
+            background: #000; color: #fff; border: 1px solid var(--entity-red);
+            padding: 12px 20px; font-size: 1.1rem; border-radius: 4px; outline: none; cursor: pointer;
+        }
+
+        .action-zone { text-align: center; margin-bottom: 2rem; }
+        .btn-primary {
+            background: linear-gradient(45deg, #7a0000 0%, #d32f2f 100%); color: #fff;
+            border: 2px solid #ff4d4d; padding: 1.2rem 3rem; font-size: 1.2rem; font-weight: bold;
+            text-transform: uppercase; letter-spacing: 4px; border-radius: 4px; cursor: pointer;
+            transition: var(--transition-bounce); box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .btn-primary:hover { transform: translateY(-3px) scale(1.05); box-shadow: var(--neon-glow); border-color: #fff; }
+        .btn-primary:active { transform: scale(0.95); }
+        .btn-primary:disabled { filter: grayscale(1); opacity: 0.5; pointer-events: none; }
+
+        .btn-outline {
+            background: transparent; color: #fff; border: 2px solid #555;
+            padding: 1.2rem 3rem; font-size: 1.2rem; font-weight: bold;
+            text-transform: uppercase; letter-spacing: 4px; border-radius: 4px; cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+        .btn-outline:hover { border-color: #fff; background: rgba(255,255,255,0.05); }
+
+        /* Decision Phase UI (Post-Win) */
+        .decision-panel {
+            display: none; background: rgba(211, 47, 47, 0.1); border: 1px solid var(--entity-red);
+            padding: 2rem; border-radius: 8px; margin-bottom: 2rem; text-align: center;
+            box-shadow: inset 0 0 30px rgba(211,47,47,0.1);
+        }
+        .decision-panel.active { display: block; animation: pulseGlow 2s infinite; }
+        .decision-title { font-size: 1.8rem; color: #fff; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem; }
+        .decision-pot { font-family: var(--font-mono); font-size: 2.5rem; color: var(--entity-red); font-weight: bold; margin-bottom: 2rem; }
+        .decision-buttons { display: flex; justify-content: center; gap: 20px; }
+        
+        .timer-bar {
+            width: 100%; height: 4px; background: #333; margin-top: 2rem; border-radius: 2px; overflow: hidden;
+        }
+        .timer-fill {
+            height: 100%; width: 100%; background: var(--entity-red); transform-origin: left;
+        }
+
+        @keyframes pulseGlow { 0% { box-shadow: inset 0 0 10px rgba(211,47,47,0.1); } 50% { box-shadow: inset 0 0 40px rgba(211,47,47,0.3); } 100% { box-shadow: inset 0 0 10px rgba(211,47,47,0.1); } }
+
+        /* Perk Rhombus Display */
+        .perk-display-area {
+            display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start;
+            gap: 3.5rem 2.5rem; min-height: 320px; padding: 2rem 1rem;
+            background: var(--bg-panel); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;
+        }
+        .perk-card-container {
+            display: flex; flex-direction: column; align-items: center; width: 120px;
+            opacity: 0; transform: translateY(30px); transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .perk-card-container.revealed { opacity: 1; transform: translateY(0); }
+        .perk-node {
+            position: relative; width: 85px; height: 85px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px;
+        }
+        .rhombus-outer {
+            width: 75px; height: 75px; background: linear-gradient(135deg, #2a2a35 0%, #0d0d12 100%);
+            border: 2px solid #555; transform: rotate(45deg); position: absolute;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.6);
+            transition: var(--transition-bounce); cursor: pointer; overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .perk-card-container:hover .rhombus-outer {
+            border-color: var(--entity-red); box-shadow: inset 0 0 20px rgba(211, 47, 47, 0.4), 0 0 25px rgba(211, 47, 47, 0.7);
+            transform: rotate(45deg) scale(1.12); z-index: 10;
+        }
+        .rhombus-inner-img {
+            width: 135%; height: 135%; object-fit: contain; transform: rotate(-45deg);
+            filter: drop-shadow(0px 0px 4px rgba(0,0,0,0.8)); pointer-events: none;
+        }
+        .perk-card-container:hover .rhombus-inner-img { filter: drop-shadow(0px 0px 8px rgba(211, 47, 47, 0.9)) brightness(1.25); }
+        .perk-fallback-badge {
+            position: absolute; transform: rotate(-45deg); color: var(--gold-ascension);
+            font-family: var(--font-mono); font-weight: 900; font-size: 0.85rem; letter-spacing: 1px; pointer-events: none;
+        }
+        .perk-name-label {
+            color: #d0d0dd; font-family: var(--font-main); font-size: 0.82rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px; text-align: center; line-height: 1.3;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.9); transition: var(--transition-smooth);
+        }
+        .perk-card-container:hover .perk-name-label { color: #ffffff; text-shadow: 0 0 10px var(--entity-red); }
+
+        /* ==========================================================================
+           INVENTORY ROSTER SECTION
+           ========================================================================== */
+        .inventory-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px;
+        }
+        .char-checkbox-label {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--bg-panel); padding: 15px; border-radius: 6px;
+            cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.2s;
+        }
+        .char-checkbox-label:hover { background: rgba(255,255,255,0.08); border-color: #555; }
+        .char-checkbox-label input[type="checkbox"] {
+            appearance: none; width: 20px; height: 20px;
+            background: #000; border: 1px solid #555; border-radius: 4px; cursor: pointer; position: relative;
+        }
+        .char-checkbox-label input[type="checkbox"]:checked { background: var(--entity-red); border-color: var(--entity-red); }
+        .char-checkbox-label input[type="checkbox"]:checked::after {
+            content: '✔'; position: absolute; color: #fff; font-size: 14px;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+        }
+
+        /* Tooltip */
+        #custom-tooltip {
+            position: fixed; background: rgba(10, 10, 15, 0.95);
+            border: 1px solid var(--entity-red); border-radius: 8px; width: 320px; padding: 1.5rem;
+            pointer-events: none; opacity: 0; z-index: 9999; box-shadow: 0 15px 35px rgba(0,0,0,0.9);
+            backdrop-filter: blur(12px); transform: scale(0.95) translateY(10px);
+            transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        #custom-tooltip.visible { opacity: 1; transform: scale(1) translateY(0); }
+        .tt-header { border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .tt-title { color: #fff; font-size: 1.2rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .tt-char { color: var(--entity-red); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; }
+        .tt-effect { color: #ccc; font-size: 0.9rem; line-height: 1.5; margin-top: 5px; }
+        .tt-effect strong { color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div class="bg-gradient"></div>
+    <div class="fog-overlay"></div>
+
+    <div class="app-container">
+        
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="sidebar">
+            <div class="brand">
+                <h1>Entity's Roulette</h1>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" onclick="switchTab('dashboard')">Analytics & Status</li>
+                <li class="nav-item" onclick="switchTab('trial')">Enter the Fog (Play)</li>
+                <li class="nav-item" onclick="switchTab('roster')">Survivor Roster</li>
+            </ul>
+            <div class="user-profile">
+                <div class="user-email" id="userEmailDisplay">OPERATIVE: CLASSIFIED</div>
+                <button class="btn-signout" onclick="handleSignOut()">Sever Connection</button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            
+            <!-- VIEW: DASHBOARD -->
+            <section id="view-dashboard" class="view-section active">
+                <h2 class="section-title">Operational Analytics</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title">Safe Bank Points</div>
+                        <div class="stat-value highlight" id="stat-safe">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Current Active Pot</div>
+                        <div class="stat-value" id="stat-pot">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Current Streak</div>
+                        <div class="stat-value" id="stat-streak">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Perks in Ransom Jail</div>
+                        <div class="stat-value" id="stat-jail">0</div>
+                    </div>
+                </div>
+
+                <div class="goal-container">
+                    <h3 class="goal-title">The Entity's Demand (Goal)</h3>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="goal-progress"></div>
+                    </div>
+                    <div class="goal-numbers">
+                        <span>0</span>
+                        <span id="goal-text">0 / 20,000 Points</span>
+                        <span>20,000</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: TRIAL (PLAY) -->
+            <section id="view-trial" class="view-section">
+                <h2 class="section-title">The Fog Awaits</h2>
+                
+                <!-- Match Settings -->
+                <div class="controls-bar" id="controlsBar">
+                    <label style="color: var(--text-muted); text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px;">Party Size:</label>
+                    <select id="party-size" class="custom-select">
+                        <option value="4">Squad (4 Players)</option>
+                        <option value="3">Trio (3 Players)</option>
+                        <option value="2">Duo (2 Players)</option>
+                        <option value="1">Solo (1 Player)</option>
+                    </select>
+                </div>
+
+                <!-- Main Actions -->
+                <div class="action-zone" id="actionZoneInitial">
+                    <button class="btn-primary" id="btnInitiate" onclick="startDraft()">Initiate Algorithm (Draft Perks)</button>
+                    <button class="btn-outline" id="btnJailbreak" style="display: none; margin-left: 15px;" onclick="initiateJailbreak()">Jailbreak Trial (-1000 Pts Risk)</button>
+                </div>
+
+                <!-- Decision Panel (Shows after a Win) -->
+                <div class="decision-panel" id="decisionPanel">
+                    <h3 class="decision-title">Trial Victorious</h3>
+                    <div class="decision-pot" id="decisionPotValue">Pot: 200 Pts</div>
+                    <div class="decision-buttons">
+                        <button class="btn-outline" onclick="executeCashOut()" id="btnCashOut">Cash Out (Secure)</button>
+                        <button class="btn-primary" onclick="startDraft(true)">Double Down (Spin Again)</button>
+                    </div>
+                    <div class="timer-bar"><div class="timer-fill" id="decisionTimer"></div></div>
+                </div>
+
+                <!-- Match Resolution Actions (Shows after draft) -->
+                <div class="action-zone" id="actionZoneMatch" style="display: none; gap: 20px;">
+                    <button class="btn-primary" style="background: linear-gradient(45deg, #1e3c23, #2e7d32); border-color: #4caf50;" onclick="resolveMatch('win')">Declare Victory</button>
+                    <button class="btn-primary" onclick="resolveMatch('loss')">Declare Failure</button>
+                </div>
+
+                <!-- Perk Display Grid -->
+                <div class="perk-display-area" id="perkDisplayArea">
+                    <p style="color: var(--text-muted); width: 100%; text-align: center; margin-top: 50px;">Awaiting algorithmic input...</p>
+                </div>
+            </section>
+
+            <!-- VIEW: ROSTER (INVENTORY) -->
+            <section id="view-roster" class="view-section">
+                <h2 class="section-title">Survivor Roster Configuration</h2>
+                <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 1.1rem;">Exclude operatives you do not possess. Their associated tools will be stripped from the drafting pool.</p>
+                
+                <div class="inventory-grid" id="inventoryGrid">
+                    <!-- Populated via JS -->
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Tooltip -->
+    <div id="custom-tooltip">
+        <div class="tt-header">
+            <div class="tt-title" id="tt-title">Perk</div>
+            <div class="tt-char" id="tt-char">Char</div>
+        </div>
+        <div class="tt-effect" id="tt-effect">Effect</div>
+    </div>
+
+    <script>
+        /* ==========================================================================
+           FIREBASE PLACEHOLDERS (HOOK THESE UP LATER)
+           ========================================================================== */
+        const firebaseConfig = {
+            apiKey: "AIzaSyBMAxj2E3snmnOcQXIylkIIS1cTnuu0hlY",
+            authDomain: "dashboard-1db87.firebaseapp.com",
+            projectId: "dashboard-1db87",
+            storageBucket: "dashboard-1db87.firebasestorage.app",
+            messagingSenderId: "711217707380",
+            appId: "1:711217707380:web:247cfdfb2dc3c2c4485421",
+            measurementId: "G-Z4WBDQ9HEH"
+        };
+        // firebase.initializeApp(firebaseConfig);
+        // const db = firebase.firestore();
+        // const auth = firebase.auth();
+
+        /* ==========================================================================
+           SYSTEM STATE
+           ========================================================================== */
+        let STATE = {
+            safeBank: 0,
+            currentPot: 0,
+            currentStreak: 0, // 0 to 5
+            ransomJail: [], // Array of perk names
+            activeDraft: [], // Perks currently being played
+            isGoldenMode: false,
+            ownedCharacters: new Set(),
+            isJailbreakActive: false
+        };
+
+        const POT_STAGES = [0, 200, 500, 1000, 2000, 4000];
+        let decisionTimeout = null;
+
+        /* ==========================================================================
+           PERK DATABASE (CONDENSED FOR SCRIPT)
+           ========================================================================== */
+        const rawPerkData = `
+A Place For Us|Kwon Tae-young|When finishing healing another Survivor, both gain the Elusive Status Effect.
+Ace in the Hole|Ace Visconti|Items retrieved from Chests have 1 guaranteed Add-on.
+Adrenaline|Meg Thomas|When Exit Gates are powered, instantly heal one Health State and gain +50% Haste for 3 seconds.
+Aftercare|Jeff Johansen|You and recent Survivors who unhooked/healed you can see each other's Auras.
+Alert|Feng Min|Whenever the Killer performs a Break or Damage action, their Aura is revealed.
+Any Means Necessary|Yui Kimura|See the Auras of dropped Pallets. Press Active Ability to reset it upright.
+Apocalyptic Ingenuity|Rick Grimes|See Auras of broken Pallets. Rebuild them as Fragile Pallets.
+Appraisal|Élodie Rakoto|Start with Tokens. Rummage empty Chests faster to retrieve an extra Item.
+Autodidact|Adam Francis|Gain Tokens on Good Heal Checks for massive bonus progression. Inactive with Med-Kits.
+Babysitter|Steve Harrington|When unhooking, see Killer's Aura. Unhooked Survivor leaves no tracks and gets Haste.
+Background Player|Renato Lyra|When Killer picks up another Survivor, running grants +50% Haste.
+Bada Bada Boom|Dustin Henderson|Install a Trap on a window. Killer vaulting it suffers -50% Hindered.
+Balanced Landing|Nea Karlsson|Falling from height reduces Stagger and grants +50% Haste for 3 seconds.
+Bardic Inspiration|Aestri (The Troupe)|Perform stationary. Nearby Survivors get buffed Skill Checks based on d20 roll.
+Better Together|Nancy Wheeler|Generator you repair is revealed to all.
+Better than New|Rebecca Chambers|Fully healing another Survivor grants them Action speed buffs.
+Bite the Bullet|Leon Scott Kennedy|Suppresses Healing noises and failed check notifications.
+Blast Mine|Jill Valentine|Trap a Gen. Killer damaging it gets stunned and players are blinded.
+Blood Pact|Cheryl Mason|You and Obsession see each other. Healing grants Haste.
+Blood Rush|Renato Lyra|After unhook, press Active Ability to instantly cure Exhausted.
+Boil Over|Kate Denson|Wiggling effect is stronger, Hook Auras hidden, landing grants Wiggle progress.
+Bond|Dwight Fairfield|See Auras of all other Survivors within 36 metres.
+Boon: Circle of Healing|Mikaela Reid|Bless a Totem. Altruistic Healing speed +100% and injured Auras revealed.
+Boon: Dark Theory|Yoichi Asakawa|Bless a Totem. Gain +3% Haste in radius.
+Boon: Exponential|Jonah Vasquez|Bless a Totem. Recovery speed +100% and unlock Self-Recovery.
+Boon: Illumination|Alan Wake|Bless a Totem. See Chest/Generator Auras in blue.
+Boon: Shadow Step|Mikaela Reid|Bless a Totem. Scratch Marks suppressed and Auras hidden from Killer.
+Boon: Steadfast|Aurora Stardotter|Bless a Totem. Gens regress slower and repair faster.
+Borrowed Time|Bill Overbeck|Unhooking extends Endurance and Haste duration for the rescued.
+Botany Knowledge|Claudette Morel|Permanently increases your Healing speed by 50%.
+Bound by Obsession|Laurie Strode|When Killer reads your Aura, reveal Killer's Aura and gain Action speed.
+Breakdown|Jeff Johansen|Upon unhook, instantly break that Hook and reveal Killer's Aura.
+Breakout|Yui Kimura|Near carried Survivor, gain Haste and increase their Wiggling speed.
+Buckle Up|Ash Williams|When healing a Dying Survivor, both see Killer's Aura.
+Built to Last|Felix Richter|Hiding in a Locker with depleted Item recharges it.
+Calm Spirit|Jake Park|Crows don't fly off. Suppresses screams and interaction noises.
+Camaraderie|Steve Harrington|Pause Struggle timer if an ally is near the hook.
+Champion of Light|Alan Wake|Using Flashlight grants Haste. Blinding Killer Hinders them.
+Change of Plan|Dustin Henderson|In a Locker, transform a Toolbox into a Med-Kit.
+Chemical Trap|Ellen Ripley|Trap a dropped Pallet. Killer breaking it is Hindered.
+Clairvoyance|Mikaela Reid|After cleansing Totem, see Auras of objects within 64m.
+Clean Break|Taurie Cain|Press button while being healed to become Broken, automatically healing later.
+Come and Get Me!|Rick Grimes|Suppress tracks for injured Survivors, but you scream and reveal Aura.
+Conviction|Michonne Grimes|While Dying, unlock Self-Recovery, become Broken, re-enter Dying later.
+Corrective Action|Jonah Vasquez|Converts other Survivors' Failed Checks to Good.
+Counterforce|Jill Valentine|Cleansing a Totem grants stackable speed and reveals furthest Totem Aura.
+Cross-Examination|Shane Wiigwaas|See Killer's Light Marks. Standing on Mark grants Elusive.
+Cut Loose|Thalita Lyra|Suppress vault noise/notification after a Rushed Vault.
+Dance With Me|Kate Denson|After Rushing a Window or Locker, suppress Scratch Marks for 5s.
+Dark Sense|All|Upon Generator completion, Killer's Aura is revealed.
+Dead Hard|David King|While injured and running, gain Endurance for 0.5 seconds to dodge hits.
+Deadline|Alan Wake|When injured, Skill Checks appear randomly and more often.
+Deception|Élodie Rakoto|Fake a Locker entry to suppress Scratch Marks and trigger Loud Noise.
+Decisive Strike|Laurie Strode|After unhook, hit a Skill Check when grabbed by Killer to escape.
+Déjà Vu|All|See Auras of 3 closest Generators. Repair speed on them increased.
+Deliverance|Adam Francis|After safe unhook, grants 100% self-unhook chance on first Hook.
+Desperate Measures|Felix Richter|Healing/Unhooking speed increased per injured/dying/hooked Survivor.
+Detective's Hunch|David Tapp|Upon Gen completion, see Auras of Chests, Gens, Totems.
+Distortion|Jeff Johansen|When Killer reads Aura, consume Token to block Aura and suppress Scratch Marks.
+Diversion|Adam Francis|Throw a pebble to create a fake Loud Noise Notification.
+Down to the Last|Laurie Strode|Killed Survivors block Killer Aura-reading. As last Survivor, gain Action speed.
+Dramaturgy|Nicolas Cage|While healthy, gain random effect: Haste, Exposed, scream, or Rare Item.
+Duty of Care|Orela Rose|Taking a Protection Hit grants nearby Survivors Haste.
+Empathic Connection|Yoichi Asakawa|Healing speed increased. Injured Survivors see your Aura.
+Empathy|Claudette Morel|See Auras of injured or dying Survivors within 128 metres.
+Extrasensory Perception|Eleven|Crouch to reveal Auras of Survivors, Killer, and key objects. Gain Elusive.
+Exultation|Trevor Belmont|Stunning Killer with Pallet upgrades holding Item Rarity.
+Eyes of Belmont|Trevor Belmont|Upon Gen completion, see Killer Aura. Extends all Killer Aura reveals.
+Fast Track|Yun-Jin Lee|Great Repair Checks consume Tokens to instantly progress Generator.
+Finesse|Lara Croft|While healthy, Fast Vault speed increased by 20%.
+Five Moves Ahead|Kwon Tae-young|After dropping Pallet, see Auras of 5 closest Pallets/Windows.
+Fixated|Nancy Wheeler|Walking speed increased. See your own Scratch Marks.
+Flashbang|Leon Scott Kennedy|Hide in Locker to craft a Flash Grenade.
+Flip-Flop|Ash Williams|Recovery progress also charges Wiggle progression.
+Flow State|Kwon Tae-young|Completed Gens grant Action speed buffs.
+Fogwise|Vittorio Toscano|Great Repair Skill Check reveals the Killer's Aura.
+For the People|Zarina Kassir|Instantly heal another Survivor by sacrificing your own health state.
+Friendly Competition|Thalita Lyra|Completing a Gen with others grants permanent Repair speed buff.
+Fruits of Your Labor|Aurora Stardotter|Finishing a repair grants Haste and passive healing progress.
+Ghost Notes|Vee Boonyasak|While Exhausted, Scratch Marks fade faster.
+Hardened|Lara Croft|After looting and cleansing, screams reveal Killer's Aura instead.
+Head On|Jane Romero|Sprint-exit a Locker to stun the nearby Killer.
+Hope|All|Once Exit Gates are powered, gain a permanent Haste Status Effect.
+Hyperfocus|Rebecca Chambers|Great Skill Checks grant Tokens for massive bonus repair progression.
+Inner Focus|Haddie Kaur|See other Survivors' Scratch Marks. See Killer Aura when ally takes a hit.
+Inner Strength|Nancy Wheeler|After cleansing Totem, hiding in Locker heals you.
+Invocation: Treacherous Crows|Taurie Cain|Basement ritual. Killer scaring Crows reveals Aura. You become Broken permanently.
+Invocation: Weaving Spiders|Sable Ward|Basement ritual. Reduces all Gen repair requirements. You become Broken permanently.
+Iron Will|Jake Park|While injured, Grunt volume is reduced to 0%.
+Kindred|All|When anyone is hooked, see Killer Aura and all Survivor Auras.
+Last Stand|Michonne Grimes|Rushed Vault stuns Killer if close enough. Disables after use.
+Leader|Dwight Fairfield|Nearby Survivors gain massive Action speed buffs.
+Left Behind|Bill Overbeck|As the Last Survivor, see Hatch Aura.
+Lend a Hand|Shane Wiigwaas|After Cleansing, grant another Survivor permanent healing charges.
+Light-Footed|Ellen Ripley|While healthy, suppress footstep sounds entirely.
+Lightweight|All|Scratch Mark lifetime and spawn chance significantly reduced.
+Lithe|Feng Min|Rushed Vault grants massive Haste for 3 seconds. Causes Exhausted.
+Low Profile|Ada Wong|When last one standing, suppress Grunts, Blood, and Scratch Marks.
+Lucky Break|Yui Kimura|When injured, completely suppress Blood and Scratch Marks temporarily.
+Lucky Star|Ellen Ripley|Suppress Grunts in Lockers. Exiting reveals Auras.
+Made for This|Gabriel Soma|Healing grants Endurance. While Deep Wound, running grants Haste.
+Mettle of Man|Ash Williams|Take Protection Hits to ignore the next hit that would down you.
+Mirrored Illusion|Aestri (The Troupe)|Spawn a Static Illusion of yourself on a Gen/Totem.
+Moment of Glory|Trevor Belmont|After looting 2 Chests, become Broken upon injury and auto-heal later.
+No Mither|David King|Permanently Broken (injured). Leave no blood, suppress grunts, infinite self-pickup.
+No One Left Behind|All|Endgame altruism speed +100%. See all Auras.
+Off the Record|Zarina Kassir|After unhook, block Aura, suppress tracks, and gain Endurance.
+One-Two-Three-Four!|Vee Boonyasak|Perform music. Grants nearby Survivors bonus Skill Check odds.
+Open-Handed|Ace Visconti|Increases all Survivors' Aura-reading ranges by 16 metres.
+Overcome|Jonah Vasquez|Taking damage extends your On-hit Sprint duration.
+Overzealous|Haddie Kaur|Cleansing a Totem grants Repair speed until you get injured.
+Parental Guidance|Yoichi Asakawa|Stunning Killer suppresses Grunts, Scratch Marks, and Blood.
+Pharmacy|Quentin Smith|Chests open faster and guarantee an Emergency Med-Kit.
+Plot Twist|Nicolas Cage|Silently enter Dying State to fully self-recover and gain Haste.
+Plunderer's Instinct|All|See Auras of Chests. Find much rarer Items.
+Poised|Jane Romero|Completing a Gen suppresses Scratch Marks. See Killer Aura on first repair.
+Potential Energy|Vittorio Toscano|Store Repair progression as Tokens to instantly dump into another Gen later.
+Power Struggle|Élodie Rakoto|Drop Pallet while being carried to stun Killer and escape.
+Premonition|All|Audio cue when looking in Killer's direction.
+Prove Thyself|Dwight Fairfield|Repairing together grants bonus Repair speed to all involved.
+Quick & Quiet|Meg Thomas|Make completely silent Rushed Vaults or Locker entries.
+Quick Gambit|Vittorio Toscano|Being chased near allies gives them a Repair speed boost.
+Rapid Response|Orela Rose|When Exhausted, see Killer's Aura. Rushing Locker triggers Exhausted.
+Reactive Healing|Ada Wong|Gain healing progress when an ally gets hit nearby.
+Reassurance|Rebecca Chambers|Pause a hooked Survivor's Sacrifice timer from a distance.
+Red Herring|Zarina Kassir|Enter Locker to trigger a fake Loud Noise Notification on a repaired Gen.
+Repressed Alliance|Cheryl Mason|Block a Generator with the Entity to stop Killer from kicking it.
+Residual Manifest|Haddie Kaur|Blinding Killer inflicts Blindness. Rummage opened Chest for Flashlight.
+Resilience|All|When injured, perform all Actions 9% faster.
+Resurgence|Jill Valentine|Start with 70% Healing progression after being unhooked.
+Road Life|Vee Boonyasak|Repair Great Checks grant Tokens. Consume for +100% Healing speed.
+Rookie Spirit|Leon Scott Kennedy|Permanently see Auras of regressing Generators after hitting skill checks.
+Saboteur|Jake Park|See Hook Auras when Killer picks someone up. Sabotage hooks without Toolbox.
+Salvation's Cry|Aurora Stardotter|When chased, see ally Auras. They see you and the Killer.
+Scavenger|Gabriel Soma|Great Repair Checks recharge depleted Toolbox but incur Repair penalty.
+Scene Partner|Nicolas Cage|Looking at Killer makes you scream but reveals their Aura.
+Second Wind|Steve Harrington|Heal an ally. Next time you're unhooked, you auto-heal over time.
+Self-Care|Claudette Morel|Unlock self-heal ability without a Med-Kit at 35% speed.
+Self-Preservation|Yun-Jin Lee|When another Survivor is hooked, gain Elusive Status Effect.
+Shoulder the Burden|Taurie Cain|Unhook an ally to trade a Hook Stage with them. You become Exposed.
+Slippery Meat|All|Gain 3 extra Self-Unhook attempts and higher luck.
+Small Game|All|Audio cue when looking at a hidden Totem.
+Smash Hit|Yun-Jin Lee|Stunning Killer with a Pallet grants massive Haste. Causes Exhausted.
+Solidarity|Jane Romero|Healing another passively heals yourself at the same time.
+Soul Guard|Cheryl Mason|Picking yourself up grants Endurance. Infinite pickups if Cursed by Hex.
+Specialist|Lara Croft|Loot Chests for Tokens. Consume on Gens to permanently reduce required charges.
+Spine Chill|All|UI lights up when Killer looks at you. Grants minor Action speed.
+Sprint Burst|Meg Thomas|Starting to run grants immediate massive Haste. Causes Exhausted.
+Stake Out|David Tapp|Hide in Terror Radius for Tokens. Tokens guarantee Great Skill Checks.
+Still Sight|Aestri (The Troupe)|Standing still reveals Killer, Chest, and Gen Auras.
+Streetwise|Nea Karlsson|Items last significantly longer. See Killer Aura when item breaks.
+Strength in Shadows|Sable Ward|Unlock fast self-heal in the Basement. Reveals Killer Aura after.
+Teamwork: Collective Stealth|Renato Lyra|After healing, both survivors leave no Scratch Marks while close.
+Teamwork: Full Circuit|Dustin Henderson|Co-op repairing grants larger Skill Check zones and extra speed.
+Teamwork: Power of Two|Thalita Lyra|After healing, both survivors gain Haste while staying close.
+Teamwork: Soft-Spoken|Eleven|Co-op repairing is quieter and faster.
+Teamwork: Throw Down|Michonne Grimes|Blinding/stunning Killer grants Endurance to all injured nearby allies.
+Teamwork: Toughen Up|Rick Grimes|Ally stunning Killer suppresses your injured tracks completely.
+Technician|Feng Min|Missed Gen skill checks don't explode, but lose extra progress. Gen noises reduced.
+Tenacity|David Tapp|Crawl faster on the ground while recovering simultaneously. Suppress grunts.
+This Is Not Happening|All|While injured, Great Skill Check success zones are much larger.
+Troubleshooter|Gabriel Soma|When chased, see most progressed Gen. Dropping Pallet reveals Killer Aura.
+Unbreakable|Bill Overbeck|Recover on ground faster. Once per trial, pick yourself up completely.
+Up the Ante|Ace Visconti|All Survivors can self-unhook on first stage. Grants team luck.
+Urban Evasion|Nea Karlsson|Crouch walking is as fast as normal walking.
+Vigil|Quentin Smith|Recover from Exhaustion and negative status effects much faster.
+Visionary|Felix Richter|See all Generator Auras nearby.
+Wake Up!|Quentin Smith|See Gate Auras. Open Gates significantly faster.
+We See You|Eleven|When Killer reads your Aura, store Tokens to reveal Killer to team later.
+We'll Make It|All|After unhooking, heal others at double speed for 90 seconds.
+We're Gonna Live Forever|David King|Heal Dying Survivors at double speed. Grants them Endurance.
+Wicked|Sable Ward|100% self-unhook chance in the Basement. See Killer Aura after unhook.
+Wide Open Throttle|Shane Wiigwaas|Fast-vaulting a Pallet grants Haste and resets/blocks the Pallet.
+Will to Live|All|After unhook, escape Killer's grasp if grabbed.
+Windows of Opportunity|Kate Denson|See Auras of all Pallets and Windows nearby.
+Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.
+        `;
+
+        const iconFilenames = ["IconPerks_aceInTheHole.webp", "IconPerks_adrenaline.webp", "IconPerks_aftercare.webp", "IconPerks_alert.webp", "IconPerks_anyMeansNecessary.webp", "IconPerks_appraisal.webp", "IconPerks_autodidact.webp", "IconPerks_babysitter.webp", "IconPerks_backgroundPlayer.webp", "IconPerks_balancedLanding.webp", "IconPerks_bardicInspiration.webp", "IconPerks_betterThanNew.webp", "IconPerks_betterTogether.webp", "IconPerks_biteTheBullet.webp", "IconPerks_blastMine.webp", "IconPerks_bloodPact.webp", "IconPerks_bloodRush.webp", "IconPerks_boilOver.webp", "IconPerks_bond.webp", "IconPerks_boonCircleOfHealing.webp", "IconPerks_boonDarkTheory.webp", "IconPerks_boonExponential.webp", "IconPerks_boonIllumination.webp", "IconPerks_boonShadowStep.webp", "IconPerks_borrowedTime.webp", "IconPerks_botanyKnowledge.webp", "IconPerks_breakdown.webp", "IconPerks_breakout.webp", "IconPerks_buckleUp.webp", "IconPerks_builtToLast.webp", "IconPerks_calmSpirit.webp", "IconPerks_camaraderie.webp", "IconPerks_championOfLight.webp", "IconPerks_chemicalTrap.webp", "IconPerks_clairvoyance.webp", "IconPerks_cleanBreak.webp", "IconPerks_correctiveAction.webp", "IconPerks_counterforce.webp", "IconPerks_cutLoose.webp", "IconPerks_danceWithMe.webp", "IconPerks_darkSense.webp", "IconPerks_deadHard.webp", "IconPerks_deadline.webp", "IconPerks_deception.webp", "IconPerks_decisiveStrike.webp", "IconPerks_dejaVu.webp", "IconPerks_deliverance.webp", "IconPerks_desperateMeasures.webp", "IconPerks_detectivesHunch.webp", "IconPerks_distortion.webp", "IconPerks_diversion.webp", "IconPerks_dramaturgy.webp", "IconPerks_empathicConnection.webp", "IconPerks_empathy.webp", "IconPerks_Exultation.webp", "IconPerks_EyesOfBelmont.webp", "IconPerks_fastTrack.webp", "IconPerks_finesse.webp", "IconPerks_fixated.webp", "IconPerks_flashbang.webp", "IconPerks_flipFlop.webp", "IconPerks_fogwise.webp", "IconPerks_forThePeople.webp", "IconPerks_friendlyCompetition.webp", "IconPerks_hardened.webp", "IconPerks_headOn.webp", "IconPerks_hope.webp", "IconPerks_hyperfocus.webp", "IconPerks_iconperksDejavu.webp", "IconPerks_innerFocus.webp", "IconPerks_innerStrength.webp", "IconPerks_invocationTreacherousCrows.webp", "IconPerks_invocationWeavingSpiders.webp", "IconPerks_ironWill.webp", "IconPerks_kindred.webp", "IconPerks_leader.webp", "IconPerks_leftBehind.webp", "IconPerks_lightFooted.webp", "IconPerks_lightweight.webp", "IconPerks_lithe.webp", "IconPerks_lowProfile.webp", "IconPerks_luckyBreak.webp", "IconPerks_luckyStar.webp", "IconPerks_madeForThis.webp", "IconPerks_mettleOfMan.webp", "IconPerks_mirroredIllusion.webp", "IconPerks_MomentOfGlory.webp", "IconPerks_noMither.webp", "IconPerks_noOneLeftBehind.webp", "IconPerks_objectOfObsession.webp", "IconPerks_offTheRecord.webp", "IconPerks_openHanded.webp", "IconPerks_overcome.webp", "IconPerks_overzealous.webp", "IconPerks_parentalGuidance.webp", "IconPerks_pharmacy.webp", "IconPerks_plotTwist.webp", "IconPerks_plunderersInstinct.webp", "IconPerks_poised.webp", "IconPerks_potentialEnergy.webp", "IconPerks_powerStruggle.webp", "IconPerks_premonition.webp", "IconPerks_proveThyself.webp", "IconPerks_quickGambit.webp", "IconPerks_quick&Quiet.webp", "IconPerks_reactiveHealing.webp", "IconPerks_reassurance.webp", "IconPerks_redHerring.webp", "IconPerks_repressedAlliance.webp", "IconPerks_residualManifest.webp", "IconPerks_resilience.webp", "IconPerks_resurgence.webp", "IconPerks_rookieSpirit.webp", "IconPerks_saboteur.webp", "IconPerks_scavenger.webp", "IconPerks_scenePartner.webp", "IconPerks_secondWind.webp", "IconPerks_selfCare.webp", "IconPerks_selfPreservation.webp", "IconPerks_shoulderTheBurden.webp", "IconPerks_slipperyMeat.webp", "IconPerks_smallGame.webp", "IconPerks_smashHit.webp", "IconPerks_soleSurvivor.webp", "IconPerks_solidarity.webp", "IconPerks_soulGuard.webp", "IconPerks_specialist.webp", "IconPerks_spineChill.webp", "IconPerks_sprintBurst.webp", "IconPerks_stakeOut.webp", "IconPerks_stillSight.webp", "IconPerks_streetwise.webp", "IconPerks_strengthInShadows.webp", "IconPerks_teamworkCollectiveStealth.webp", "IconPerks_teamworkPowerOfTwo.webp", "IconPerks_technician.webp", "IconPerks_tenacity.webp", "IconPerks_thisIsNotHappening.webp", "IconPerks_troubleshooter.webp", "IconPerks_unbreakable.webp", "IconPerks_upTheAnte.webp", "IconPerks_urbanEvasion.webp", "IconPerks_vigil.webp", "IconPerks_visionary.webp", "IconPerks_wakeUp.webp", "IconPerks_wellMakeIt.webp", "IconPerks_wereGonnaLiveForever.webp", "IconPerks_wicked.webp", "IconPerks_windowsOfOpportunity.webp", "IconPerks_wiretap.webp"];
+
+        function getExactOrFuzzyFilename(perkName) {
+            const normPerk = perkName.toLowerCase().replace(/[^a-z0-9]/g, '');
+            const overrides = { 'quickquiet': 'IconPerks_quick&Quiet.webp', 'dejavu': 'IconPerks_dejaVu.webp', 'downtothelast': 'IconPerks_soleSurvivor.webp', 'solesurvivor': 'IconPerks_soleSurvivor.webp', 'decisivestrike': 'IconPerks_decisiveStrike.webp', 'willtolive': 'IconPerks_decisiveStrike.webp', 'boundbyobsession': 'IconPerks_objectOfObsession.webp', 'objectofobsession': 'IconPerks_objectOfObsession.webp' };
+            if (overrides[normPerk]) return overrides[normPerk];
+            for (let file of iconFilenames) {
+                let cleanFile = file.replace('IconPerks_', '').replace('.webp', '').toLowerCase().replace(/[^a-z0-9]/g, '');
+                if (cleanFile === normPerk || cleanFile.includes(normPerk) || normPerk.includes(cleanFile)) return file;
+            }
+            let camelCase = perkName.replace(/[^a-zA-Z0-9 ]/g, '').split(' ').map((w, i) => i === 0 ? w.toLowerCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
+            return `IconPerks_${camelCase}.webp`;
+        }
+
+        const ALL_PERKS = [];
+        rawPerkData.trim().split('\n').forEach(line => {
+            if(!line.trim()) return;
+            const parts = line.split('|');
+            if(parts.length === 3) {
+                ALL_PERKS.push({
+                    name: parts[0].trim(),
+                    character: parts[1].trim(),
+                    effect: parts[2].trim(),
+                    iconPath: `../assets/images/perks/${getExactOrFuzzyFilename(parts[0].trim())}`
+                });
+            }
+        });
+
+        // Initialize Inventory
+        let characters = [...new Set(ALL_PERKS.map(p => p.character))].sort((a,b) => a === 'All' ? -1 : b === 'All' ? 1 : a.localeCompare(b));
+        characters.forEach(c => STATE.ownedCharacters.add(c)); // Default all owned
+
+        /* ==========================================================================
+           UI RENDERING & TAB SWITCHING
+           ========================================================================== */
+        function switchTab(tabId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(`view-${tabId}`).classList.add('active');
+            event.currentTarget.classList.add('active');
+
+            if(tabId === 'dashboard') updateDashboardUI();
+            if(tabId === 'roster') renderInventoryCheckboxes();
+        }
+
+        function updateDashboardUI() {
+            document.getElementById('stat-safe').textContent = STATE.safeBank;
+            document.getElementById('stat-pot').textContent = STATE.currentPot;
+            document.getElementById('stat-streak').textContent = STATE.currentStreak;
+            document.getElementById('stat-jail').textContent = STATE.ransomJail.length;
+            
+            // Progress Bar
+            let percent = Math.min(100, (STATE.safeBank / 20000) * 100);
+            document.getElementById('goal-progress').style.width = `${percent}%`;
+            document.getElementById('goal-text').textContent = `${STATE.safeBank} / 20,000 Pts`;
+
+            // Toggle Jailbreak button
+            document.getElementById('btnJailbreak').style.display = STATE.ransomJail.length > 0 ? 'inline-block' : 'none';
+        }
+
+        function renderInventoryCheckboxes() {
+            const container = document.getElementById('inventoryGrid');
+            if(container.children.length > 0) return; // already rendered
+
+            characters.forEach(char => {
+                const label = document.createElement('label');
+                label.className = 'char-checkbox-label';
+                const input = document.createElement('input');
+                input.type = 'checkbox';
+                input.checked = STATE.ownedCharacters.has(char);
+                
+                if (char === 'All') input.disabled = true;
+                else {
+                    input.addEventListener('change', (e) => {
+                        if (e.target.checked) STATE.ownedCharacters.add(char);
+                        else STATE.ownedCharacters.delete(char);
+                        saveToFirebase(); // Sync
+                    });
+                }
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(char));
+                container.appendChild(label);
+            });
+        }
+
+        /* ==========================================================================
+           GAME LOGIC (DRAFTING, WIN/LOSS)
+           ========================================================================== */
+        function startDraft(isDoubleDown = false) {
+            // Close decision panel if active
+            document.getElementById('decisionPanel').classList.remove('active');
+            clearInterval(decisionTimeout);
+
+            const displayArea = document.getElementById('perkDisplayArea');
+            const btnInitiate = document.getElementById('btnInitiate');
+            const partySize = parseInt(document.getElementById('party-size').value);
+            const numPerks = partySize * 4;
+            
+            // Hide action zones during animation
+            document.getElementById('actionZoneInitial').style.display = 'none';
+            document.getElementById('actionZoneMatch').style.display = 'none';
+            
+            displayArea.innerHTML = ''; 
+
+            // Filter pool (Exclude Jailed & Unowned)
+            let availablePool = ALL_PERKS.filter(p => 
+                STATE.ownedCharacters.has(p.character) && !STATE.ransomJail.includes(p.name)
+            );
+            
+            if (availablePool.length < numPerks) {
+                alert(`CRITICAL ERROR: Not enough perks in inventory to supply ${numPerks} perks! Un-jail perks or adjust roster.`);
+                document.getElementById('actionZoneInitial').style.display = 'block';
+                return;
+            }
+
+            // Shuffle
+            let shuffled = [...availablePool];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            
+            STATE.activeDraft = shuffled.slice(0, numPerks);
+
+            // Render Perks
+            STATE.activeDraft.forEach((perk, index) => {
+                const card = document.createElement('div');
+                card.className = 'perk-card-container';
+                const node = document.createElement('div'); node.className = 'perk-node';
+                const rhombus = document.createElement('div'); rhombus.className = 'rhombus-outer';
+                
+                const img = document.createElement('img');
+                img.className = 'rhombus-inner-img'; img.alt = perk.name; img.src = perk.iconPath;
+                img.onerror = function() {
+                    this.style.display = 'none';
+                    const fallback = document.createElement('div'); fallback.className = 'perk-fallback-badge';
+                    fallback.textContent = perk.name.replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase();
+                    rhombus.appendChild(fallback);
+                };
+
+                rhombus.appendChild(img); node.appendChild(rhombus);
+                const label = document.createElement('div'); label.className = 'perk-name-label'; label.textContent = perk.name;
+                card.appendChild(node); card.appendChild(label);
+                
+                attachTooltipEvents(card, perk);
+                displayArea.appendChild(card);
+                setTimeout(() => card.classList.add('revealed'), index * 120);
+            });
+
+            // Re-show match actions after animation
+            setTimeout(() => {
+                document.getElementById('actionZoneMatch').style.display = 'flex';
+                saveToFirebase();
+            }, numPerks * 120 + 400);
+        }
+
+        function initiateJailbreak() {
+            STATE.isJailbreakActive = true;
+            startDraft();
+        }
+
+        function resolveMatch(outcome) {
+            document.getElementById('actionZoneMatch').style.display = 'none';
+
+            if(outcome === 'win') {
+                if(STATE.isJailbreakActive) {
+                    // Win Jailbreak
+                    STATE.ransomJail = [];
+                    STATE.isJailbreakActive = false;
+                    alert("JAILBREAK SUCCESSFUL: All perks freed.");
+                    resetToInitialState();
+                } else {
+                    // Normal Win -> Decision Phase
+                    STATE.currentStreak = Math.min(5, STATE.currentStreak + 1);
+                    STATE.currentPot = POT_STAGES[STATE.currentStreak];
+                    triggerDecisionPhase();
+                }
+            } else {
+                // Loss
+                if(STATE.isJailbreakActive) {
+                    STATE.safeBank = Math.max(0, STATE.safeBank - 1000);
+                    STATE.isJailbreakActive = false;
+                }
+                
+                // Kidnap current perks
+                STATE.activeDraft.forEach(p => STATE.ransomJail.push(p.name));
+                STATE.currentStreak = 0;
+                STATE.currentPot = 0;
+                STATE.activeDraft = [];
+                
+                resetToInitialState();
+            }
+            saveToFirebase();
+        }
+
+        function triggerDecisionPhase() {
+            const panel = document.getElementById('decisionPanel');
+            const potValue = document.getElementById('decisionPotValue');
+            const timerFill = document.getElementById('decisionTimer');
+            
+            panel.classList.add('active');
+            potValue.textContent = `Pot: ${STATE.currentPot} Pts`;
+            
+            // 60 second timer animation
+            timerFill.style.transition = 'none';
+            timerFill.style.transform = 'scaleX(1)';
+            
+            setTimeout(() => {
+                timerFill.style.transition = 'transform 60s linear';
+                timerFill.style.transform = 'scaleX(0)';
+            }, 50);
+
+            // Auto-force double down if time expires
+            decisionTimeout = setTimeout(() => {
+                if(panel.classList.contains('active')) {
+                    startDraft(true);
+                }
+            }, 60000);
+        }
+
+        function executeCashOut() {
+            STATE.safeBank += STATE.currentPot;
+            STATE.currentPot = 0;
+            STATE.currentStreak = 0;
+            STATE.activeDraft = [];
+            
+            document.getElementById('decisionPanel').classList.remove('active');
+            clearInterval(decisionTimeout);
+            resetToInitialState();
+            updateDashboardUI();
+            saveToFirebase();
+        }
+
+        function resetToInitialState() {
+            document.getElementById('perkDisplayArea').innerHTML = '<p style="color: var(--text-muted); width: 100%; text-align: center; margin-top: 50px;">Awaiting algorithmic input...</p>';
+            document.getElementById('actionZoneInitial').style.display = 'block';
+            updateDashboardUI();
+        }
+
+        /* ==========================================================================
+           TOOLTIP LOGIC
+           ========================================================================== */
+        const tooltip = document.getElementById('custom-tooltip');
+        function attachTooltipEvents(element, perkData) {
+            element.addEventListener('mouseenter', (e) => {
+                document.getElementById('tt-title').textContent = perkData.name;
+                document.getElementById('tt-char').textContent = perkData.character;
+                document.getElementById('tt-effect').innerHTML = perkData.effect.replace(/(\+\d+%|-\d+%|\d+s|\d+m|\d+%)/g, '<strong>$1</strong>');
+                tooltip.classList.add('visible');
+                positionTooltip(e);
+            });
+            element.addEventListener('mousemove', positionTooltip);
+            element.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
+        }
+        function positionTooltip(e) {
+            let x = e.clientX + 20, y = e.clientY + 20;
+            const ttRect = tooltip.getBoundingClientRect();
+            if (x + ttRect.width > window.innerWidth) x = e.clientX - ttRect.width - 20;
+            if (y + ttRect.height > window.innerHeight) y = e.clientY - ttRect.height - 20;
+            tooltip.style.left = `${x}px`; tooltip.style.top = `${y}px`;
+        }
+
+        /* ==========================================================================
+           FIREBASE SYNC PLACEHOLDERS
+           ========================================================================== */
+        function saveToFirebase() {
+            console.log("Saving state to Firestore...", STATE);
+            /*
+            if (auth.currentUser) {
+                db.collection("users").doc(auth.currentUser.uid).set({
+                    safeBank: STATE.safeBank,
+                    currentPot: STATE.currentPot,
+                    currentStreak: STATE.currentStreak,
+                    ransomJail: STATE.ransomJail,
+                    ownedCharacters: Array.from(STATE.ownedCharacters)
+                }, { merge: true });
+            }
+            */
+        }
+
+        function loadFromFirebase() {
+            /*
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    document.getElementById('userEmailDisplay').textContent = user.email;
+                    db.collection("users").doc(user.uid).get().then(doc => {
+                        if (doc.exists) {
+                            let data = doc.data();
+                            STATE.safeBank = data.safeBank || 0;
+                            STATE.currentPot = data.currentPot || 0;
+                            STATE.currentStreak = data.currentStreak || 0;
+                            STATE.ransomJail = data.ransomJail || [];
+                            if(data.ownedCharacters) STATE.ownedCharacters = new Set(data.ownedCharacters);
+                            updateDashboardUI();
+                        }
+                    });
+                }
+            });
+            */
+           updateDashboardUI();
+        }
+
+        function handleSignOut() {
+            /*
+            auth.signOut().then(() => {
+                window.location.href = "login.html"; // Redirect to login
+            });
+            */
+            alert("Connection Severed. (Firebase Auth Sign Out)");
+        }
+
+        // Init
+        window.addEventListener('DOMContentLoaded', () => {
+            loadFromFirebase();
+        });
+
+    </script>
+</body>
+</html>

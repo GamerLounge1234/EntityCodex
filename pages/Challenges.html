@@ -694,34 +694,42 @@
     <!-- ==========================================================================
          THE TRACKER WINDOW (MINIMIZABLE APP UI)
          ========================================================================== -->
-    <div id="tracker-window"
-        style="position: fixed; top: 90px; right: 20px; width: 90vw; max-width: 1100px; height: 80vh; background: rgba(10, 2, 2, 0.95); border: 2px solid #3a0000; z-index: 5000; border-radius: 8px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(255, 0, 0, 0.2); display: none; flex-direction: column; transition: all 0.4s cubic-bezier(0.25, 1, 0.3, 1); overflow: hidden;">
-        <!-- Title Bar -->
+    
+    <!-- 1. KILLER TRACKER WINDOW -->
+    <div id="tracker-window" class="tracker-popup">
         <div style="height: 60px; background: linear-gradient(90deg, #2a0000, #000); border-bottom: 1px solid #ff0505; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; flex-shrink: 0;"
             onclick="TrackerApp.toggleMinimize(event)">
-            <h3
-                style="color: #ffffff; font-family: 'Teko', sans-serif; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; margin: 0;">
+            <h3 style="color: #ffffff; font-family: 'Teko', sans-serif; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; margin: 0;">
                 Entity's <span style="color: #ff0505;">Terminal</span></h3>
             <div>
-                <span id="btn-minimize"
-                    style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer; transition: color 0.2s;">_</span>
-                <span onclick="TrackerApp.close(event)"
-                    style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer; transition: color 0.2s;">X</span>
+                <span style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer; transition: color 0.2s;">_</span>
+                <span onclick="TrackerApp.close(event)" style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer; transition: color 0.2s;">X</span>
             </div>
         </div>
-
-        <!-- App Body (Just basic structure, JS fills it) -->
         <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative;">
-            <div
-                style="display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; padding: 15px; background: rgba(0, 0, 0, 0.5); border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                <button id="nav-roster" onclick="TrackerApp.showView('t-roster')"
-                    style="background: #3a0000; color: white; border: 1px solid #ff0505; padding: 8px 15px; cursor: pointer; font-weight: bold; text-transform: uppercase;">Roster</button>
+            <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; padding: 15px; background: rgba(0, 0, 0, 0.5); border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                <button id="nav-roster" onclick="TrackerApp.showView('t-roster')" style="background: #3a0000; color: white; border: 1px solid #ff0505; padding: 8px 15px; cursor: pointer; font-weight: bold; text-transform: uppercase;">Roster</button>
             </div>
             <div id="t-roster" style="flex: 1; padding: 20px; overflow-y: auto;">
-                <div id="roster-grid"
-                    style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; padding-bottom: 50px;">
-                </div>
+                <div id="roster-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; padding-bottom: 50px;"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- 2. SURVIVOR ROULETTE DASHBOARD WINDOW (IFRAME) -->
+    <div id="roulette-tracker-window" class="tracker-popup">
+        <div style="height: 60px; background: linear-gradient(90deg, #2a0000, #000); border-bottom: 1px solid #ff0505; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; flex-shrink: 0;"
+            onclick="RouletteTrackerApp.toggleMinimize(event)">
+            <h3 style="color: #ffffff; font-family: 'Teko', sans-serif; font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; margin: 0;">
+                Roulette <span style="color: #ff0505;">Dashboard</span></h3>
+            <div>
+                <span style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer; transition: color 0.2s;">_</span>
+                <span onclick="RouletteTrackerApp.close(event)" style="color: #b8a5a5; font-size: 1.5rem; font-weight: bold; margin-left: 15px; cursor: pointer; transition: color 0.2s;">X</span>
+            </div>
+        </div>
+        <!-- Iframe loads the separate HTML file seamlessly inside this div -->
+        <div style="flex: 1; overflow: hidden; background: var(--bg-dark);">
+            <iframe id="roulette-iframe" src="" style="width: 100%; height: 100%; border: none;"></iframe>
         </div>
     </div>
 

@@ -6,9 +6,7 @@
     <title>DBD Challenges - The Entity's Trials</title>
 
     <style>
-        /* ==========================================================================
-           ROOT VARIABLES & PREMIUM THEME DEFINITIONS
-           ========================================================================== */
+
         @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,700;1,400&family=Teko:wght@500;700&family=Nosifer&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap');
 
@@ -300,7 +298,6 @@
         .builder-layout { display: flex; flex-direction: column; gap: 20px; height: 100%; }
         .schools-sidebar { width: 100%; display: flex; overflow-x: auto; gap: 10px; }
 
-        /* The media query MUST come after the mobile styles above it */
         @media (min-width: 800px) { 
             .builder-layout { flex-direction: row; } 
             .schools-sidebar { 
@@ -910,9 +907,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // =======================================================
-        // 🔥 FIREBASE CONFIGURATION GOES HERE 🔥
-        // =======================================================
         const firebaseConfig = {
             apiKey: "AIzaSyBMAxj2E3snmnOcQXIylkIIS1cTnuu0hlY",
             authDomain: "dashboard-1db87.firebaseapp.com",

@@ -635,92 +635,58 @@
         </header>
 
         <section class="rules-wrapper">
-            <!-- Rule 1: Goal & Dynamic Scaling -->
             <div class="rule-card">
                 <div class="rule-header">
                     <span class="rule-number">GOAL</span>
-                    <h2 class="rule-title">Survive or Perish (Dynamic Scaling)</h2>
+                    <h2 class="rule-title">Survive or Perish</h2>
                 </div>
                 <div class="rule-content">
-                    <p>The ultimate goal of The Entity's Roulette is to amass <strong>20,000 Safe Points</strong>. However, the Entity recognizes that the fog is unpredictable, and gathering a full squad isn't always an option. The trial's win and loss conditions scale dynamically based on the number of friends in your lobby. <strong>There are no draws in this challenge any tie goes to the Killer, resulting in a devastating loss.</strong></p>
-                    
+                    <p>The goal is simple: your team must reach <strong>20,000 Safe Points</strong> to win the whole challenge.</p>
+                    <p>The rules adapt depending on how many friends are playing with you. There are no ties in this game. If a tie happens, the Killer wins, and you lose.</p>
                     <table class="win-table">
-                        <tr>
-                            <th>Party Size</th>
-                            <th>Win Condition</th>
-                            <th>Loss Condition</th>
-                        </tr>
-                        <tr>
-                            <td><strong>Squad (4 Players)</strong></td>
-                            <td>3 or 4 Survivors escape</td>
-                            <td>0, 1, or 2 Survivors escape</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Trio (3 Players)</strong></td>
-                            <td>2 or 3 Survivors escape</td>
-                            <td>0 or 1 Survivor escapes</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Duo (2 Players)</strong></td>
-                            <td>BOTH Survivors must escape</td>
-                            <td>0 or 1 Survivor escapes</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Solo (1 Player)</strong></td>
-                            <td>YOU must escape (Hatch or Gates)</td>
-                            <td>You die (Random teammates do not matter)</td>
-                        </tr>
+                        <tr><th>Party Size</th><th>Win Condition</th><th>Loss Condition</th></tr>
+                        <tr><td><strong>Squad (4 Players)</strong></td><td>3 or 4 Survivors escape</td><td>0, 1, or 2 Survivors escape</td></tr>
+                        <tr><td><strong>Trio (3 Players)</strong></td><td>2 or 3 Survivors escape</td><td>0 or 1 Survivor escapes</td></tr>
+                        <tr><td><strong>Duo (2 Players)</strong></td><td>BOTH Survivors must escape</td><td>0 or 1 Survivor escapes</td></tr>
+                        <tr><td><strong>Solo (1 Player)</strong></td><td>YOU must escape (Hatch or Gates)</td><td>You die (Random teammates do not matter)</td></tr>
                     </table>
-                    
                     <div class="highlight-box">
-                        <h4>Detailed Mode Breakdowns</h4>
-                        <p><strong>Solo (Lone Wolf):</strong> Your fate is entirely in your own hands. You are judged solely on your survival. If you escape through the exit gates or the hatch, it is a win. If you die, it is a loss. The fates of the random players in your lobby do not impact your challenge in any way.</p>
-                        <p style="margin-top: 10px;"><strong>Duo (Hardcore Co-Op):</strong> This is arguably the most brutal mode. <strong>Both of you must escape.</strong> If one of you escapes, but the other sacrifices themselves to secure that escape, the Entity claims victory and the entire match counts as a Loss for your tracker.</p>
-                        <p style="margin-top: 10px;"><strong>Trio (Tactical Squad):</strong> You have one random player on your team, but you do not care about them. To win, the majority of your specific trio (at least 2 of you) must escape.</p>
-                        <p style="margin-top: 10px;"><strong>Squad (Full Party):</strong> You control the entire map. To win, you must overwhelmingly defeat the Killer by ensuring at least 3 players make it out alive.</p>
+                        <h4>Example</h4>
+                        <p>If you are playing as a Duo (2 players), it is hardcore mode. Both of you must survive the match to win. If one of you escapes, but the other dies trying to save you, the entire match counts as a Loss.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Rule 2: The Draft -->
             <div class="rule-card">
                 <div class="rule-header">
                     <span class="rule-number">01</span>
-                    <h2 class="rule-title">The Draft (Perk Selection)</h2>
+                    <h2 class="rule-title">Perk Selection</h2>
                 </div>
                 <div class="rule-content">
-                    <p>Before every match, you must select your current Party Size on the dashboard and click the spin button. The Entity's algorithm will grant exactly <strong>4 perks per player in your party</strong>.</p>
-                    <p>If you or your friends do not own certain DLC characters, click the "Manage Perk Inventory" button and uncheck them. The algorithm respects your inventory and will never draft a perk you cannot equip.</p>
+                    <p>Before you play, you must click the button below to spin for random perks. The system will give exactly <strong>4 perks for each person playing</strong>.</p>
+                    <p>Don't own all the characters in the game? No problem. Use your Tracker Dashboard to turn off the characters you do not have. The game will never give you a perk you cannot equip.</p>
                     <div class="highlight-box">
-                        <h4>The Strategy of the Shared Pool</h4>
-                        <p>If you are playing with friends, the algorithm generates a massive shared pool of perks (e.g., 16 perks for a Squad, 12 for a Trio). <strong>You are not forced to assign them randomly!</strong></p>
-                        <p style="margin-top: 10px;">You and your friends look at the entire generated pool and strategically divide them up. Player 1 could act as the medic, taking all the healing perks generated. Player 2 could act as the runner, taking the exhaustion perks. The Entity gives you the tools; it is up to your team to build the optimal loadouts from that pool.</p>
+                        <h4>Example</h4>
+                        <p>If you are playing as a Trio (3 players), the wheel will give you 12 random perks. You and your friends look at all 12 perks and decide who gets which ones. Player 1 could take all the healing perks, while Player 2 takes the running perks. You build the team strategy together.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Rule 3: Ransom Jail & Fluid Parties -->
             <div class="rule-card">
                 <div class="rule-header">
                     <span class="rule-number">02</span>
-                    <h2 class="rule-title">Ransom Jail & Fluid Parties</h2>
+                    <h2 class="rule-title">The Ban System: Ransom Jail</h2>
                 </div>
                 <div class="rule-content">
-                    <p>When you lose a match, the punishment is severe. Your current streak is wiped out, your active Pot of points is destroyed, and the exact perks your team took into that match are abducted into the <strong>Ransom Jail</strong>. Those perks are entirely removed from your available drafting pool.</p>
-                    <p>To retrieve them, you must declare a <strong>Jailbreak Match</strong>. You spin a new set of perks and enter the fog. Win, and the jail doors open, returning all trapped perks to your pool. Lose, and your Safe Bank is penalized 1,000 Points, while your newly drafted perks join the others in confinement.</p>
-                    
+                    <p>If you lose a game, you do not just lose points. The perks your team used are locked away in <strong>Ransom Jail</strong>. You cannot use them again. As more perks go to jail, you have fewer options left.</p>
+                    <p>But you can try to rescue them! Before a game starts, tell your team you are doing a <strong>Jailbreak Match</strong>. You spin for new perks and play. If you win, all trapped perks are free. If you lose, you lose 1,000 points from your bank, and your new perks get locked in jail too.</p>
                     <div class="highlight-box">
-                        <h4>The Fluid Party System (Changing Team Sizes)</h4>
-                        <p>What happens if your friends log off, or a new friend joins mid-session? <strong>The challenge seamlessly adapts.</strong> The Safe Bank, the active Pot, and the Ransom Jail are tied to <em>your specific account</em>, not the lobby.</p>
-                        <ul style="margin-top: 10px; margin-left: 20px; color: #ccc; line-height: 1.6;">
-                            <li><strong>Scenario A (Scaling Down):</strong> You play 3 games as a Trio, building a 1,000 point Pot. You lose the 4th game, sending 12 perks to Ransom Jail. Your two friends log off. You change the tracker to "Solo". Your 1,000 point Pot is gone, but the 12 perks remain in *your* Ransom Jail. If you start a Solo Jailbreak, you will draft only 4 perks. If you escape alone, you free all 12 of the perks your Trio lost earlier!</li>
-                            <li><strong>Scenario B (Scaling Up):</strong> You are playing Solo and have 500 points in your active Pot. A friend comes online. You switch the tracker to "Duo". Your 500 points carry over safely! You simply draft 8 perks for the next match and continue your streak seamlessly as a Duo.</li>
-                        </ul>
+                        <h4>Example</h4>
+                        <p>You lose a game while using Sprint Burst and Adrenaline. Those perks are now locked in jail. Two games later, you decide to do a "Jailbreak Match" and you win. Sprint Burst and Adrenaline are now free and can show up on the wheel again.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Rule 4: Cash Out -->
             <div class="rule-card">
                 <div class="rule-header">
                     <span class="rule-number">03</span>
@@ -728,24 +694,27 @@
                 </div>
                 <div class="rule-content">
                     <p>When you win, you earn points in a temporary 'Pot'. You have exactly 60 seconds to make a choice:</p>
-                    <p style="font-family: var(--font-mono); color: var(--gold-ascension); font-size: 1.2rem; margin: 15px 0;">Win 1: 200 pts | Win 2: 500 pts | Win 3: 1,000 pts | Win 4: 2,000 pts | Win 5: 4,000 pts</p>
-                    <p><strong>Choice A: Cash Out (Safe).</strong> You secure the Pot. The points are permanently added to your Safe Bank, bringing you closer to the 20,000 goal. However, your winning streak resets to zero, meaning your next win will only grant 200 points.</p>
-                    <p style="margin-top: 10px;"><strong>Choice B: Double Down (Greed).</strong> You leave the points in the Pot and spin for the next match. If you win, the multiplier grows massively. If you lose, the Pot is entirely wiped to zero, your streak dies, and all perks used are sent to jail.</p>
+                    <p>Win 1: 200 pts | Win 2: 500 pts | Win 3: 1,000 pts | Win 4: 2,000 pts | Win 5: 4,000 pts</p>
+                    <p><strong>Choice A: Cash Out (Safe).</strong> Save the points to your Safe Bank. They are yours forever, but your winning streak goes back to zero.</p>
+                    <p><strong>Choice B: Spin Again (Greed).</strong> Risk it! Leave the points in the Pot and play another match. Win, and the points grow huge. Lose, and you lose all Pot points, plus your perks go to jail.</p>
+                    <div class="highlight-box">
+                        <h4>Example</h4>
+                        <p>You win your first match and get 200 points. You choose "Spin Again". You win the second match, so the Pot grows to 500 points. Now you choose "Cash Out". Those 500 points are added to your Safe Bank forever. Next time you win, you will start back at 200 points.</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- Rule 5: Gold -->
             <div class="rule-card gold-tier">
                 <div class="rule-header">
                     <span class="rule-number">04</span>
                     <h2 class="rule-title">The Golden Spin</h2>
                 </div>
                 <div class="rule-content">
-                    <p>To ensure complacency does not take root, the algorithm harbors a secret. Every time you spin the roulette, there is a flat <strong>15% chance</strong> the interface will glow gold.</p>
-                    <p>When you trigger a Golden Spin, the point reward for your upcoming match is automatically <strong>tripled</strong>. However, the Entity demands blood for this blessing.</p>
+                    <p>Every time you spin for new perks, there is a small chance the screen will turn Gold. This is a <strong>Golden Spin!</strong></p>
+                    <p>When this happens, the points for your next match are multiplied by three. But there is a massive catch: <strong>You are not allowed to "Cash Out" after a Golden Spin game.</strong> You must play at least one more game after it and risk all those points.</p>
                     <div class="highlight-box">
-                        <h4>The Golden Curse</h4>
-                        <p>If you survive and win a Golden Spin match, <strong>you are strictly forbidden from Cashing Out.</strong> The system will lock the Cash Out button. You are forced to carry that massive, inflated Pot into the next trial and risk everything once more. Greed is mandatory.</p>
+                        <h4>Example</h4>
+                        <p>You are on a 2-game win streak (500 points in the Pot). You spin the wheel and get a Golden Spin! You win the match, earning you 3,000 points (1,000 points for winning game 3, multiplied by 3). But you cannot save them yet! You MUST hit "Spin Again" and risk all 3,000 points in the next game.</p>
                     </div>
                 </div>
             </div>
@@ -1510,54 +1479,34 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
            ROULETTE (SURVIVOR) LOGIC
            ========================================================================== */
         const RouletteState = {
-            safeBank: 0, currentPot: 0, currentStreak: 0, ransomJail: [], 
-            activeDraft: [], // Stores current match perks to prevent refresh dodging
+            safeBank: 0, currentPot: 0, currentStreak: 0, ransomJail: [], activeDraft: [],
             isGoldenMode: false, ownedCharacters: new Set(), isJailbreakActive: false,
-            
             async load() {
-                // Initialize default owned characters
+                // Initialize default owned
                 let chars = [...new Set(SURVIVOR_PERKS.map(p => p.character))];
                 chars.forEach(c => this.ownedCharacters.add(c));
-                
                 if(!db) {
-                    RouletteUI.restorePhase();
+                    RouletteUI.updateDashboard(); RouletteUI.renderInventory();
                     return;
                 }
                 try {
                     const docSnap = await getDoc(doc(db, 'roulette_state', currentUser));
                     if (docSnap.exists()) {
                         const data = docSnap.data();
-                        this.safeBank = data.safeBank || 0; 
-                        this.currentPot = data.currentPot || 0; 
-                        this.currentStreak = data.currentStreak || 0;
+                        this.safeBank = data.safeBank || 0; this.currentPot = data.currentPot || 0; this.currentStreak = data.currentStreak || 0;
                         this.ransomJail = data.ransomJail || [];
-                        this.activeDraft = data.activeDraft || [];
-                        this.isGoldenMode = data.isGoldenMode || false;
-                        this.isJailbreakActive = data.isJailbreakActive || false;
                         if (data.ownedCharacters) this.ownedCharacters = new Set(data.ownedCharacters);
                     }
-                    // Restore the exact phase the player was in (prevents refresh exploiting)
-                    RouletteUI.restorePhase();
+                    RouletteUI.updateDashboard(); RouletteUI.renderInventory();
                 } catch (e) { 
                     console.error("Firebase Roulette Load Error:", e);
-                    RouletteUI.restorePhase(); 
+                    RouletteUI.updateDashboard(); RouletteUI.renderInventory(); 
                 }
             },
             async save() {
                 RouletteUI.updateDashboard();
                 if(!db) return;
-                try { 
-                    await setDoc(doc(db, 'roulette_state', currentUser), { 
-                        safeBank: this.safeBank, 
-                        currentPot: this.currentPot, 
-                        currentStreak: this.currentStreak, 
-                        ransomJail: this.ransomJail, 
-                        activeDraft: this.activeDraft,
-                        isGoldenMode: this.isGoldenMode,
-                        isJailbreakActive: this.isJailbreakActive,
-                        ownedCharacters: Array.from(this.ownedCharacters) 
-                    }, { merge: true }); 
-                } 
+                try { await setDoc(doc(db, 'roulette_state', currentUser), { safeBank: this.safeBank, currentPot: this.currentPot, currentStreak: this.currentStreak, ransomJail: this.ransomJail, ownedCharacters: Array.from(this.ownedCharacters) }, { merge: true }); } 
                 catch (e) { console.error("Firebase Roulette Save Error:", e);}
             }
         };
@@ -1571,7 +1520,6 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                 document.querySelectorAll('#survivor-tracker-window .tracker-nav button').forEach(b => b.classList.remove('active-btn'));
                 document.getElementById(viewId).classList.add('active');
                 if (document.getElementById(`nav-${viewId.substring(2)}`)) document.getElementById(`nav-${viewId.substring(2)}`).classList.add('active-btn');
-                
                 if (viewId === 't-s-dashboard') RouletteUI.updateDashboard();
                 if (viewId === 't-s-roster') RouletteUI.renderInventory();
                 if (viewId === 't-s-leaderboard') RouletteLeaderboard.fetch();
@@ -1584,18 +1532,13 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                 document.getElementById('s-stat-pot').textContent = RouletteState.currentPot;
                 document.getElementById('s-stat-streak').textContent = RouletteState.currentStreak;
                 document.getElementById('s-stat-jail').textContent = RouletteState.ransomJail.length;
-                
                 let percent = Math.min(100, (RouletteState.safeBank / 20000) * 100);
                 document.getElementById('s-goal-progress').style.width = `${percent}%`;
                 document.getElementById('s-goal-text').textContent = `${RouletteState.safeBank} / 20,000 Pts`;
-                
-                // Only allow Jailbreak if they have jailed perks AND are not currently mid-streak
-                document.getElementById('s_btnJailbreak').style.display = (RouletteState.ransomJail.length > 0 && RouletteState.currentPot === 0) ? 'inline-block' : 'none';
+                document.getElementById('btnJailbreak').style.display = RouletteState.ransomJail.length > 0 ? 'inline-block' : 'none';
             },
             renderInventory() {
-                const container = document.getElementById('rouletteInventoryCheckboxes'); 
-                if(container.children.length > 0) return; 
-
+                const container = document.getElementById('s-inventoryGrid'); container.innerHTML = '';
                 let chars = [...new Set(SURVIVOR_PERKS.map(p => p.character))].sort((a,b) => a === 'All' ? -1 : b === 'All' ? 1 : a.localeCompare(b));
                 chars.forEach(char => {
                     const label = document.createElement('label'); label.className = 'char-checkbox-label';
@@ -1610,107 +1553,40 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                     label.appendChild(input); label.appendChild(document.createTextNode(char)); container.appendChild(label);
                 });
             },
-            restorePhase() {
-                this.updateDashboard();
-                this.renderInventory();
-
-                // Phase 2: User refreshed DURING a match (Anti-Dodging logic)
-                if (RouletteState.activeDraft.length > 0) {
-                    RouletteGame.rebuildDraftUI();
-                } 
-                // Phase 3: User refreshed during the DECISION phase (Anti-Golden Curse Bypass)
-                else if (RouletteState.currentPot > 0) {
-                    RouletteGame.triggerDecisionPhase(false); // pass false to not restart the 60s timer infinitely
-                } 
-                // Phase 1: Normal Idle Phase
-                else {
-                    this.resetToInitial();
-                }
-            },
             resetToInitial() {
-                document.getElementById('roulettePerkDisplayArea').innerHTML = '<p style="color: var(--text-muted); width: 100%; text-align: center; margin-top: 50px;">Awaiting algorithmic input...</p>';
-                document.getElementById('s_actionZoneInitial').style.display = 'flex';
-                document.getElementById('s_actionZoneMatch').style.display = 'none';
-                document.getElementById('s_decisionPanel').style.display = 'none';
-                document.getElementById('rouletteGoldenBanner').style.display = 'none';
-                document.getElementById('rouletteRandomizerBox').classList.remove('golden-active');
+                document.getElementById('s-perkDisplayArea').innerHTML = '<p style="color: var(--text-muted); width: 100%; text-align: center; margin-top: 50px;">Awaiting algorithmic input...</p>';
+                document.getElementById('s-actionZoneInitial').style.display = 'flex';
+                document.getElementById('s-actionZoneMatch').style.display = 'none';
                 this.updateDashboard();
             }
         };
 
         const RouletteGame = {
             startDraft(isDoubleDown = false) {
-                document.getElementById('s_decisionPanel').style.display = 'none'; 
-                clearInterval(rouletteDecisionTimeout);
-                
-                // IMPORTANT BUG FIX: Look specifically for the Roulette party size dropdown
-                const partySelect = document.getElementById('roulettePartySize');
-                const partySize = parseInt(partySelect.value);
+                document.getElementById('s-decisionPanel').classList.remove('active'); clearInterval(rouletteDecisionTimeout);
+                const displayArea = document.getElementById('s-perkDisplayArea');
+                const btnInitiate = document.getElementById('btnInitiate');
+                const partySize = parseInt(document.getElementById('party-size').value);
                 const numPerks = partySize * 4;
                 
-                const displayArea = document.getElementById('roulettePerkDisplayArea');
-                const btnInitiate = document.getElementById('s_btnInitiate');
-                
-                document.getElementById('s_actionZoneInitial').style.display = 'none';
-                document.getElementById('s_actionZoneMatch').style.display = 'none';
+                document.getElementById('s-actionZoneInitial').style.display = 'none';
+                document.getElementById('s-actionZoneMatch').style.display = 'none';
                 displayArea.innerHTML = ''; 
 
                 let availablePool = SURVIVOR_PERKS.filter(p => RouletteState.ownedCharacters.has(p.character) && !RouletteState.ransomJail.includes(p.name));
-                
                 if (availablePool.length < numPerks) {
                     alert(`CRITICAL ERROR: Not enough perks to supply ${numPerks} perks! Un-jail perks or adjust roster.`);
-                    document.getElementById('s_actionZoneInitial').style.display = 'flex'; 
-                    return;
+                    document.getElementById('s-actionZoneInitial').style.display = 'flex'; return;
                 }
 
-                btnInitiate.style.pointerEvents = 'none';
-                btnInitiate.textContent = "THE ENTITY IS CHOOSING...";
-
-                // Determine Golden Mode
                 RouletteState.isGoldenMode = Math.random() < 0.15;
-                const box = document.getElementById('rouletteRandomizerBox'); 
-                const banner = document.getElementById('rouletteGoldenBanner');
-                
-                if (RouletteState.isGoldenMode) { 
-                    box.classList.add('golden-active'); 
-                    banner.style.display = 'block'; 
-                } else { 
-                    box.classList.remove('golden-active'); 
-                    banner.style.display = 'none'; 
-                }
+                const box = document.getElementById('s-randomizerBox'); const banner = document.getElementById('s-goldenBanner');
+                if (RouletteState.isGoldenMode) { box.classList.add('golden-active'); banner.style.display = 'block'; }
+                else { box.classList.remove('golden-active'); banner.style.display = 'none'; }
 
-                // Shuffle & Draft
                 let shuffled = [...availablePool];
                 for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; }
                 RouletteState.activeDraft = shuffled.slice(0, numPerks);
-
-                this.animateDraftCards(numPerks);
-
-                // Save immediately so they cannot refresh to dodge bad perks
-                RouletteState.save(); 
-            },
-            
-            rebuildDraftUI() {
-                // If a user refreshed the page, this instantly redraws their active perks
-                document.getElementById('s_actionZoneInitial').style.display = 'none';
-                document.getElementById('s_actionZoneMatch').style.display = 'flex';
-                
-                const box = document.getElementById('rouletteRandomizerBox'); 
-                const banner = document.getElementById('rouletteGoldenBanner');
-                if (RouletteState.isGoldenMode) { 
-                    box.classList.add('golden-active'); 
-                    banner.style.display = 'block'; 
-                } else { 
-                    box.classList.remove('golden-active'); 
-                    banner.style.display = 'none'; 
-                }
-
-                this.animateDraftCards(RouletteState.activeDraft.length, true); // true = skip staggered animation delay
-            },
-
-            animateDraftCards(numPerks, skipDelay = false) {
-                const displayArea = document.getElementById('roulettePerkDisplayArea');
-                displayArea.innerHTML = ''; 
 
                 RouletteState.activeDraft.forEach((perk, index) => {
                     const card = document.createElement('div'); card.className = 'perk-card-container';
@@ -1718,115 +1594,56 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                     const rhombus = document.createElement('div'); rhombus.className = 'rhombus-outer';
                     const img = document.createElement('img'); img.className = 'rhombus-inner-img'; img.alt = perk.name; img.src = perk.iconPath;
                     img.onerror = function() { this.style.display = 'none'; const fallback = document.createElement('div'); fallback.className = 'perk-fallback-badge'; fallback.textContent = perk.name.replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase(); rhombus.appendChild(fallback); };
-
                     rhombus.appendChild(img); node.appendChild(rhombus);
                     const label = document.createElement('div'); label.className = 'perk-name-label'; label.textContent = perk.name;
-
                     card.appendChild(node); card.appendChild(label);
-                    s_attachTooltip(card, perk); 
-                    displayArea.appendChild(card);
-                    
-                    if(skipDelay) {
-                        card.classList.add('revealed');
-                    } else {
-                        setTimeout(() => card.classList.add('revealed'), index * 120);
-                    }
+                    attachTooltipEvents(card, perk); displayArea.appendChild(card);
+                    setTimeout(() => card.classList.add('revealed'), index * 120);
                 });
 
-                if(!skipDelay) {
-                    setTimeout(() => { 
-                        document.getElementById('s_actionZoneMatch').style.display = 'flex';
-                        const btn = document.getElementById('s_btnInitiate');
-                        btn.style.pointerEvents = 'all'; 
-                        btn.textContent = "ROLL THE ENTITY'S DICE";
-                    }, numPerks * 120 + 400);
-                }
+                setTimeout(() => { document.getElementById('s-actionZoneMatch').style.display = 'flex'; RouletteState.save(); }, numPerks * 120 + 400);
             },
-
             initiateJailbreak() { RouletteState.isJailbreakActive = true; this.startDraft(); },
-            
             resolveMatch(outcome) {
-                document.getElementById('s_actionZoneMatch').style.display = 'none';
-
+                document.getElementById('s-actionZoneMatch').style.display = 'none';
                 if(outcome === 'win') {
                     if(RouletteState.isJailbreakActive) {
-                        RouletteState.ransomJail = []; 
-                        RouletteState.isJailbreakActive = false;
-                        RouletteState.activeDraft = [];
-                        alert("JAILBREAK SUCCESSFUL: All perks freed."); 
-                        RouletteUI.resetToInitial();
+                        RouletteState.ransomJail = []; RouletteState.isJailbreakActive = false;
+                        alert("JAILBREAK SUCCESSFUL: All perks freed."); RouletteUI.resetToInitial();
                     } else {
                         RouletteState.currentStreak = Math.min(5, RouletteState.currentStreak + 1);
-                        let basePoints = POT_STAGES[RouletteState.currentStreak] || POT_STAGES[5];
-                        let earned = RouletteState.isGoldenMode ? basePoints * 3 : basePoints;
-                        RouletteState.currentPot += earned;
-                        RouletteState.activeDraft = []; // Clear draft once won
+                        let earned = POT_STAGES[RouletteState.currentStreak] || POT_STAGES[5];
+                        if(RouletteState.isGoldenMode) earned *= 3;
+                        RouletteState.currentPot = earned;
                         this.triggerDecisionPhase();
                     }
                 } else {
-                    if(RouletteState.isJailbreakActive) { 
-                        RouletteState.safeBank = Math.max(0, RouletteState.safeBank - 1000); 
-                        RouletteState.isJailbreakActive = false; 
-                    }
-                    
-                    // Fluid Party Size Check: Push EXACTLY the perks generated into jail. 
-                    // E.g., if they swapped to Solo (4 perks), only those 4 go to jail!
+                    if(RouletteState.isJailbreakActive) { RouletteState.safeBank = Math.max(0, RouletteState.safeBank - 1000); RouletteState.isJailbreakActive = false; }
                     RouletteState.activeDraft.forEach(p => RouletteState.ransomJail.push(p.name));
-                    
-                    RouletteState.currentStreak = 0; 
-                    RouletteState.currentPot = 0; 
-                    RouletteState.activeDraft = []; 
-                    RouletteState.isGoldenMode = false;
-                    
+                    RouletteState.currentStreak = 0; RouletteState.currentPot = 0; RouletteState.activeDraft = [];
                     RouletteUI.resetToInitial();
                 }
                 RouletteState.save();
             },
-
-            triggerDecisionPhase(startTimer = true) {
-                const panel = document.getElementById('s_decisionPanel'); 
-                const potValue = document.getElementById('s_decisionPotValue'); 
-                const timerFill = document.getElementById('s_decisionTimer');
-                const btnCash = document.getElementById('s_btnCashOut');
+            triggerDecisionPhase() {
+                const panel = document.getElementById('s-decisionPanel'); const potValue = document.getElementById('s-decisionPotValue'); const timerFill = document.getElementById('s-decisionTimer');
+                panel.classList.add('active'); potValue.textContent = `Pot: ${RouletteState.currentPot} Pts`;
                 
-                document.getElementById('roulettePerkDisplayArea').innerHTML = '';
-                panel.style.display = 'block'; 
-                potValue.textContent = `Pot: ${RouletteState.currentPot} Pts`;
-                
-                // Golden Curse Check
-                document.getElementById('s_btnCashOut').disabled = RouletteState.isGoldenMode;
-                if(RouletteState.isGoldenMode) {
-                    btnCash.innerText = "LOCKED (Golden Curse)";
-                } else {
-                    btnCash.innerText = "Cash Out (Secure)";
-                }
+                document.getElementById('btnCashOut').disabled = RouletteState.isGoldenMode;
+                if(RouletteState.isGoldenMode) document.getElementById('btnCashOut').innerText = "LOCKED (Golden Mode)"; else document.getElementById('btnCashOut').innerText = "Cash Out (Secure)";
 
-                if(startTimer) {
-                    timerFill.style.transition = 'none'; timerFill.style.transform = 'scaleX(1)';
-                    setTimeout(() => { timerFill.style.transition = 'transform 60s linear'; timerFill.style.transform = 'scaleX(0)'; }, 50);
-                    rouletteDecisionTimeout = setTimeout(() => { if(panel.style.display === 'block') { this.startDraft(true); } }, 60000);
-                } else {
-                    // If restored from refresh, pause the timer so they aren't punished instantly
-                    timerFill.style.transform = 'scaleX(0.5)';
-                }
+                timerFill.style.transition = 'none'; timerFill.style.transform = 'scaleX(1)';
+                setTimeout(() => { timerFill.style.transition = 'transform 60s linear'; timerFill.style.transform = 'scaleX(0)'; }, 50);
+                rouletteDecisionTimeout = setTimeout(() => { if(panel.classList.contains('active')) { this.startDraft(true); } }, 60000);
             },
-
             executeCashOut() {
-                if(RouletteState.isGoldenMode) return alert("The Entity forbids Cashing Out on a Golden Spin.");
-                
-                RouletteState.safeBank += RouletteState.currentPot; 
-                RouletteState.currentPot = 0; 
-                RouletteState.currentStreak = 0; 
-                RouletteState.activeDraft = [];
-                RouletteState.isGoldenMode = false;
-                
-                document.getElementById('s_decisionPanel').style.display = 'none'; 
-                clearInterval(rouletteDecisionTimeout);
-                
-                RouletteUI.resetToInitial(); 
-                RouletteState.save();
+                if(RouletteState.isGoldenMode) return;
+                RouletteState.safeBank += RouletteState.currentPot; RouletteState.currentPot = 0; RouletteState.currentStreak = 0; RouletteState.activeDraft = [];
+                document.getElementById('s-decisionPanel').classList.remove('active'); clearInterval(rouletteDecisionTimeout);
+                RouletteUI.resetToInitial(); RouletteState.save();
             }
         };
+
         const RouletteLeaderboard = {
             async fetch() {
                 const lbContainer = document.getElementById('s-leaderboard-list'); 

@@ -1655,9 +1655,9 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                 displayArea.innerHTML = ''; 
 
                 let availablePool = SURVIVOR_PERKS.filter(p => RouletteState.ownedCharacters.has(p.character) && !RouletteState.ransomJail.includes(p.name));
+
                 if (availablePool.length < numPerks) {
-                    alert(`CRITICAL ERROR: Not enough un-jailed perks in roster to supply ${numPerks} perks! Un-jail perks or adjust roster.`);
-                    document.getElementById('s-actionZoneInitial').style.display = 'flex'; return;
+                    alert(`WARNING: The Entity has drained your resources. Only ${availablePool.length} perks remain. You must survive with empty slots!`);
                 }
 
                 RouletteState.isGoldenMode = Math.random() < 0.15;
@@ -1666,8 +1666,18 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                 else { box.classList.remove('golden-active'); banner.style.display = 'none'; }
 
                 let shuffled = [...availablePool];
-                for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; }
-                RouletteState.activeDraft = shuffled.slice(0, numPerks);
+for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; }
+RouletteState.activeDraft = shuffled.slice(0, numPerks);
+
+// Pad with empty slots if the pool was too small
+while (RouletteState.activeDraft.length < numPerks) {
+    RouletteState.activeDraft.push({
+        name: "EMPTY SLOT",
+        character: "The Entity",
+        effect: "You have run out of tools. Survive with nothing.",
+        iconPath: "" 
+    });
+}
 
                 RouletteState.activeDraft.forEach((perk, index) => {
                     const card = document.createElement('div'); card.className = 'perk-card-container';
@@ -1714,7 +1724,10 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                     if(RouletteState.isJailbreakActive) { RouletteState.safeBank = Math.max(0, RouletteState.safeBank - 1000); RouletteState.isJailbreakActive = false; }
                     
                     // Jailing logic
-                    RouletteState.activeDraft.forEach(p => RouletteState.ransomJail.push(p.name));
+                    // Jailing logic
+RouletteState.activeDraft.forEach(p => {
+    if (p.name !== "EMPTY SLOT") RouletteState.ransomJail.push(p.name);
+});
                     
                     // Universal Streak Checkpoint & Risk Logic
                     let isRiskMatch = RISK_MATCHES.includes(RouletteState.totalStreak);

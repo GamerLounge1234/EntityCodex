@@ -1504,18 +1504,15 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
         // Risk match thresholds
         const RISK_MATCHES = [9, 19, 29, 39, 49, 50];
 
-        const RouletteState = {
-            safeBank: 0, currentPot: 0, currentLocalStreak: 0, totalStreak: 0, 
-            ransomJail: [], activeDraft: [], isGoldenMode: false, 
+const RouletteState = {
+            safeBank: 0, currentPot: 0, currentLocalStreak: 0, totalStreak: 0, highestStreak: 0,
+            victorTimestamp: null, ransomJail: [], activeDraft: [], isGoldenMode: false, 
             ownedCharacters: new Set(), isJailbreakActive: false, lockedPartySize: null,
+            
             async load() {
-                // Initialize default owned
                 let chars = [...new Set(SURVIVOR_PERKS.map(p => p.character))];
                 chars.forEach(c => this.ownedCharacters.add(c));
-                if(!db) {
-                    RouletteUI.updateDashboard(); RouletteUI.renderInventory();
-                    return;
-                }
+                if(!db) { RouletteUI.updateDashboard(); RouletteUI.renderInventory(); return; }
                 try {
                     const docSnap = await getDoc(doc(db, 'roulette_state', currentUser));
                     if (docSnap.exists()) {
@@ -1524,41 +1521,38 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                         this.currentPot = data.currentPot || 0; 
                         this.currentLocalStreak = data.currentLocalStreak || 0;
                         this.totalStreak = data.totalStreak || 0;
+                        this.highestStreak = data.highestStreak || 0;
+                        this.victorTimestamp = data.victorTimestamp || null;
                         this.ransomJail = data.ransomJail || [];
                         this.lockedPartySize = data.lockedPartySize || null;
                         if (data.ownedCharacters) this.ownedCharacters = new Set(data.ownedCharacters);
                     }
                     RouletteUI.updateDashboard(); RouletteUI.renderInventory();
-                } catch (e) { 
-                    console.error("Firebase Roulette Load Error:", e);
-                    RouletteUI.updateDashboard(); RouletteUI.renderInventory(); 
-                }
+                } catch (e) { RouletteUI.updateDashboard(); RouletteUI.renderInventory(); }
             },
+            
             async save() {
                 RouletteUI.updateDashboard();
                 if(!db) return;
                 try { 
                     await setDoc(doc(db, 'roulette_state', currentUser), { 
-                        safeBank: this.safeBank, 
-                        currentPot: this.currentPot, 
-                        currentLocalStreak: this.currentLocalStreak, 
-                        totalStreak: this.totalStreak,
-                        lockedPartySize: this.lockedPartySize,
-                        ransomJail: this.ransomJail, 
+                        safeBank: this.safeBank, currentPot: this.currentPot, 
+                        currentLocalStreak: this.currentLocalStreak, totalStreak: this.totalStreak,
+                        highestStreak: this.highestStreak, victorTimestamp: this.victorTimestamp,
+                        lockedPartySize: this.lockedPartySize, ransomJail: this.ransomJail, 
                         ownedCharacters: Array.from(this.ownedCharacters) 
                     }, { merge: true }); 
-                } 
-                catch (e) { console.error("Firebase Roulette Save Error:", e);}
+                } catch (e) {}
             },
+            
             reset() {
                 this.safeBank = 0; this.currentPot = 0; this.currentLocalStreak = 0; 
-                this.totalStreak = 0; this.ransomJail = []; this.activeDraft = []; 
-                this.isGoldenMode = false; this.isJailbreakActive = false; this.lockedPartySize = null;
-                this.save();
-                RouletteUI.resetToInitial();
+                this.totalStreak = 0; this.highestStreak = 0; this.victorTimestamp = null; 
+                this.ransomJail = []; this.activeDraft = []; this.isGoldenMode = false; 
+                this.isJailbreakActive = false; this.lockedPartySize = null; 
+                this.save(); RouletteUI.resetToInitial();
             }
         };
-
         let rouletteDecisionTimeout = null;
 
         const RouletteTracker = {
@@ -1703,8 +1697,14 @@ while (RouletteState.activeDraft.length < numPerks) {
                         alert("JAILBREAK SUCCESSFUL: All perks freed."); RouletteUI.resetToInitial();
                     } else {
                         // Core Progression Logic
-                        RouletteState.currentLocalStreak += 1;
-                        RouletteState.totalStreak += 1;
+                        // Core Progression Logic
+RouletteState.currentLocalStreak += 1;
+RouletteState.totalStreak += 1;
+
+// Check if we beat our highest streak
+if (RouletteState.totalStreak > RouletteState.highestStreak) {
+    RouletteState.highestStreak = RouletteState.totalStreak;
+}
                         
                         let base = BASE_POINTS[RouletteState.lockedPartySize];
                         let multiplier = 1.0 + ((RouletteState.currentLocalStreak - 1) * 0.5); // 1.0, 1.5, 2.0...
@@ -1764,7 +1764,14 @@ RouletteState.activeDraft.forEach(p => {
             },
             executeCashOut() {
                 if(RouletteState.isGoldenMode) return;
+                
                 RouletteState.safeBank += RouletteState.currentPot; 
+                
+                // If they hit 20,000 for the FIRST time, record the exact timestamp
+                if (RouletteState.safeBank >= 20000 && !RouletteState.victorTimestamp) {
+                    RouletteState.victorTimestamp = Date.now();
+                }
+
                 RouletteState.currentPot = 0; 
                 RouletteState.currentLocalStreak = 0; 
                 RouletteState.lockedPartySize = null;
@@ -1774,7 +1781,7 @@ RouletteState.activeDraft.forEach(p => {
             }
         };
 
-        const RouletteLeaderboard = {
+const RouletteLeaderboard = {
             async fetch() {
                 const lbContainer = document.getElementById('s-leaderboard-list'); 
                 lbContainer.innerHTML = 'Consulting the Archives...';
@@ -1783,17 +1790,73 @@ RouletteState.activeDraft.forEach(p => {
                     return;
                 }
                 try {
-                    const q = query(collection(db, 'roulette_state'), orderBy('safeBank', 'desc'), limit(50));
+                    // Fetch top players by safeBank
+                    const q = query(collection(db, 'roulette_state'), orderBy('safeBank', 'desc'), limit(100));
                     const snapshot = await getDocs(q);
                     if (snapshot.empty) { lbContainer.innerHTML = 'No survivors recorded yet.'; return; }
-                    let html = `<table class="lb-table"><tr><th>Rank</th><th>Survivor Name</th><th>Safe Bank</th><th>Universal Streak</th><th>Jailed Perks</th></tr>`;
+                    
+                    // Extract data into an array so we can custom sort it
+                    let players = [];
+                    snapshot.forEach(doc => { players.push({ id: doc.id, ...doc.data() }); });
+                    
+                    // Custom Algorithm:
+                    // 1. Victors (20,000+ points) are placed at the top and sorted by earliest timestamp (Who got there first).
+                    // 2. Non-Victors are sorted by highest points descending.
+                    players.sort((a, b) => {
+                        const aIsVictor = a.safeBank >= 20000 && a.victorTimestamp;
+                        const bIsVictor = b.safeBank >= 20000 && b.victorTimestamp;
+
+                        if (aIsVictor && bIsVictor) {
+                            return a.victorTimestamp - b.victorTimestamp; // Earliest time wins
+                        } else if (aIsVictor) {
+                            return -1; // a goes to the top
+                        } else if (bIsVictor) {
+                            return 1;  // b goes to the top
+                        } else {
+                            return (b.safeBank || 0) - (a.safeBank || 0); // Highest points wins
+                        }
+                    });
+
+                    let html = `<table class="lb-table">
+                        <tr>
+                            <th>Rank</th>
+                            <th>Survivor Name</th>
+                            <th>Date Conquered</th>
+                            <th>Safe Bank</th>
+                            <th>Highest Streak</th>
+                        </tr>`;
+                    
                     let rank = 1;
-                    snapshot.forEach(doc => {
-                        const data = doc.data(); const isMe = doc.id === currentUser;
-                        html += `<tr class="${isMe ? 'lb-me' : ''}"><td>#${rank}</td><td>${doc.id} ${isMe ? '(You)' : ''}</td><td><strong style="color:var(--gold-ascension);">${data.safeBank || 0}</strong></td><td><strong style="color:#00ff66;">${data.totalStreak || 0}</strong></td><td>${(data.ransomJail || []).length}</td></tr>`;
+                    players.forEach(data => {
+                        const isMe = data.id === currentUser;
+                        const safePoints = data.safeBank || 0;
+                        const isVictor = safePoints >= 20000 && data.victorTimestamp;
+                        
+                        // Format Name and Badge
+                        const nameDisplay = isVictor 
+                            ? `🏆 <span style="color:var(--gold-ascension); text-shadow: 0 0 5px var(--gold-ascension); font-weight: bold;">${data.id}</span> ${isMe ? '(You)' : ''}` 
+                            : `${data.id} ${isMe ? '(You)' : ''}`;
+                        
+                        // Format the date they hit 20k
+                        let dateDisplay = `<span style="color:#555;">-</span>`;
+                        if (isVictor) {
+                            const d = new Date(data.victorTimestamp);
+                            dateDisplay = `<span style="color:#aaa;">${d.toLocaleDateString()}</span>`;
+                        }
+                        
+                        html += `<tr class="${isMe ? 'lb-me' : ''}">
+                            <td>#${rank}</td>
+                            <td>${nameDisplay}</td>
+                            <td>${dateDisplay}</td>
+                            <td><strong style="color:${isVictor ? 'var(--gold-ascension)' : 'var(--bone-white)'};">${safePoints}</strong></td>
+                            <td><strong style="color:#00ff66;">${data.highestStreak || 0}</strong></td>
+                        </tr>`;
                         rank++;
                     });
-                    html += `</table>`; lbContainer.innerHTML = html;
+                    
+                    html += `</table>`; 
+                    lbContainer.innerHTML = html;
+                    
                 } catch (e) { 
                     console.error("Leaderboard Error:", e);
                     lbContainer.innerHTML = `<span style="color:red;">The connection was severed. Error: ${e.message}</span>`; 

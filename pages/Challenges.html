@@ -273,6 +273,24 @@
         .tt-effect { color: #ccc; font-size: 0.9rem; line-height: 1.5; margin-top: 5px; }
         .tt-effect strong { color: #fff; }
 
+        /* Ascension Tier Tooltip */
+        #tier-tooltip { position: fixed; background: rgba(10, 10, 15, 0.98); border: 1px solid var(--gold-ascension); border-radius: 8px; width: 340px; padding: 1.5rem; pointer-events: none; opacity: 0; z-index: 9999; box-shadow: 0 15px 35px rgba(0,0,0,0.9), inset 0 0 20px rgba(229, 184, 36, 0.15); backdrop-filter: blur(12px); transform: scale(0.95) translateY(10px); transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; gap: 10px; }
+        #tier-tooltip.visible { opacity: 1; transform: scale(1) translateY(0); }
+        .tt-tier-header { border-bottom: 1px solid #333; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: baseline; }
+        .tt-tier-name { color: var(--gold-ascension); font-size: 1.25rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 0 10px rgba(229, 184, 36, 0.4); }
+        .tt-tier-num { color: #fff; font-size: 1.4rem; font-family: var(--font-mono); font-weight: 900; opacity: 0.3; }
+        .tt-tier-desc { color: #ddd; font-size: 0.95rem; line-height: 1.6; margin-top: 5px; font-family: var(--font-journal); }
+
+
+        /* Ascension Timeline UI */
+        .tier-timeline-container { display: flex; align-items: center; justify-content: center; margin-bottom: 2rem; width: 100%; max-width: 600px; margin-inline: auto; padding: 10px; }
+        .tier-node { width: 45px; height: 45px; background: #111; border: 2px solid #333; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-family: var(--font-mono); font-weight: bold; font-size: 1.4rem; color: #555; position: relative; z-index: 2; transition: all 0.4s; }
+        .tier-node.completed { background: rgba(229, 184, 36, 0.15); border-color: var(--gold-ascension); color: var(--gold-ascension); box-shadow: 0 0 10px rgba(229,184,36,0.3); }
+        .tier-node.active-tier { background: var(--entity-blood); border-color: var(--entity-red); color: #fff; animation: pulseTier 1.5s infinite; box-shadow: 0 0 20px var(--entity-red); }
+        .tier-path { flex: 1; height: 4px; background: #333; position: relative; z-index: 1; margin: 0 -5px; transition: background 0.4s; }
+        .tier-path.completed { background: var(--gold-ascension); box-shadow: 0 0 8px var(--gold-ascension); }
+        @keyframes pulseTier { 0%, 100% { transform: scale(1); box-shadow: 0 0 10px var(--entity-red); } 50% { transform: scale(1.15); box-shadow: 0 0 25px var(--entity-red), inset 0 0 10px #000; border-color: #fff; } }
+
         /* Trackers (Entity Terminal) */
         .tracker-window { position: fixed; top: 90px; right: 20px; width: 90vw; max-width: 1100px; height: 80vh; background: rgba(10, 2, 2, 0.95); border: 2px solid var(--dried-blood); z-index: 5000; border-radius: 8px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(255, 0, 0, 0.2); display: none; flex-direction: column; font-family: var(--font-tracker); transition: all 0.4s var(--smooth-curve); overflow: hidden; }
         .tracker-window.active { display: flex; animation: slideUpFade 0.5s var(--smooth-curve); }
@@ -577,7 +595,11 @@
             <div style="background: rgba(0,0,0,0.5); padding: 20px; border-left: 4px solid var(--entity-red); border-radius: 4px; margin-top: 30px;">
                 <h4 style="color: #fff; margin-bottom: 10px; font-size: 1.2rem; font-family: var(--font-ui); text-transform: uppercase;">
                     The Last Hope: The Perkless Lifeline</h4>
-                <p style="color: #aaa; font-size: 0.95rem; line-height: 1.6; font-family: var(--font-journal);">What happens when you lose all your perks? The Entity gives you one final chance to prove yourself. You must play a game with <strong>no perks at all</strong>. <br><br>If you somehow survive and win this test, you get to climb back up! You earn back 1 perk and get to keep trying.<br><br>But if you lose this final test? The Entity gets angry. Those 4 perks you originally picked are now <strong>banned forever</strong> for that specific Killer. You have to start their story all over again by drafting 4 brand new perks.</p>
+                <p style="color: #aaa; font-size: 0.95rem; line-height: 1.6; font-family: var(--font-journal);">What happens when you lose all your perks? The Entity gives you one final chance. You must play a game with <strong>no perks at all</strong>. <br><br>If you somehow survive, you climb back up! You earn back 1 perk and get to keep trying.<br><br>But if you lose this final test? The Entity gets angry and triggers a ban wave depending on your selected difficulty:</p>
+                <ul style="color: #ccc; font-size: 0.95rem; font-family: var(--font-journal); margin-left: 20px; margin-top: 10px; line-height: 1.6;">
+                    <li><strong style="color: #fff;">Normal Mode:</strong> The 4 initial perks you drafted are <strong>banned forever for this specific Killer</strong>.</li>
+                    <li><strong style="color: var(--entity-red);">Hardcore Mode:</strong> The 4 initial perks are <strong>banned globally for ALL Killers</strong>. You can never use them again in your entire campaign.</li>
+                </ul>
             </div>
         </div>
 
@@ -761,6 +783,31 @@
             </div>
             
             <div id="t-roster" class="t-view active">
+                <!-- Ascension Timeline Display -->
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h4 style="color: var(--gold-ascension); font-family: var(--font-ui); text-transform: uppercase; font-size: 1.6rem; letter-spacing: 2px; text-shadow: var(--gold-glow); margin-bottom: 10px;">
+                        Ascension Tiers
+                    </h4>
+                    
+                    <div class="tier-timeline-container" id="tier-timeline">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <button id="btn-ascend" class="btn-primary" style="display: none; width: 100%; max-width: 400px; margin: 10px auto; background: linear-gradient(45deg, #b8860b, var(--gold-ascension)); color: #000; border-color: #fff; box-shadow: 0 0 20px var(--gold-ascension);" onclick="DescentState.ascendTier()">
+                        ASCEND TO TIER <span id="next-tier-num">1</span>
+                    </button>
+                </div>
+
+                <div class="controls-bar" style="background: rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.05); padding:10px 20px; border-radius:4px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <label style="color: var(--entity-red); text-transform: uppercase; font-size: 0.95rem; letter-spacing: 1px; font-weight: bold;">Difficulty Protocol:</label>
+                        <select id="descent-mode-select" class="custom-select" onchange="DescentState.changeMode(this.value)" style="border-color: #555;">
+                            <option value="normal">Normal (Bans target Current Killer)</option>
+                            <option value="hardcore">Hardcore (Bans target ALL Killers)</option>
+                        </select>
+                    </div>
+                    <button class="btn-danger" onclick="DescentState.hardReset()" style="padding: 6px 12px; font-size: 0.85rem;">Wipe Killer Data</button>
+                </div>
                 <div class="roster-grid" id="roster-grid"></div>
             </div>
             
@@ -923,6 +970,15 @@
             <div class="tt-char" id="tt-char">Char</div>
         </div>
         <div class="tt-effect" id="tt-effect">Effect</div>
+    </div>
+
+    <!-- Ascension Tier Tooltip -->
+    <div id="tier-tooltip">
+        <div class="tt-tier-header">
+            <div class="tt-tier-name" id="tt-tier-name">Tier Name</div>
+            <div class="tt-tier-num" id="tt-tier-num">0</div>
+        </div>
+        <div class="tt-tier-desc" id="tt-tier-desc">Description</div>
     </div>
 
     <!-- ==========================================================================
@@ -1194,6 +1250,22 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
             if (y + ttRect.height > window.innerHeight) y = e.clientY - ttRect.height - 20;
             tooltip.style.left = `${x}px`; tooltip.style.top = `${y}px`;
         }
+        const AscensionTierData = [
+            { name: "The Baseline", desc: "Standard Descent Rules. Complete the roster without modifiers to unlock the true nightmare." },
+            { name: "Weakened Tools", desc: "You are no longer allowed to use strong items. Only the weakest Brown and Yellow add-ons are allowed." },
+            { name: "The Entity's Choice", desc: "Before you even pick your perks, the Entity randomly bans two whole Disciplines. You have to make do with what's left." },
+            { name: "A Fast Fall", desc: "The punishment for losing is much faster. If you lose once, you drop straight down to 2 perks. Lose again, and you are immediately at zero." },
+            { name: "Perfect or Nothing", desc: "A normal win isn't good enough anymore. If even one survivor escapes (through the gates or the hatch), it counts as a loss. You must kill all four." }
+        ];
+
+        const tierTooltip = document.getElementById('tier-tooltip');
+        function positionTierTooltip(e) {
+            let x = e.clientX + 20, y = e.clientY + 20;
+            const ttRect = tierTooltip.getBoundingClientRect();
+            if (x + ttRect.width > window.innerWidth) x = e.clientX - ttRect.width - 20;
+            if (y + ttRect.height > window.innerHeight) y = e.clientY - ttRect.height - 20;
+            tierTooltip.style.left = `${x}px`; tierTooltip.style.top = `${y}px`;
+        }
 
         // Accordion for Killer Logic
         window.toggleAccordion = function(header) {
@@ -1264,19 +1336,27 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
         };
 
         const DescentState = {
+            mode: 'normal',
+            currentTier: 0, tierArchive: {},
             completedKillers: [], bannedPerks: {}, points: 0, stats: { sacrificed: 0, lifelines: 0, losses: 0 },
             currentKiller: null, selectedLoadout: [], activePerks: [], sacrificedThisRun: [],
+            runBannedDisciplines: [], // NEW: Tracks Tier 2 blocked disciplines
+            
             async load() {
                 if(!db) return this.updateUI();
                 try {
                     const docSnap = await getDoc(doc(db, 'player_state', currentUser));
                     if (docSnap.exists()) {
                         const data = docSnap.data();
+                        this.mode = data.mode || 'normal';
+                        this.currentTier = data.currentTier || 0;
+                        this.tierArchive = data.tierArchive || {};
                         this.completedKillers = data.completed_killers || [];
                         const loadedBans = data.banned_perks || {};
                         Killers.forEach(k => { this.bannedPerks[k] = loadedBans[k] || []; });
                         this.points = data.points || 0;
                         this.stats = data.stats || { sacrificed: 0, lifelines: 0, losses: 0 };
+                        this.runBannedDisciplines = data.runBannedDisciplines || [];
                     }
                     this.updateUI();
                 } catch (e) { 
@@ -1289,22 +1369,99 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                 if(!db) return;
                 try { 
                     await setDoc(doc(db, 'player_state', currentUser), { 
-                        completed_killers: this.completedKillers, 
-                        banned_perks: this.bannedPerks, 
-                        points: this.points, 
-                        stats: this.stats 
+                        mode: this.mode, currentTier: this.currentTier, tierArchive: this.tierArchive,
+                        completed_killers: this.completedKillers, banned_perks: this.bannedPerks, 
+                        points: this.points, stats: this.stats, runBannedDisciplines: this.runBannedDisciplines 
                     }, { merge: true }); 
-                } 
-                catch (e) { console.error("Firebase Save Error:", e); }
+                } catch (e) { console.error("Firebase Save Error:", e); }
             },
             updateUI() {
+                let totalCleansed = (this.currentTier * 43) + this.completedKillers.length;
                 document.getElementById('stat-points').innerText = this.points;
-                document.getElementById('stat-killers').innerText = `${this.completedKillers.length} / 43`;
+                document.getElementById('stat-killers').innerText = `${totalCleansed} (T${this.currentTier}: ${this.completedKillers.length}/43)`;
                 document.getElementById('stat-sacrificed').innerText = this.stats.sacrificed;
                 document.getElementById('stat-lifelines').innerText = this.stats.lifelines;
+                
+                const timeline = document.getElementById('tier-timeline');
+                if (timeline) {
+                    timeline.innerHTML = '';
+                    for (let i = 0; i <= 4; i++) {
+                        const node = document.createElement('div');
+                        node.className = 'tier-node';
+                        if (i < this.currentTier) node.classList.add('completed');
+                        else if (i === this.currentTier) node.classList.add('active-tier');
+                        node.innerText = i;
+                        
+                        node.addEventListener('mouseenter', (e) => {
+                            document.getElementById('tt-tier-name').textContent = AscensionTierData[i].name;
+                            document.getElementById('tt-tier-num').textContent = "TIER " + i;
+                            document.getElementById('tt-tier-desc').textContent = AscensionTierData[i].desc;
+                            tierTooltip.classList.add('visible');
+                            positionTierTooltip(e);
+                        });
+                        node.addEventListener('mousemove', positionTierTooltip);
+                        node.addEventListener('mouseleave', () => tierTooltip.classList.remove('visible'));
+
+                        timeline.appendChild(node);
+                        
+                        if (i < 4) {
+                            const path = document.createElement('div');
+                            path.className = 'tier-path';
+                            if (i < this.currentTier) path.classList.add('completed');
+                            timeline.appendChild(path);
+                        }
+                    }
+                }
+                
+                const ascendBtn = document.getElementById('btn-ascend');
+                if (ascendBtn) {
+                    if (this.completedKillers.length >= 43 && this.currentTier < 4) {
+                        ascendBtn.style.display = 'block';
+                        document.getElementById('next-tier-num').innerText = this.currentTier + 1;
+                    } else {
+                        ascendBtn.style.display = 'none';
+                    }
+                }
+                
+                const modeSelect = document.getElementById('descent-mode-select');
+                if (modeSelect) {
+                    modeSelect.value = this.mode;
+                    const hasProgressInCurrentTier = this.completedKillers.length > 0 || 
+                                                     this.stats.losses > 0 || 
+                                                     Object.values(this.bannedPerks).some(arr => arr.length > 0);
+                    
+                    if (hasProgressInCurrentTier) {
+                        modeSelect.disabled = true;
+                        modeSelect.title = "Difficulty is locked because you have already started this Tier. Wipe Data to change.";
+                    } else {
+                        modeSelect.disabled = false;
+                        modeSelect.title = "Select your difficulty before starting your first match in this Tier.";
+                    }
+                }
                 if (document.getElementById('t-roster').classList.contains('active')) DescentRoster.render();
             },
-            resetRun() { this.selectedLoadout = []; this.activePerks = []; this.sacrificedThisRun = []; }
+            changeMode(newMode) { this.mode = newMode; this.save(); },
+            ascendTier() {
+                if (this.completedKillers.length >= 43 && this.currentTier < 4) {
+                    if (confirm(`Are you ready to Ascend to Tier ${this.currentTier + 1}? \n\n- Your Roster will reset to 0/43 for the new Tier.\n- ALL Perk Bans will be lifted!\n- You can choose a new Difficulty Mode.\n\n(Your Tier ${this.currentTier} history is permanently archived safely).`)) {
+                        this.tierArchive[this.currentTier] = { mode: this.mode, bans: JSON.parse(JSON.stringify(this.bannedPerks)) };
+                        this.currentTier++; this.completedKillers = []; this.runBannedDisciplines = [];
+                        Killers.forEach(k => { this.bannedPerks[k] = []; }); 
+                        this.mode = 'normal'; this.points += 10000; this.save();
+                        DescentTracker.showView('t-roster');
+                        alert(`ASCENSION SUCCESSFUL! Welcome to Tier ${this.currentTier}. All perks have been restored. +10,000 Points.`);
+                    }
+                }
+            },
+            resetRun() { this.selectedLoadout = []; this.activePerks = []; this.sacrificedThisRun = []; this.runBannedDisciplines = []; },
+            hardReset() {
+                if (confirm("WARNING: Wipe all Killer Challenge Data? This resets completions, points, Tiers, Archives, and ALL perk bans.")) {
+                    this.currentTier = 0; this.tierArchive = {}; this.completedKillers = []; this.points = 0; 
+                    this.stats = { sacrificed: 0, lifelines: 0, losses: 0 }; this.runBannedDisciplines = [];
+                    Killers.forEach(k => { this.bannedPerks[k] = []; });
+                    this.save(); DescentTracker.showView('t-roster'); alert("Killer Database WIPED.");
+                }
+            }
         };
         Killers.forEach(k => { DescentState.bannedPerks[k] = []; });
         
@@ -1328,7 +1485,18 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                     el.innerText = killer;
                     el.onclick = () => {
                         if (!DescentState.completedKillers.includes(killer)) {
-                            DescentState.currentKiller = killer; DescentState.resetRun();
+                            DescentState.currentKiller = killer; 
+                            DescentState.resetRun();
+                            
+                            // TIER 2+ RULE: Entity's Choice (Ban 2 Disciplines)
+                            if (DescentState.currentTier >= 2) {
+                                const schools = Object.keys(KillerPerks);
+                                let shuffled = [...schools].sort(() => 0.5 - Math.random());
+                                DescentState.runBannedDisciplines = [shuffled[0], shuffled[1]];
+                                alert(`ASCENSION TIER ${DescentState.currentTier} PROTOCOL:\nThe Entity has sealed the ${shuffled[0]} and ${shuffled[1]} disciplines for this trial!`);
+                                DescentState.save();
+                            }
+
                             DescentTracker.showView('t-builder');
                             document.getElementById('nav-builder-k').style.display = 'block'; document.getElementById('nav-trial-k').style.display = 'none';
                             DescentBuilder.init();
@@ -1343,7 +1511,14 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
             currentTab: "INFO",
             init() {
                 document.getElementById('builder-killer-name').innerText = DescentState.currentKiller;
-                this.renderSidebar(); this.renderSlots(); this.switchTab("INFO");
+                
+                // Ensure the builder doesn't default to a banned tab
+                let startTab = "INFO";
+                if (DescentState.runBannedDisciplines && DescentState.runBannedDisciplines.includes("INFO")) {
+                    startTab = Object.keys(KillerPerks).find(s => !DescentState.runBannedDisciplines.includes(s));
+                }
+                
+                this.renderSidebar(); this.renderSlots(); this.switchTab(startTab);
             },
             renderSidebar() {
                 const sidebar = document.getElementById('schools-sidebar'); sidebar.innerHTML = '';
@@ -1359,10 +1534,23 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                 Object.keys(KillerPerks).forEach(school => {
                     const btn = document.getElementById(`tab-${school}`); if (!btn) return;
                     btn.classList.remove('locked', 'disabled');
-                    if (selectedSchools.includes(school)) btn.classList.add('locked'); else if (isFull) btn.classList.add('disabled');
+                    btn.style.opacity = '1'; btn.innerHTML = school; // Reset
+                    
+                    if (DescentState.runBannedDisciplines && DescentState.runBannedDisciplines.includes(school)) {
+                        btn.classList.add('disabled');
+                        btn.style.opacity = '0.3';
+                        btn.innerHTML = `<span style="color:var(--entity-red)">✖ ${school}</span>`;
+                    } else if (selectedSchools.includes(school)) {
+                        btn.classList.add('locked');
+                    } else if (isFull) {
+                        btn.classList.add('disabled');
+                    }
                 });
             },
             switchTab(school) {
+                // Prevent clicking a banned tab
+                if (DescentState.runBannedDisciplines && DescentState.runBannedDisciplines.includes(school)) return; 
+                
                 document.querySelectorAll('.school-btn').forEach(b => b.classList.remove('active-tab'));
                 document.getElementById(`tab-${school}`).classList.add('active-tab');
                 this.currentTab = school; document.getElementById('perk-search').value = ''; this.renderMatrix(school);
@@ -1443,9 +1631,26 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
             },
             lose() {
                 DescentState.points -= 100; DescentState.stats.losses++; DescentState.save();
+                
                 if (DescentState.activePerks.length === 0) {
-                    alert("THE ENTITY IS ENRAGED.\nYour 4 initial perks are banned for this killer forever. Start over.");
-                    DescentState.selectedLoadout.forEach(l => DescentState.bannedPerks[DescentState.currentKiller].push(l.perk)); DescentState.save();
+                    if (DescentState.mode === 'hardcore') {
+                        alert("THE ENTITY IS ENRAGED.\n[HARDCORE MODE] Your 4 initial perks are banned GLOBALLY for ALL killers. Start over.");
+                        DescentState.selectedLoadout.forEach(l => {
+                            Killers.forEach(k => {
+                                if (!DescentState.bannedPerks[k].includes(l.perk)) {
+                                    DescentState.bannedPerks[k].push(l.perk);
+                                }
+                            });
+                        });
+                    } else {
+                        alert("THE ENTITY IS ENRAGED.\nYour 4 initial perks are banned for this killer forever. Start over.");
+                        DescentState.selectedLoadout.forEach(l => {
+                            if (!DescentState.bannedPerks[DescentState.currentKiller].includes(l.perk)) {
+                                DescentState.bannedPerks[DescentState.currentKiller].push(l.perk);
+                            }
+                        });
+                    }
+                    DescentState.save();
                     document.getElementById('nav-builder-k').style.display = 'none'; document.getElementById('nav-trial-k').style.display = 'none'; DescentTracker.showView('t-roster'); return;
                 }
                 this.isSacrificeMode = true; this.renderStage();
@@ -1468,17 +1673,57 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                     return;
                 }
                 try {
-                    const q = query(collection(db, 'player_state'), orderBy('points', 'desc'), limit(50));
+                    // Sort descending by points
+                    const q = query(collection(db, 'player_state'), orderBy('points', 'desc'), limit(100));
                     const snapshot = await getDocs(q);
                     if (snapshot.empty) { lbContainer.innerHTML = 'No sacrifices recorded yet.'; return; }
-                    let html = `<table class="lb-table"><tr><th>Rank</th><th>Sacrifice Name</th><th>Points</th><th>Killers Cleansed</th><th>Perks Broken</th><th>Losses</th></tr>`;
+                    
+                    let html = `<table class="lb-table">
+                        <tr>
+                            <th>Rank</th>
+                            <th>Sacrifice Name</th>
+                            <th>Mode</th>
+                            <th>Tier</th>
+                            <th>Points</th>
+                            <th>Killers Cleansed</th>
+                            <th>Perks Broken</th>
+                            <th>Losses</th>
+                        </tr>`;
+                        
                     let rank = 1;
                     snapshot.forEach(doc => {
-                        const data = doc.data(); const isMe = doc.id === currentUser; const stats = data.stats || {};
-                        html += `<tr class="${isMe ? 'lb-me' : ''}"><td>#${rank}</td><td>${doc.id} ${isMe ? '(You)' : ''}</td><td><strong style="color:var(--entity-orange);">${data.points || 0}</strong></td><td>${(data.completed_killers || []).length} / 43</td><td>${stats.sacrificed || 0}</td><td>${stats.losses || 0}</td></tr>`;
+                        const data = doc.data(); 
+                        const isMe = doc.id === currentUser; 
+                        const stats = data.stats || {};
+                        const playerTier = data.currentTier || 0;
+                        
+                        // Legacy support: If mode isn't defined, assume they are a veteran Normal mode player
+                        const playerMode = data.mode === 'hardcore' ? 'Hardcore' : 'Normal';
+                        const modeStyle = playerMode === 'Hardcore' 
+                            ? 'color: var(--entity-red); font-weight: bold; text-shadow: 0 0 5px rgba(211,47,47,0.5);' 
+                            : 'color: var(--text-muted);';
+
+                        // Check if they beat the challenge (43/43 on current tier)
+                        const completedCount = (data.completed_killers || []).length;
+                        const isVictor = completedCount >= 43;
+                        const nameDisplay = isVictor 
+                            ? `🏆 <span style="color:var(--gold-ascension); text-shadow: 0 0 5px var(--gold-ascension); font-weight: bold;">${doc.id}</span> ${isMe ? '(You)' : ''}` 
+                            : `${doc.id} ${isMe ? '(You)' : ''}`;
+
+                        html += `<tr class="${isMe ? 'lb-me' : ''}">
+                            <td>#${rank}</td>
+                            <td>${nameDisplay}</td>
+                            <td><span style="${modeStyle}">${playerMode}</span></td>
+                            <td><strong style="color:var(--gold-ascension); text-shadow: var(--gold-glow); font-size: 1.2rem;">${playerTier}</strong></td>
+                            <td><strong style="color:var(--entity-orange);">${data.points || 0}</strong></td>
+                            <td>${completedCount} / 43</td>
+                            <td>${stats.sacrificed || 0}</td>
+                            <td>${stats.losses || 0}</td>
+                        </tr>`;
                         rank++;
                     });
-                    html += `</table>`; lbContainer.innerHTML = html;
+                    html += `</table>`; 
+                    lbContainer.innerHTML = html;
                 } catch (e) { 
                     console.error("Leaderboard Error:", e);
                     lbContainer.innerHTML = `<span style="color:red;">The connection was severed. Error: ${e.message}</span>`; 
@@ -1487,6 +1732,7 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
         };
 
         // EXPORT DESCENT TO WINDOW
+        window.DescentState = DescentState; // <-- This is the missing line!
         window.DescentTracker = DescentTracker; 
         window.DescentTrial = DescentTrial; 
         window.DescentBuilder = DescentBuilder;

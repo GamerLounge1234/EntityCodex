@@ -1921,7 +1921,6 @@ while (RouletteState.activeDraft.length < numPerks) {
                         alert("JAILBREAK SUCCESSFUL: All perks freed."); RouletteUI.resetToInitial();
                     } else {
                         // Core Progression Logic
-                        // Core Progression Logic
 RouletteState.currentLocalStreak += 1;
 RouletteState.totalStreak += 1;
 
@@ -1947,7 +1946,6 @@ if (RouletteState.totalStreak > RouletteState.highestStreak) {
                 } else {
                     if(RouletteState.isJailbreakActive) { RouletteState.safeBank = Math.max(0, RouletteState.safeBank - 1000); RouletteState.isJailbreakActive = false; }
                     
-                    // Jailing logic
                     // Jailing logic
 RouletteState.activeDraft.forEach(p => {
     if (p.name !== "EMPTY SLOT") RouletteState.ransomJail.push(p.name);

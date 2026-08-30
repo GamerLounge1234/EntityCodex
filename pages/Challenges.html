@@ -822,7 +822,7 @@
             <div id="t-stats" class="t-view">
                 <div class="dashboard-grid">
                     <div class="stat-box"><div>Total Points</div><div class="s-stat-value" id="stat-points" style="color: var(--neon-red);">0</div></div>
-                    <div class="stat-box"><div>Killers Cleansed</div><div class="s-stat-value" id="stat-killers">0 / 43</div></div>
+                    <div class="stat-box"><div>Killers Cleansed</div><div class="s-stat-value" id="stat-killers">0 / 44</div></div>
                     <div class="stat-box"><div>Perks Sacrificed</div><div class="s-stat-value" id="stat-sacrificed" style="color: var(--entity-orange);">0</div></div>
                     <div class="stat-box"><div>Lifelines Grasped</div><div class="s-stat-value" id="stat-lifelines" style="color: #00ff66;">0</div></div>
                 </div>
@@ -1354,9 +1354,9 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                 } catch (e) { console.error("Firebase Save Error:", e); }
             },
             updateUI() {
-                let totalCleansed = (this.currentTier * 43) + this.completedKillers.length;
+                let totalCleansed = (this.currentTier * 44) + this.completedKillers.length;
                 document.getElementById('stat-points').innerText = this.points;
-                document.getElementById('stat-killers').innerText = `${totalCleansed} (T${this.currentTier}: ${this.completedKillers.length}/43)`;
+                document.getElementById('stat-killers').innerText = `${totalCleansed} (T${this.currentTier}: ${this.completedKillers.length}/44)`;
                 document.getElementById('stat-sacrificed').innerText = this.stats.sacrificed;
                 document.getElementById('stat-lifelines').innerText = this.stats.lifelines;
                 
@@ -1393,7 +1393,7 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                 
                 const ascendBtn = document.getElementById('btn-ascend');
                 if (ascendBtn) {
-                    if (this.completedKillers.length >= 43 && this.currentTier < 4) {
+                    if (this.completedKillers.length >= 44 && this.currentTier < 4) {
                         ascendBtn.style.display = 'block';
                         document.getElementById('next-tier-num').innerText = this.currentTier + 1;
                     } else {
@@ -1420,8 +1420,8 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
             },
             changeMode(newMode) { this.mode = newMode; this.save(); },
             ascendTier() {
-                if (this.completedKillers.length >= 43 && this.currentTier < 4) {
-                    if (confirm(`Are you ready to Ascend to Tier ${this.currentTier + 1}? \n\n- Your Roster will reset to 0/43 for the new Tier.\n- ALL Perk Bans will be lifted!\n- You can choose a new Difficulty Mode.\n\n(Your Tier ${this.currentTier} history is permanently archived safely).`)) {
+                if (this.completedKillers.length >= 44 && this.currentTier < 4) {
+                    if (confirm(`Are you ready to Ascend to Tier ${this.currentTier + 1}? \n\n- Your Roster will reset to 0/44 for the new Tier.\n- ALL Perk Bans will be lifted!\n- You can choose a new Difficulty Mode.\n\n(Your Tier ${this.currentTier} history is permanently archived safely).`)) {
                         this.tierArchive[this.currentTier] = { mode: this.mode, bans: JSON.parse(JSON.stringify(this.bannedPerks)) };
                         this.currentTier++; this.completedKillers = []; this.runBannedDisciplines = [];
                         Killers.forEach(k => { this.bannedPerks[k] = []; }); 
@@ -1681,9 +1681,8 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                             ? 'color: var(--entity-red); font-weight: bold; text-shadow: 0 0 5px rgba(211,47,47,0.5);' 
                             : 'color: var(--text-muted);';
 
-                        // Check if they beat the challenge (43/43 on current tier)
                         const completedCount = (data.completed_killers || []).length;
-                        const isVictor = completedCount >= 43;
+                        const isVictor = completedCount >= 44;
                         const nameDisplay = isVictor 
                             ? `🏆 <span style="color:var(--gold-ascension); text-shadow: 0 0 5px var(--gold-ascension); font-weight: bold;">${doc.id}</span> ${isMe ? '(You)' : ''}` 
                             : `${doc.id} ${isMe ? '(You)' : ''}`;
@@ -1694,7 +1693,7 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                             <td><span style="${modeStyle}">${playerMode}</span></td>
                             <td><strong style="color:var(--gold-ascension); text-shadow: var(--gold-glow); font-size: 1.2rem;">${playerTier}</strong></td>
                             <td><strong style="color:var(--entity-orange);">${data.points || 0}</strong></td>
-                            <td>${completedCount} / 43</td>
+                            <td>${completedCount} / 44</td>
                             <td>${stats.sacrificed || 0}</td>
                             <td>${stats.losses || 0}</td>
                         </tr>`;

@@ -3,159 +3,561 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DBD Killer Randomizer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/killers.css">
+    <title>DBD Advanced Killer Wheel</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================================================
+           ROOT VARIABLES & DBD THEME
+           ========================================================================== */
+        :root {
+            --dried-blood: #5a0000;
+            --arterial-spray: #ff0000;
+            --smooth-curve: cubic-bezier(0.4, 0, 0.2, 1);
+            --bone-white: #f5f5dc;
+            --muted-bone: #c8c8b4;
+            --entity-void: #050508;
+            --fog: rgba(20, 25, 30, 0.8);
+            --font-ui: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--entity-void);
+            color: var(--bone-white);
+            font-family: var(--font-ui);
+            overflow: hidden; /* Hide scrollbars for the floating space effect */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* ==========================================================================
+           FLUID NAVBAR - STICKY FIX (From User)
+           ========================================================================== */
+        @keyframes organicHeartbeatBorder {
+            0% { border-bottom-color: var(--dried-blood); box-shadow: 0 4px 20px rgba(90, 0, 0, 0.6); }
+            15% { border-bottom-color: var(--arterial-spray); box-shadow: 0 4px 30px rgba(255, 0, 0, 0.8); }
+            30% { border-bottom-color: var(--dried-blood); box-shadow: 0 4px 20px rgba(90, 0, 0, 0.6); }
+            100% { border-bottom-color: var(--dried-blood); box-shadow: 0 4px 20px rgba(90, 0, 0, 0.6); }
+        }
+
+        .navbar {
+            position: sticky; 
+            top: 0;
+            left: 0;
+            width: 100%;
+            min-height: 70px;
+            height: auto;
+            padding: clamp(5px, 1.5vw, 10px) 15px;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.98) 0%, rgba(15, 0, 0, 0.90) 100%);
+            border-bottom: 2px solid var(--dried-blood);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            animation: organicHeartbeatBorder 4s infinite var(--smooth-curve);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: clamp(15px, 3vw, 40px);
+            flex-wrap: wrap;
+            list-style: none;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar li a {
+            font-family: var(--font-ui);
+            font-size: clamp(0.9rem, 2.5vw, 1.5rem);
+            font-weight: 700;
+            letter-spacing: clamp(1px, 1vw, 3px);
+            color: var(--muted-bone);
+            text-decoration: none;
+            text-transform: uppercase;
+            position: relative;
+            padding: clamp(5px, 1.5vw, 8px) clamp(10px, 2vw, 15px);
+            transition: all 0.3s var(--smooth-curve);
+            white-space: nowrap;
+        }
+
+        .navbar li a::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--arterial-spray);
+            transform: translate(-50%, -50%) rotate(-3deg);
+            transition: width 0.4s var(--smooth-curve);
+            box-shadow: 0 0 10px var(--arterial-spray);
+            z-index: 2;
+            opacity: 0;
+        }
+
+        .navbar li a:hover, .navbar li a.active {
+            color: var(--bone-white);
+            text-shadow: 0 0 15px rgba(255, 5, 5, 0.7);
+        }
+
+        .navbar li a:hover::before, .navbar li a.active::before {
+            width: 100%;
+            opacity: 1;
+        }
+
+        /* ==========================================================================
+           ENTITY REALM (Floating Background)
+           ========================================================================== */
+        #entity-realm {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #1a0a0a 0%, #000000 80%);
+        }
+
+        .floating-killer {
+            position: absolute;
+            width: clamp(60px, 8vw, 120px);
+            height: clamp(60px, 8vw, 120px);
+            object-fit: contain;
+            opacity: 0.15;
+            filter: grayscale(100%) blur(2px);
+            transition: all 2s var(--smooth-curve);
+            will-change: transform;
+        }
+
+        /* Vortex animation triggered during shuffle */
+        .vortex-active .floating-killer {
+            opacity: 0.8;
+            filter: grayscale(0%) blur(5px) drop-shadow(0 0 20px var(--arterial-spray));
+            animation: suckIntoVoid 6s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+        }
+
+        @keyframes suckIntoVoid {
+            0% { transform: rotate(0deg) scale(1); opacity: 0.8; }
+            50% { filter: blur(10px) drop-shadow(0 0 40px red); }
+            100% { transform: translate(50vw, 50vh) rotate(1440deg) scale(0); opacity: 0; }
+        }
+
+        /* ==========================================================================
+           MAIN UI LAYOUT
+           ========================================================================== */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            position: relative;
+            padding: 20px;
+        }
+
+        .counter-box {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            font-weight: 800;
+            color: var(--arterial-spray);
+            text-shadow: 0 0 10px rgba(255,0,0,0.5);
+            background: rgba(0,0,0,0.6);
+            padding: 10px 20px;
+            border: 1px solid var(--dried-blood);
+            border-radius: 5px;
+            backdrop-filter: blur(5px);
+        }
+
+        .display-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            width: 100%;
+        }
+
+        /* Killer Image Display */
+        .killer-portrait-container {
+            position: relative;
+            width: clamp(200px, 30vw, 400px);
+            height: clamp(200px, 30vw, 400px);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .killer-portrait {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.5s var(--smooth-curve);
+            filter: drop-shadow(0 0 30px transparent);
+        }
+
+        .killer-portrait.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .killer-portrait.flashing {
+            opacity: 0.7;
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 20px var(--dried-blood));
+        }
+
+        /* Killer Text Name Animation */
+        .killer-name {
+            font-size: clamp(2rem, 4vw, 4rem);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-align: center;
+            opacity: 0;
+            min-height: 60px;
+            transition: opacity 0.5s ease;
+        }
+
+        .killer-name.show {
+            opacity: 1;
+            animation: glitchReveal 1s forwards;
+        }
+
+        @keyframes glitchReveal {
+            0% { transform: skewX(20deg); text-shadow: 5px 0 0 red, -5px 0 0 blue; opacity: 0; }
+            20% { transform: skewX(-20deg); text-shadow: -5px 0 0 red, 5px 0 0 blue; opacity: 1; }
+            40% { transform: skewX(10deg); text-shadow: 2px 0 0 red, -2px 0 0 blue; }
+            60% { transform: skewX(-10deg); text-shadow: -2px 0 0 red, 2px 0 0 blue; }
+            80% { transform: skewX(5deg); text-shadow: 0 0 20px currentColor; }
+            100% { transform: skewX(0); text-shadow: 0 0 30px currentColor, 0 0 10px currentColor; }
+        }
+
+        /* ==========================================================================
+           CONTROLS (Buttons)
+           ========================================================================== */
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .btn {
+            font-family: var(--font-ui);
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 15px 40px;
+            background: transparent;
+            color: var(--bone-white);
+            border: 2px solid var(--dried-blood);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(90, 0, 0, 0.4) inset;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,0,0,0.4), transparent);
+            transition: all 0.5s ease;
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 30px var(--arterial-spray) inset, 0 0 20px var(--arterial-spray);
+            border-color: var(--arterial-spray);
+            text-shadow: 0 0 10px white;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:disabled {
+            border-color: #333;
+            color: #555;
+            cursor: not-allowed;
+            box-shadow: none;
+            pointer-events: none;
+        }
+
+        .btn-reset {
+            border-color: #444;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1) inset;
+        }
+        
+        .btn-reset:hover {
+            box-shadow: 0 0 30px white inset, 0 0 20px white;
+            border-color: white;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- User Navigation -->
     <nav class="navbar">
         <ul class="nav-links">
             <li><a href="../index.html">Lobby</a></li>
             <li><a href="../pages/Randomizer.html">Randomizer</a></li>
             <li><a href="../pages/Challenges.html">Challenges</a></li>
             <li><a href="#" class="active">Killer Wheel</a></li>
-                        <li><a href="../pages/CreatorsLounge.html">Creators</a></li>
-
+            <li><a href="../pages/CreatorsLounge.html">Creators</a></li>
         </ul>
     </nav>
 
-    <!-- 3D Void for Killers -->
-    <div id="void-container"></div>
+    <div id="entity-realm"></div>
 
-    <!-- Interface -->
-    <div id="controls">
-        <button id="randomize-btn">Summon Entity</button>
-    </div>
+    <main class="main-container">
+        
+        <div class="counter-box">
+            Killers: <span id="counter">0 / 0</span>
+        </div>
 
-   <script>
-        const killerNames = [
-            "Artist.png", "Dredge.png", "Legion.png", "Skull.png",
-            "Billy.png", "Executioner.png", "Lich.png", "Spirit.png",
-            "Blight.png", "Freddy.png", "Nemesis.png", "SpringTrap.png",
-            "Bubba.png", "GhostFace.png", "Nurse.png", "Trapper.png",
-            "Chucky.png", "Ghoul.png", "oni.png", "Pig.png",
-            "Clown.png", "Hag.png", "Pinhead.png", "Trickster.png",
-            "Deathslinger.png", "HoundMaster.png", "Plague.png", "Twins.png",
-            "Demo.png", "Huntress.png", "Sadako.png", "Unknown.png",
-            "Doctor.png", "Karsue.png", "Singularity.png", "Vecna.png",
-            "Dracula.png", "Knight.png", "Waraith.png", "Xeno.png", "Jason.png", "Shape.png", "wesker.png",
+        <div class="display-area">
+            <div class="killer-portrait-container">
+                <img id="main-portrait" class="killer-portrait" src="" alt="Killer Portrait">
+            </div>
+            <div id="main-name" class="killer-name">THE ENTITY HUNGERS</div>
+        </div>
+
+        <div class="controls">
+            <button id="btn-roll" class="btn btn-roll">Summon Killer</button>
+            <button id="btn-reset" class="btn btn-reset">Reset Bloodweb</button>
+        </div>
+
+    </main>
+
+    <script>
+        /* ==========================================================================
+           KILLER DATA (Exact filenames mapped to display data)
+           ========================================================================== */
+        const allKillers = [
+            { file: "Dracula.gif", name: "Dracula", color: "#a30000" },
+            { file: "The_Hag.webp", name: "The Hag", color: "#8b9c78" },
+            { file: "The_Oni.webp", name: "The Oni", color: "#cc2900" },
+            { file: "The_Animatronic.gif", name: "The Animatronic", color: "#b3aa00" },
+            { file: "The_HillBilly.webp", name: "The Hillbilly", color: "#d97a26" },
+            { file: "The_Onryō – Sadako.webp", name: "The Onryō", color: "#ffffff" },
+            { file: "The_Artist.webp", name: "The Artist", color: "#2d2d3b" },
+            { file: "The_Houndmaster.gif", name: "The Houndmaster", color: "#6e4b3a" },
+            { file: "The_Pig.webp", name: "The Pig", color: "#9e1515" },
+            { file: "The_Blight.webp", name: "The Blight", color: "#ff8c00" },
+            { file: "The_Huntress.webp", name: "The Huntress", color: "#a43333" },
+            { file: "The_Plague.webp", name: "The Plague", color: "#8a9a5b" },
+            { file: "The_Clown.webp", name: "The Clown", color: "#9370db" },
+            { file: "The_Judgment.gif", name: "The Judgment", color: "#a9a9a9" },
+            { file: "The_Singularity.webp", name: "The Singularity", color: "#00ffcc" },
+            { file: "The_Deathslinger.webp", name: "The Deathslinger", color: "#b8860b" },
+            { file: "The_Knight.gif", name: "The Knight", color: "#778899" },
+            { file: "The_Skull_Merchant.webp", name: "The Skull Merchant", color: "#c0c0c0" },
+            { file: "The_Demogorgon.webp", name: "The Demogorgon", color: "#8b0000" },
+            { file: "The_Krasue.gif", name: "The Krasue", color: "#b03060" },
+            { file: "The_Slasher.gif", name: "The Slasher", color: "#ff4500" },
+            { file: "The_Doctor.webp", name: "The Doctor", color: "#48d1cc" },
+            { file: "The_Leatherface.webp", name: "The Cannibal", color: "#cd853f" },
+            { file: "The_Spirit.webp", name: "The Spirit", color: "#87ceeb" },
+            { file: "The_Dredge.webp", name: "The Dredge", color: "#4b0082" },
+            { file: "The_Legion.webp", name: "The Legion", color: "#ff1493" },
+            { file: "The_Trapper.webp", name: "The Trapper", color: "#696969" },
+            { file: "The_Executioner.webp", name: "The Executioner", color: "#8b4513" },
+            { file: "The_Lich.gif", name: "The Lich", color: "#00fa9a" },
+            { file: "The_Trickster.webp", name: "The Trickster", color: "#ffff00" },
+            { file: "The_First.gif", name: "The First", color: "#dc143c" },
+            { file: "The_MasterMind.webp", name: "The Mastermind", color: "#2f4f4f" },
+            { file: "The_Twins.gif", name: "The Twins", color: "#8fbc8f" },
+            { file: "The_Ghostface.webp", name: "The Ghost Face", color: "#f8f8ff" },
+            { file: "The_Nemesis.gif", name: "The Nemesis", color: "#4682b4" },
+            { file: "The_Unknown.webp", name: "The Unknown", color: "#ff69b4" },
+            { file: "The_Ghoul.gif", name: "The Ghoul", color: "#2e8b57" },
+            { file: "The_Nightmare.webp", name: "The Nightmare", color: "#800000" },
+            { file: "The_Wraith.webp", name: "The Wraith", color: "#a0522d" },
+            { file: "The_Good_Guy.gif", name: "The Good Guy", color: "#ff7f50" },
+            { file: "The_Nurse.webp", name: "The Nurse", color: "#e6e6fa" },
+            { file: "The_Xenomorph.gif", name: "The Xenomorph", color: "#32cd32" }
         ];
 
-        const voidContainer = document.getElementById('void-container');
-        const randomizeBtn = document.getElementById('randomize-btn');
-        const wrappers = [];
+        /* ==========================================================================
+           STATE & DOM ELEMENTS
+           ========================================================================== */
+        let remainingKillers = [...allKillers];
+        let totalKillers = allKillers.length;
+        let isRolling = false;
+        const basePath = "../killers/";
 
-        // NEW: Array to keep track of killers that haven't been picked yet
-        let availableKillers = [];
+        const realm = document.getElementById('entity-realm');
+        const counterEl = document.getElementById('counter');
+        const portraitEl = document.getElementById('main-portrait');
+        const nameEl = document.getElementById('main-name');
+        const btnRoll = document.getElementById('btn-roll');
+        const btnReset = document.getElementById('btn-reset');
 
-        // Helper to generate random 3D position
-        function getRandomTransform() {
-            // Screen width/height bounds
-            const x = (Math.random() - 0.5) * 120; // -60vw to +60vw
-            const y = (Math.random() - 0.5) * 100; // -50vh to +50vh
-            const z = (Math.random() * -1000) + 200; // Depth: far back to slightly forward
-            return `translate3d(${x}vw, ${y}vh, ${z}px)`;
-        }
-
-        // Initialize images in the void
-        function initSpace() {
-            killerNames.forEach((file, index) => {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'killer-wrapper';
-                
-                // Randomize animation delay so they don't all float in sync
-                const delay = Math.random() * 5;
-                
+        /* ==========================================================================
+           BACKGROUND FLOATING SYSTEM
+           ========================================================================== */
+        function spawnFloatingKillers() {
+            realm.innerHTML = ''; // Clear existing
+            allKillers.forEach((killer, i) => {
                 const img = document.createElement('img');
-                img.src = `../assets/images/killers/${file}`;
-                img.className = 'killer-img';
-                img.style.animationDelay = `-${delay}s`;
-
-                wrapper.appendChild(img);
-                wrapper.style.transform = getRandomTransform();
+                img.src = basePath + killer.file;
+                img.className = 'floating-killer';
                 
-                voidContainer.appendChild(wrapper);
-                wrappers.push(wrapper);
+                // Random starting positions
+                const startX = Math.random() * 100;
+                const startY = Math.random() * 100;
+                img.style.left = `${startX}vw`;
+                img.style.top = `${startY}vh`;
                 
-                // NEW: Populate the available pool with every killer's index on load
-                availableKillers.push(index);
+                realm.appendChild(img);
+                animateFloating(img);
             });
         }
 
-        let shuffleInterval;
-
-        // Start Randomization
-        randomizeBtn.addEventListener('click', () => {
-            // NEW: If all killers have been picked, reset the pool
-            if (availableKillers.length === 0) {
-                console.log("All killers played! Resetting the Entity's pool...");
-                // Refill the array with numbers 0 through 39
-                availableKillers = wrappers.map((_, i) => i); 
-            }
-
-            randomizeBtn.disabled = true;
-            randomizeBtn.innerText = "The Entity is choosing...";
+        function animateFloating(element) {
+            // Give each element a unique, infinite drifting path
+            const duration = 10000 + Math.random() * 20000; // 10-30 seconds per move
             
-            // Add shuffling visual effects
-            voidContainer.classList.add('is-shuffling');
+            function move() {
+                if(isRolling) return; // Freeze normal float during roll
+                const newX = (Math.random() - 0.5) * 50; // drift up to 50px X
+                const newY = (Math.random() - 0.5) * 50; // drift up to 50px Y
+                const rot = (Math.random() - 0.5) * 45; // rotate
 
-            // Reset classes if clicking again
-            wrappers.forEach(w => {
-                w.classList.remove('winner', 'loser');
-            });
+                element.style.transform = `translate(${newX}px, ${newY}px) rotate(${rot}deg)`;
+                setTimeout(move, duration);
+            }
+            move();
+        }
 
-            // 1. High Speed Shuffling (Images warping around the screen)
-            shuffleInterval = setInterval(() => {
-                wrappers.forEach(w => {
-                    w.style.transform = getRandomTransform();
-                });
-            }, 400); // Changes position every 400ms for a chaotic feel
+        /* ==========================================================================
+           CORE LOGIC: RANDOMIZER & ANIMATIONS
+           ========================================================================== */
+        function updateCounter() {
+            const rolledCount = totalKillers - remainingKillers.length;
+            counterEl.innerText = `${rolledCount} / ${totalKillers}`;
+        }
 
-            // 2. Stop Shuffling after 7 Seconds and pick a winner
-            setTimeout(() => {
-                clearInterval(shuffleInterval);
-                voidContainer.classList.remove('is-shuffling');
+        function playShuffleAnimation() {
+            return new Promise((resolve) => {
+                // Trigger Background Vortex
+                realm.classList.add('vortex-active');
+                
+                nameEl.classList.remove('show');
+                portraitEl.classList.remove('show');
+                portraitEl.classList.add('flashing');
+                nameEl.innerText = "SEARCHING THE FOG...";
+                nameEl.style.color = "var(--bone-white)";
+                nameEl.style.textShadow = "none";
 
-                // NEW: Pick a random index FROM THE AVAILABLE POOL, not the full list
-                const poolIndex = Math.floor(Math.random() * availableKillers.length);
-                const winningIndex = availableKillers[poolIndex];
+                let shuffleInterval = setInterval(() => {
+                    // Flash random images rapidly
+                    const randomImg = allKillers[Math.floor(Math.random() * allKillers.length)].file;
+                    portraitEl.src = basePath + randomImg;
+                }, 120); // Switch image every 120ms
 
-                // NEW: Remove the chosen killer from the available pool so they can't be picked again
-                availableKillers.splice(poolIndex, 1);
-
-                wrappers.forEach((wrapper, i) => {
-                    if (i === winningIndex) {
-                        // Bring winner to the very front center
-                        wrapper.classList.add('winner');
-                    } else {
-                        // Push losers into the background
-                        wrapper.classList.add('loser');
-                        // Assign them a new slow, distant resting place
-                        wrapper.style.transform = getRandomTransform();
-                    }
-                });
-
-                // Re-enable button
+                // Shuffle for exactly 6 seconds
                 setTimeout(() => {
-                    randomizeBtn.disabled = false;
-                    // NEW: Shows how many killers are left before the pool resets
-                    if (availableKillers.length > 0) {
-                        randomizeBtn.innerText = `Resummon (${availableKillers.length} Left)`;
-                    } else {
-                        randomizeBtn.innerText = "Pool Empty - Click to Reset";
-                    }
-                }, 1500);
+                    clearInterval(shuffleInterval);
+                    realm.classList.remove('vortex-active');
+                    portraitEl.classList.remove('flashing');
+                    resolve();
+                }, 6000);
+            });
+        }
 
-            }, 7000); // 7 seconds
+        async function summonKiller() {
+            if (isRolling || remainingKillers.length === 0) return;
+
+            isRolling = true;
+            btnRoll.disabled = true;
+            btnReset.disabled = true;
+
+            // 1. Play 6-second immersive shuffle
+            await playShuffleAnimation();
+
+            // 2. Select the unique killer and remove from pool
+            const randomIndex = Math.floor(Math.random() * remainingKillers.length);
+            const selectedKiller = remainingKillers.splice(randomIndex, 1)[0];
+
+            // 3. Display Results
+            portraitEl.src = basePath + selectedKiller.file;
+            portraitEl.style.filter = `drop-shadow(0 0 35px ${selectedKiller.color})`;
+            portraitEl.classList.add('show');
+
+            nameEl.innerText = selectedKiller.name;
+            nameEl.style.color = selectedKiller.color;
+            nameEl.classList.add('show');
+
+            updateCounter();
+
+            // 4. Reset states
+            isRolling = false;
+            btnReset.disabled = false;
+            
+            if (remainingKillers.length > 0) {
+                btnRoll.disabled = false;
+                btnRoll.innerText = "Summon Next";
+            } else {
+                btnRoll.innerText = "Entity Sated";
+            }
+            
+            // Restart standard floating animation
+            document.querySelectorAll('.floating-killer').forEach(animateFloating);
+        }
+
+        function resetWheel() {
+            if (isRolling) return;
+            remainingKillers = [...allKillers];
+            updateCounter();
+            
+            portraitEl.classList.remove('show');
+            nameEl.classList.remove('show');
+            
+            setTimeout(() => {
+                portraitEl.src = '';
+                nameEl.innerText = "THE ENTITY HUNGERS";
+                nameEl.style.color = "var(--bone-white)";
+                nameEl.style.textShadow = "none";
+            }, 500);
+
+            btnRoll.disabled = false;
+            btnRoll.innerText = "Summon Killer";
+        }
+
+        /* ==========================================================================
+           INITIALIZATION
+           ========================================================================== */
+        btnRoll.addEventListener('click', summonKiller);
+        btnReset.addEventListener('click', resetWheel);
+
+        // Run on load
+        window.addEventListener('DOMContentLoaded', () => {
+            spawnFloatingKillers();
+            updateCounter();
         });
 
-        // Setup on load
-        window.addEventListener('DOMContentLoaded', initSpace);
-
     </script>
-    <script src="../assets/js/ai-widget.js"></script>
-    <script src="../assets/js/session.js"></script>
 </body>
 </html>

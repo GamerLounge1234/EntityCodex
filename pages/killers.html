@@ -7,9 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;0,800;1,400&display=swap" rel="stylesheet">
     
     <style>
-        /* ==========================================================================
-           ROOT VARIABLES & DBD THEME
-           ========================================================================== */
+
         :root {
             --dried-blood: #5a0000;
             --arterial-spray: #ff0000;
@@ -32,7 +30,7 @@
             background-color: var(--entity-void);
             color: var(--bone-white);
             font-family: var(--font-ui);
-            overflow: hidden; /* Hide scrollbars for the floating space effect */
+            overflow: hidden; 
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -350,9 +348,7 @@
     </main>
 
     <script>
-        /* ==========================================================================
-           KILLER DATA (Exact filenames mapped to display data)
-           ========================================================================== */
+     
         const allKillers = [
             { file: "Dracula.gif", name: "Dracula", color: "#a30000" },
             { file: "The_Hag.webp", name: "The Hag", color: "#8b9c78" },
@@ -450,9 +446,7 @@
             move();
         }
 
-        /* ==========================================================================
-           CORE LOGIC: RANDOMIZER & ANIMATIONS
-           ========================================================================== */
+
         function updateCounter() {
             const rolledCount = totalKillers - remainingKillers.length;
             counterEl.innerText = `${rolledCount} / ${totalKillers}`;

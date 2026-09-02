@@ -3,390 +3,330 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entity's Roulette - Premium OBS Overlay</title>
-    
-    <!-- Premium Typography Selection (No Icons, Just Elegant Fonts) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Montserrat:wght@300;400;700;900&family=Teko:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-
+    <title>Entity's Roulette - Premium Stream Overlay</title>
     <style>
         /* ==========================================================================
-           PREMIUM CSS ARCHITECTURE
+           PREMIUM STREAM OVERLAY STYLES
+           Designed for OBS Browser Source (Transparent, High-Contrast, Glowing)
            ========================================================================== */
+        
+        @import url('https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Montserrat:wght@400;700;900&family=Courier+New&display=swap');
 
         :root {
-            /* Core Colors */
-            --glass-bg: rgba(8, 5, 5, 0.75);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --text-primary: #ffffff;
-            --text-secondary: #a39595;
+            /* Premium Entity Color Palette */
+            --entity-crimson: #d32f2f;
+            --entity-blood: #9a031e;
+            --entity-gold: #e5b824;
+            --bone-white: #f0f0f5;
+            --muted-bone: #888899;
+            --void-black: rgba(5, 3, 5, 0.85);
+            --glass-border: rgba(211, 47, 47, 0.4);
             
-            /* Entity Color Palette */
-            --entity-red: #d32f2f;
-            --entity-blood: #8b0000;
-            --entity-dark: #3a0000;
-            --entity-glow: rgba(211, 47, 47, 0.6);
-            
-            /* Golden Ascension Palette */
-            --gold-base: #e5b824;
-            --gold-bright: #ffdf00;
-            --gold-dark: #b8860b;
-            --gold-glow: rgba(229, 184, 36, 0.6);
+            /* Advanced Glow Effects */
+            --glow-red: 0 0 15px rgba(211, 47, 47, 0.6), inset 0 0 10px rgba(154, 3, 30, 0.4);
+            --glow-gold: 0 0 20px rgba(229, 184, 36, 0.6), inset 0 0 15px rgba(229, 184, 36, 0.3);
+            --text-glow-red: 0 0 10px rgba(255, 50, 50, 0.8);
+            --text-glow-gold: 0 0 12px rgba(229, 184, 36, 0.9);
+            --text-glow-white: 0 0 8px rgba(255, 255, 255, 0.5);
 
             /* Typography */
-            --font-headers: 'Cinzel', serif;
-            --font-labels: 'Teko', sans-serif;
-            --font-numbers: 'Space Mono', monospace;
-            --font-main: 'Montserrat', sans-serif;
-
-            /* Visual Effects */
-            --shadow-hard: 0 4px 10px rgba(0,0,0,0.9);
-            --shadow-glow-red: 0 0 15px var(--entity-glow), 0 0 30px rgba(211,47,47,0.3);
-            --shadow-glow-gold: 0 0 15px var(--gold-glow), 0 0 30px rgba(229,184,36,0.3);
-            --transition-smooth: all 0.5s cubic-bezier(0.25, 1, 0.3, 1);
+            --font-ui: 'Teko', sans-serif;
+            --font-data: 'Montserrat', sans-serif;
+            --font-mono: 'Courier New', monospace;
         }
 
-        /* Base Reset for OBS */
-        * {
+        /* Essential for OBS: Transparent Background */
+        body, html {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            /* Transparent background for OBS Browser Source */
-            background-color: transparent; 
-            color: var(--text-primary);
-            font-family: var(--font-main);
-            overflow: hidden; /* No scrollbars on stream */
-            display: flex;
-            padding: 20px;
-            /* Anchored to top-right by default, adjustable in OBS */
-            justify-content: flex-end; 
-            align-items: flex-start;
-            height: 100vh;
             width: 100vw;
+            height: 100vh;
+            background-color: transparent !important;
+            overflow: hidden;
+            font-family: var(--font-data);
+            color: var(--bone-white);
         }
 
-        /* ==========================================================================
-           MAIN OVERLAY CONTAINER (GLASSMORPHISM)
-           ========================================================================== */
-        
-        .overlay-wrapper {
+        /* Overlay Layout Container */
+        .overlay-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            width: 340px;
-            /* Premium Glass Effect */
-            background: linear-gradient(135deg, rgba(15,10,10,0.85) 0%, rgba(5,3,3,0.95) 100%);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.5);
-            position: relative;
-            transform: translateY(-20px);
-            opacity: 0;
-            animation: slideIn 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-            border-top: 2px solid var(--entity-blood);
+            gap: 15px;
+            width: 320px;
+            /* Prevents anti-aliasing artifacts on stream */
+            -webkit-font-smoothing: antialiased; 
         }
 
-        /* Subtle animated background gradient line */
-        .overlay-wrapper::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--entity-red), transparent);
-            border-radius: 12px 12px 0 0;
-            animation: panGradient 4s linear infinite;
-        }
-
-        /* Overlay Header */
-        .overlay-header {
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding-bottom: 12px;
-            margin-bottom: 8px;
-        }
-
-        .overlay-title {
-            font-family: var(--font-headers);
-            font-size: 1.2rem;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            color: var(--text-primary);
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-            margin-bottom: 4px;
-        }
-
-        .overlay-subtitle {
-            font-family: var(--font-labels);
-            font-size: 1rem;
-            color: var(--entity-red);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        /* ==========================================================================
-           DATA MODULES (INDIVIDUAL TRACKERS)
-           ========================================================================== */
-
+        /* Separation of Elements for Premium Aesthetic */
         .data-module {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 15px;
-            background: rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.03);
-            border-radius: 8px;
-            transition: var(--transition-smooth);
+            background: var(--void-black);
+            border-left: 4px solid var(--entity-crimson);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 15px 20px;
+            border-radius: 4px 12px 12px 4px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
             position: relative;
             overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.3, 1);
         }
 
-        .data-module::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            height: 100%;
-            width: 3px;
-            background: transparent;
-            transition: var(--transition-smooth);
+        /* Dynamic Module States */
+        .data-module.pot-active {
+            border-left-color: var(--entity-crimson);
+            box-shadow: var(--glow-red), 0 15px 30px rgba(0,0,0,0.9);
+            animation: pulseThreat 3s infinite alternate;
         }
 
-        /* Data Labels (Typography Heavy) */
-        .data-label {
+        .data-module.streak-active {
+            border-left-color: var(--entity-gold);
+            box-shadow: var(--glow-gold), 0 15px 30px rgba(0,0,0,0.9);
+        }
+
+        /* Title Styling */
+        .module-header {
             display: flex;
-            flex-direction: column;
-            z-index: 2;
-        }
-
-        .label-main {
-            font-family: var(--font-labels);
-            font-size: 1.15rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text-secondary);
-            line-height: 1.1;
-        }
-
-        .label-sub {
-            font-family: var(--font-main);
-            font-size: 0.65rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: rgba(255,255,255,0.3);
-            margin-top: 2px;
-        }
-
-        /* Data Values */
-        .data-value {
-            font-family: var(--font-numbers);
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            text-shadow: var(--shadow-hard);
-            z-index: 2;
-            transition: var(--transition-smooth);
-            display: flex;
+            justify-content: space-between;
             align-items: baseline;
-            gap: 4px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 4px;
         }
 
-        .value-suffix {
-            font-family: var(--font-labels);
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        /* ==========================================================================
-           SPECIFIC MODULE STYLES (COLOR CODING)
-           ========================================================================== */
-
-        /* Safe Bank Module */
-        .module-safe .data-value { color: var(--text-primary); }
-        .module-safe::after { background: var(--text-secondary); }
-
-        /* Current Pot Module */
-        .module-pot { background: rgba(30, 5, 5, 0.6); border-color: rgba(211,47,47,0.1); }
-        .module-pot::after { background: var(--entity-red); }
-        .module-pot .data-value { color: var(--entity-red); text-shadow: 0 0 10px rgba(211,47,47,0.5); }
-        
-        /* High Pot State (Dynamic Class added by JS) */
-        .module-pot.high-stakes {
-            background: rgba(40, 30, 5, 0.8);
-            border-color: rgba(229,184,36,0.3);
-            box-shadow: inset 0 0 20px rgba(229,184,36,0.1);
-            animation: breatheGold 3s infinite alternate;
-        }
-        .module-pot.high-stakes::after { background: var(--gold-base); }
-        .module-pot.high-stakes .data-value { color: var(--gold-bright); text-shadow: var(--shadow-glow-gold); }
-        .module-pot.high-stakes .label-main { color: var(--gold-base); }
-
-        /* Streak Module */
-        .module-streak { flex-direction: column; align-items: stretch; gap: 8px; }
-        .streak-header { display: flex; justify-content: space-between; align-items: flex-end; }
-        .streak-numbers { display: flex; align-items: baseline; gap: 10px; }
-        .streak-current { font-family: var(--font-numbers); font-size: 2rem; font-weight: 700; color: #fff; }
-        .streak-divider { color: #444; font-size: 1.5rem; font-weight: 300; }
-        .streak-best-container { display: flex; flex-direction: column; align-items: flex-end; }
-        .streak-best-label { font-family: var(--font-labels); font-size: 0.8rem; color: var(--gold-dark); letter-spacing: 1px; text-transform: uppercase; }
-        .streak-best-val { font-family: var(--font-numbers); font-size: 1.2rem; color: var(--gold-base); font-weight: 700; text-shadow: 0 0 10px rgba(229,184,36,0.4); }
-
-        /* Streak Progress Bar */
-        .streak-bar-bg { width: 100%; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; position: relative; overflow: hidden; }
-        .streak-bar-fill { height: 100%; background: linear-gradient(90deg, var(--entity-dark), var(--entity-red)); width: 0%; transition: width 1s cubic-bezier(0.23, 1, 0.32, 1); box-shadow: 0 0 10px var(--entity-red); }
-        
-        /* Golden Streak State */
-        .module-streak.golden-streak .streak-current { color: var(--gold-bright); text-shadow: var(--shadow-glow-gold); }
-        .module-streak.golden-streak .streak-bar-fill { background: linear-gradient(90deg, var(--gold-dark), var(--gold-bright)); box-shadow: 0 0 15px var(--gold-bright); }
-
-        /* Ransom Jail Module */
-        .module-jail { border-style: dashed; border-color: rgba(255,255,255,0.15); }
-        .module-jail .data-value { font-size: 1.4rem; color: #888; }
-        .module-jail.danger-jail { border-color: var(--entity-red); background: rgba(50, 0, 0, 0.3); }
-        .module-jail.danger-jail .data-value { color: var(--entity-red); animation: pulseDanger 1.5s infinite; }
-        .module-jail.danger-jail .label-main { color: #fff; }
-
-        /* ==========================================================================
-           PREMIUM ANIMATIONS
-           ========================================================================== */
-        
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes panGradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes breatheGold {
-            0% { box-shadow: inset 0 0 10px rgba(229,184,36,0.05); border-color: rgba(229,184,36,0.2); }
-            100% { box-shadow: inset 0 0 30px rgba(229,184,36,0.15); border-color: rgba(229,184,36,0.5); }
-        }
-
-        @keyframes pulseDanger {
-            0%, 100% { text-shadow: 0 0 5px rgba(211,47,47,0.5); transform: scale(1); }
-            50% { text-shadow: 0 0 15px rgba(211,47,47,1); transform: scale(1.05); }
-        }
-
-        /* Number update flash effect */
-        .number-update {
-            animation: flashUpdate 0.5s ease-out;
-        }
-
-        @keyframes flashUpdate {
-            0% { color: #ffffff; text-shadow: 0 0 20px #ffffff; transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        /* Streamer Tag Footer */
-        .streamer-tag {
-            text-align: right;
-            font-family: var(--font-labels);
-            font-size: 0.85rem;
-            color: rgba(255,255,255,0.2);
+        .module-title {
+            font-family: var(--font-ui);
+            font-size: 1.4rem;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-top: 4px;
+            color: var(--muted-bone);
+            margin: 0;
+            line-height: 1;
         }
+
+        .module-subtitle {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--entity-crimson);
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Data Readouts */
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 5px;
+        }
+
+        .data-label {
+            font-size: 0.8rem;
+            color: var(--muted-bone);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .data-value {
+            font-family: var(--font-mono);
+            font-size: 2.2rem;
+            font-weight: 900;
+            line-height: 1;
+            color: var(--bone-white);
+            text-shadow: var(--text-glow-white);
+            transition: color 0.3s ease;
+        }
+
+        /* Specialized Highlight Classes */
+        .value-safe { color: #fff; }
+        .value-pot { color: var(--entity-crimson); text-shadow: var(--text-glow-red); font-size: 2.8rem; }
+        .value-streak { color: var(--entity-gold); text-shadow: var(--text-glow-gold); }
+        .value-jail { color: var(--muted-bone); }
         
-        .streamer-tag span {
-            color: rgba(211,47,47,0.5);
+        .jail-warning .value-jail {
+            color: var(--entity-crimson);
+            text-shadow: var(--text-glow-red);
+            animation: glitchText 4s infinite;
+        }
+
+        /* Live Connection Indicator */
+        .connection-status {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: var(--void-black);
+            border: 1px solid var(--entity-crimson);
+            padding: 4px 10px;
+            border-radius: 0 0 8px 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.5);
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .connection-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #00ff66;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #00ff66;
+            animation: pulseDot 2s infinite;
+        }
+
+        .connection-text {
+            font-family: var(--font-ui);
+            font-size: 0.9rem;
+            letter-spacing: 1.5px;
+            color: #00ff66;
+            text-transform: uppercase;
+        }
+
+        .streamer-identity {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--muted-bone);
+            text-align: right;
+            margin-bottom: -5px;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        /* Animations */
+        @keyframes pulseThreat {
+            0% { box-shadow: 0 0 10px rgba(211, 47, 47, 0.4), inset 0 0 5px rgba(211, 47, 47, 0.1); }
+            100% { box-shadow: 0 0 25px rgba(211, 47, 47, 0.8), inset 0 0 20px rgba(211, 47, 47, 0.3); border-left-color: #ff3333; }
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+        }
+
+        @keyframes numberUpdate {
+            0% { transform: translateY(10px); opacity: 0; filter: blur(4px); }
+            100% { transform: translateY(0); opacity: 1; filter: blur(0); }
+        }
+
+        .animate-update {
+            animation: numberUpdate 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes glitchText {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 1px); }
+            40% { transform: translate(2px, -1px); }
+            60% { transform: translate(-1px, -2px); }
+            80% { transform: translate(1px, 2px); }
+        }
+
+        /* Goal Progress Bar */
+        .overlay-progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 2px;
+            margin-top: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .overlay-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #9a031e, var(--entity-crimson));
+            width: 0%;
+            transition: width 1.5s cubic-bezier(0.25, 1, 0.3, 1);
+            box-shadow: 0 0 10px var(--entity-crimson);
         }
     </style>
 </head>
 <body>
 
-    <!-- OVERLAY DOM STRUCTURE -->
-    <div class="overlay-wrapper" id="overlay-ui">
+    <!-- Connection Badge -->
+    <div class="connection-status" id="connectionBadge">
+        <div class="connection-dot" id="connectionIndicator"></div>
+        <div class="connection-text" id="connectionText">SYS_LINK</div>
+    </div>
+
+    <!-- Main Overlay Container -->
+    <div class="overlay-container">
         
-        <div class="overlay-header">
-            <h1 class="overlay-title">Entity's Roulette</h1>
-            <div class="overlay-subtitle">Live Tracker</div>
-        </div>
+        <div class="streamer-identity" id="displayStreamerName">SUBJECT: UNKNOWN</div>
 
-        <!-- Safe Points -->
-        <div class="data-module module-safe">
-            <div class="data-label">
-                <span class="label-main">Safe Bank</span>
-                <span class="label-sub">Secured Points</span>
+        <!-- Safe Bank Module -->
+        <div class="data-module">
+            <div class="module-header">
+                <h3 class="module-title" style="color: var(--bone-white);">Safe Bank</h3>
+                <span class="module-subtitle">Goal: 20k</span>
             </div>
-            <div class="data-value">
-                <span id="val-safe">0</span>
-                <span class="value-suffix">PTS</span>
+            <div class="data-row">
+                <span class="data-label">Secured</span>
+                <span class="data-value value-safe" id="val-safebank">0</span>
             </div>
-        </div>
-
-        <!-- Current Pot -->
-        <div class="data-module module-pot" id="mod-pot">
-            <div class="data-label">
-                <span class="label-main">Current Pot</span>
-                <span class="label-sub">Risking</span>
-            </div>
-            <div class="data-value">
-                <span id="val-pot">0</span>
-                <span class="value-suffix">PTS</span>
+            <div class="overlay-progress-bar">
+                <div class="overlay-progress-fill" id="bar-safebank"></div>
             </div>
         </div>
 
-        <!-- Advanced Streak Module -->
-        <div class="data-module module-streak" id="mod-streak">
-            <div class="streak-header">
-                <div class="data-label">
-                    <span class="label-main">Universal Streak</span>
-                    <span class="label-sub">Road to 50</span>
-                </div>
-                <div class="streak-numbers">
-                    <span class="streak-current" id="val-streak">0</span>
-                    <span class="streak-divider">/</span>
-                    <div class="streak-best-container">
-                        <span class="streak-best-label">Best</span>
-                        <span class="streak-best-val" id="val-best-streak">0</span>
-                    </div>
+        <!-- Active Pot Module -->
+        <div class="data-module" id="mod-pot">
+            <div class="module-header">
+                <h3 class="module-title" style="color: var(--entity-crimson);">Active Trial Pot</h3>
+                <span class="module-subtitle" id="val-multiplier">1.0x MULT</span>
+            </div>
+            <div class="data-row">
+                <span class="data-label" style="color: var(--entity-crimson);">At Risk</span>
+                <span class="data-value value-pot" id="val-pot">0</span>
+            </div>
+        </div>
+
+        <!-- Universal Streak Module -->
+        <div class="data-module" id="mod-streak">
+            <div class="module-header">
+                <h3 class="module-title" style="color: var(--entity-gold);">Universal Streak</h3>
+                <span class="module-subtitle" style="color: var(--entity-gold);">Goal: 50</span>
+            </div>
+            <div class="data-row">
+                <span class="data-label">Current / Peak</span>
+                <div>
+                    <span class="data-value value-streak" id="val-streak">0</span>
+                    <span style="color: var(--muted-bone); font-family: var(--font-mono); font-size: 1.2rem; margin: 0 5px;">/</span>
+                    <span class="data-value" style="font-size: 1.5rem; color: var(--muted-bone);" id="val-peakstreak">0</span>
                 </div>
             </div>
-            <div class="streak-bar-bg">
-                <div class="streak-bar-fill" id="val-streak-bar"></div>
-            </div>
         </div>
 
-        <!-- Ransom Jail -->
-        <div class="data-module module-jail" id="mod-jail">
-            <div class="data-label">
-                <span class="label-main">Ransom Jail</span>
-                <span class="label-sub">Locked Perks</span>
+        <!-- Ransom Jail Module -->
+        <div class="data-module" id="mod-jail">
+            <div class="module-header">
+                <h3 class="module-title">Ransom Jail</h3>
+                <span class="module-subtitle" style="color: var(--muted-bone);">Perks Locked</span>
             </div>
-            <div class="data-value">
-                <span id="val-jail">0</span>
+            <div class="data-row">
+                <span class="data-label">Tools Lost</span>
+                <span class="data-value value-jail" id="val-jail">0</span>
             </div>
-        </div>
-
-        <!-- Streamer Name Display -->
-        <div class="streamer-tag">
-            Tracking: <span id="streamer-name">Awaiting Link...</span>
         </div>
 
     </div>
 
-    <!-- ==========================================================================
-         FIREBASE & OVERLAY LOGIC
-         ========================================================================== -->
+    <!-- Firebase Real-Time Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // 1. PASTE YOUR EXACT FIREBASE CONFIG HERE
+        // ======================================================================
+        // FIREBASE CONFIGURATION
+        // Replace this with the identical config from your main game file
+        // ======================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyBMAxj2E3snmnOcQXIylkIIS1cTnuu0hlY",
             authDomain: "dashboard-1db87.firebaseapp.com",
@@ -400,140 +340,166 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 2. GET STREAMER USERNAME FROM OBS URL PARAMETERS
-        // Example URL in OBS: file:///C:/path/to/roulette_overlay.html?user=Tofu
+        // ======================================================================
+        // IDENTIFY THE STREAMER
+        // Overlay reads the URL parameter to know which database doc to pull.
+        // Example OBS URL:  https://yourdomain.com/overlay.html?user=StreamerName
+        // ======================================================================
         const urlParams = new URLSearchParams(window.location.search);
-        const streamerUsername = urlParams.get('user');
+        const streamerName = urlParams.get('user') || 'Demo_Subject';
+        
+        document.getElementById('displayStreamerName').innerText = `SUBJECT: ${streamerName.toUpperCase()}`;
 
-        const uiElements = {
-            safe: document.getElementById('val-safe'),
-            pot: document.getElementById('val-pot'),
-            streak: document.getElementById('val-streak'),
-            bestStreak: document.getElementById('val-best-streak'),
-            jail: document.getElementById('val-jail'),
-            streakBar: document.getElementById('val-streak-bar'),
-            modPot: document.getElementById('mod-pot'),
-            modStreak: document.getElementById('mod-streak'),
-            modJail: document.getElementById('mod-jail'),
-            nameDisplay: document.getElementById('streamer-name')
+        // ======================================================================
+        // STATE MANAGEMENT & ANIMATION ENGINE
+        // Prevents hard snaps, ensures numbers count up smoothly
+        // ======================================================================
+        const OverlayState = {
+            safeBank: 0,
+            currentPot: 0,
+            totalStreak: 0,
+            highestStreak: 0,
+            jailCount: 0,
+            multiplier: 1.0
         };
 
-        // Current state for animation comparison
-        let currentState = { safe: 0, pot: 0, streak: 0, best: 0, jail: 0 };
+        // Easing function for smooth number counting
+        function easeOutExpo(t) {
+            return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+        }
 
-        // ----------------------------------------------------------------------
-        // PREMIUM NUMBER ANIMATION (Counts up smoothly instead of snapping)
-        // ----------------------------------------------------------------------
-        function animateValue(element, start, end, duration) {
-            if (start === end) return;
-            
-            // Add flash effect class
-            element.classList.remove('number-update');
-            void element.offsetWidth; // Trigger reflow
-            element.classList.add('number-update');
+        // Advanced Number Animator
+        function animateNumber(elementId, startVal, endVal, duration = 1000) {
+            if (startVal === endVal) return;
+            const element = document.getElementById(elementId);
+            let startTime = null;
 
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            // Trigger CSS flash animation
+            element.classList.remove('animate-update');
+            void element.offsetWidth; // Trigger DOM reflow to restart animation
+            element.classList.add('animate-update');
+
+            function step(currentTime) {
+                if (!startTime) startTime = currentTime;
+                const progress = Math.min((currentTime - startTime) / duration, 1);
+                const easedProgress = easeOutExpo(progress);
                 
-                // Ease out expo mathematical calculation for premium feel
-                const easeOutProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-                const currentVal = Math.floor(easeOutProgress * (end - start) + start);
-                
-                element.innerText = currentVal.toLocaleString();
+                const currentVal = Math.floor(startVal + (endVal - startVal) * easedProgress);
+                element.innerText = currentVal.toLocaleString(); // Add commas for premium look
+
                 if (progress < 1) {
                     window.requestAnimationFrame(step);
                 } else {
-                    element.innerText = end.toLocaleString();
+                    element.innerText = endVal.toLocaleString();
                 }
-            };
+            }
             window.requestAnimationFrame(step);
         }
 
-        // ----------------------------------------------------------------------
-        // DATA PROCESSING AND UI UPDATING
-        // ----------------------------------------------------------------------
-        function updateOverlayUI(data) {
-            const newSafe = data.safeBank || 0;
-            const newPot = data.currentPot || 0;
-            const newStreak = data.totalStreak || 0;
-            const newBest = data.highestStreak || 0;
-            const newJail = data.ransomJail ? data.ransomJail.length : 0;
+        // ======================================================================
+        // REAL-TIME DATABASE LISTENER
+        // Connects to the specific 'roulette_state' document based on URL param
+        // ======================================================================
+        const docRef = doc(db, 'roulette_state', streamerName);
 
-            // Animate values if they changed
-            if (newSafe !== currentState.safe) animateValue(uiElements.safe, currentState.safe, newSafe, 1000);
-            if (newPot !== currentState.pot) animateValue(uiElements.pot, currentState.pot, newPot, 800);
-            if (newStreak !== currentState.streak) animateValue(uiElements.streak, currentState.streak, newStreak, 500);
-            if (newBest !== currentState.best) animateValue(uiElements.bestStreak, currentState.best, newBest, 500);
-            if (newJail !== currentState.jail) animateValue(uiElements.jail, currentState.jail, newJail, 500);
-
-            // Update Streak Progress Bar (Max 50)
-            const streakPercentage = Math.min((newStreak / 50) * 100, 100);
-            uiElements.streakBar.style.width = `${streakPercentage}%`;
-
-            // ------------------------------------------------------------------
-            // CONDITIONAL PREMIUM STYLING based on gameplay states
-            // ------------------------------------------------------------------
+        onSnapshot(docRef, (docSnap) => {
+            const statusDot = document.getElementById('connectionIndicator');
+            const statusText = document.getElementById('connectionText');
             
-            // If pot is dangerously high, turn it Golden/Glowing
-            if (newPot >= 1000) {
-                uiElements.modPot.classList.add('high-stakes');
-            } else {
-                uiElements.modPot.classList.remove('high-stakes');
-            }
-
-            // If streak hits a major milestone, turn it Golden
-            if (newStreak >= 20) {
-                uiElements.modStreak.classList.add('golden-streak');
-            } else {
-                uiElements.modStreak.classList.remove('golden-streak');
-            }
-
-            // If jail is getting full (e.g., 4+ perks), flash red danger state
-            if (newJail >= 4) {
-                uiElements.modJail.classList.add('danger-jail');
-            } else {
-                uiElements.modJail.classList.remove('danger-jail');
-            }
-
-            // Save state for next comparison
-            currentState = { safe: newSafe, pot: newPot, streak: newStreak, best: newBest, jail: newJail };
-        }
-
-        // ----------------------------------------------------------------------
-        // INITIALIZATION & FIREBASE LISTENER
-        // ----------------------------------------------------------------------
-        function initOverlay() {
-            if (!streamerUsername) {
-                uiElements.nameDisplay.innerHTML = "<span style='color:red;'>ERROR: No User in URL</span>";
-                uiElements.nameDisplay.style.color = "red";
-                console.error("Overlay Error: You must add '?user=Username' to the end of your OBS Browser Source URL.");
+            if (!docSnap.exists()) {
+                statusDot.style.backgroundColor = "var(--entity-crimson)";
+                statusDot.style.boxShadow = "0 0 8px var(--entity-crimson)";
+                statusText.innerText = "NO DATA";
+                statusText.style.color = "var(--entity-crimson)";
                 return;
             }
 
-            uiElements.nameDisplay.innerText = streamerUsername;
+            // Connection Active
+            statusDot.style.backgroundColor = "#00ff66";
+            statusDot.style.boxShadow = "0 0 8px #00ff66";
+            statusText.innerText = "LIVE SYNC";
+            statusText.style.color = "#00ff66";
 
-            // REAL-TIME DATABASE LISTENER
-            // Uses onSnapshot to automatically pull new data the exact millisecond the streamer saves on their website
-            const docRef = doc(db, 'roulette_state', streamerUsername);
+            // Extract Data from Firebase
+            const data = docSnap.data();
+            const newSafeBank = data.safeBank || 0;
+            const newCurrentPot = data.currentPot || 0;
+            const newTotalStreak = data.totalStreak || 0;
+            const newHighestStreak = data.highestStreak || 0;
+            const newJailCount = (data.ransomJail || []).length;
             
-            onSnapshot(docRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    updateOverlayUI(docSnap.data());
-                } else {
-                    console.warn(`No data found for user: ${streamerUsername}. Waiting for them to start the challenge.`);
-                    // Reset to 0 visually if no doc exists yet
-                    updateOverlayUI({ safeBank: 0, currentPot: 0, totalStreak: 0, highestStreak: 0, ransomJail: [] });
-                }
-            }, (error) => {
-                console.error("Firebase Read Error:", error);
-                uiElements.nameDisplay.innerHTML = "<span style='color:red;'>CONNECTION LOST</span>";
-            });
-        }
+            // Calculate Current Multiplier derived from Local Streak
+            const localStreak = data.currentLocalStreak || 0;
+            const newMultiplier = 1.0 + (localStreak * 0.5);
 
-        // Boot up the overlay
-        window.onload = initOverlay;
+            // 1. Process Safe Bank
+            if (newSafeBank !== OverlayState.safeBank) {
+                animateNumber('val-safebank', OverlayState.safeBank, newSafeBank);
+                OverlayState.safeBank = newSafeBank;
+                
+                // Update Progress Bar
+                const goalPercent = Math.min(100, (newSafeBank / 20000) * 100);
+                document.getElementById('bar-safebank').style.width = `${goalPercent}%`;
+            }
+
+            // 2. Process Active Pot & Multiplier
+            if (newCurrentPot !== OverlayState.currentPot) {
+                animateNumber('val-pot', OverlayState.currentPot, newCurrentPot);
+                OverlayState.currentPot = newCurrentPot;
+                
+                const potModule = document.getElementById('mod-pot');
+                if (newCurrentPot > 0) {
+                    potModule.classList.add('pot-active');
+                } else {
+                    potModule.classList.remove('pot-active');
+                }
+            }
+
+            if (newMultiplier !== OverlayState.multiplier) {
+                document.getElementById('val-multiplier').innerText = `${newMultiplier.toFixed(1)}x MULT`;
+                OverlayState.multiplier = newMultiplier;
+            }
+
+            // 3. Process Streaks
+            if (newTotalStreak !== OverlayState.totalStreak) {
+                animateNumber('val-streak', OverlayState.totalStreak, newTotalStreak);
+                OverlayState.totalStreak = newTotalStreak;
+            }
+            if (newHighestStreak !== OverlayState.highestStreak) {
+                animateNumber('val-peakstreak', OverlayState.highestStreak, newHighestStreak);
+                OverlayState.highestStreak = newHighestStreak;
+            }
+
+            const streakModule = document.getElementById('mod-streak');
+            // Add a golden glow if they are currently matching or beating their personal best
+            if (newTotalStreak > 0 && newTotalStreak >= newHighestStreak) {
+                streakModule.classList.add('streak-active');
+            } else {
+                streakModule.classList.remove('streak-active');
+            }
+
+            // 4. Process Ransom Jail
+            if (newJailCount !== OverlayState.jailCount) {
+                animateNumber('val-jail', OverlayState.jailCount, newJailCount);
+                OverlayState.jailCount = newJailCount;
+
+                const jailModule = document.getElementById('mod-jail');
+                if (newJailCount > 0) {
+                    jailModule.classList.add('jail-warning');
+                } else {
+                    jailModule.classList.remove('jail-warning');
+                }
+            }
+            
+        }, (error) => {
+            console.error("Overlay Sync Error:", error);
+            const statusDot = document.getElementById('connectionIndicator');
+            const statusText = document.getElementById('connectionText');
+            statusDot.style.backgroundColor = "var(--entity-crimson)";
+            statusDot.style.boxShadow = "0 0 8px var(--entity-crimson)";
+            statusText.innerText = "SYNC LOST";
+            statusText.style.color = "var(--entity-crimson)";
+        });
 
     </script>
 </body>

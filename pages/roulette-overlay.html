@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entity Roulette Stream Overlay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --entity-red: #d32f2f;
+            --arterial-spray: #ff0505;
+            --gold-ascension: #e5b824;
+            --glass-bg: rgba(12, 8, 10, 0.82);
+            --border-line: rgba(255, 30, 30, 0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: transparent; /* Mandatory for OBS transparency */
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-start;
+            padding: 20px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* Overlay Container */
+        .overlay-hud {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--glass-bg);
+            border: 2px solid var(--border-line);
+            border-radius: 8px;
+            padding: 10px 20px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(211, 47, 47, 0.25);
+            position: relative;
+        }
+
+        .hud-segment {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hud-label {
+            font-family: 'Teko', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #9a9aa5;
+            line-height: 1;
+        }
+
+        .hud-value {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            line-height: 1.1;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+
+        /* Values Styling */
+        .val-safe {
+            color: var(--arterial-spray);
+            text-shadow: 0 0 10px rgba(255, 5, 5, 0.6);
+        }
+
+        .val-streak {
+            color: var(--gold-ascension);
+            text-shadow: 0 0 10px rgba(229, 184, 36, 0.5);
+        }
+
+        .val-pot {
+            color: #ffffff;
+        }
+
+        .divider {
+            width: 1px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Pulse animation triggered on value updates */
+        .bump {
+            transform: scale(1.18);
+        }
+
+        /* High-Risk match warning outline */
+        .hud-segment.risk .hud-label {
+            color: #ff3333;
+            animation: blinker 1s infinite alternate;
+        }
+
+        @keyframes blinker {
+            from { opacity: 1; }
+            to { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay-hud">
+        <!-- Safe Bank -->
+        <div class="hud-segment">
+            <span class="hud-label">Safe Bank</span>
+            <span class="hud-value val-safe" id="ov-safe">0</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Active Pot -->
+        <div class="hud-segment">
+            <span class="hud-label">Active Pot</span>
+            <span class="hud-value val-pot" id="ov-pot">0</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Universal Streak -->
+        <div class="hud-segment" id="streak-segment">
+            <span class="hud-label" id="ov-streak-label">Streak</span>
+            <span class="hud-value val-streak" id="ov-streak">0 / 50</span>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Paste your Firebase config object here
+        const firebaseConfig = {
+            /* YOUR_FIREBASE_CONFIG */
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Dynamically get the streamer's username from the URL: ?user=StreamerName
+        const urlParams = new URLSearchParams(window.location.search);
+        const streamerId = urlParams.get('user') || 'Unknown_Victim';
+
+        const safeEl = document.getElementById('ov-safe');
+        const potEl = document.getElementById('ov-pot');
+        const streakEl = document.getElementById('ov-streak');
+        const streakSegment = document.getElementById('streak-segment');
+        const streakLabel = document.getElementById('ov-streak-label');
+
+        const RISK_MATCHES = [9, 19, 29, 39, 49];
+
+        function animateBump(element) {
+            element.classList.add('bump');
+            setTimeout(() => element.classList.remove('bump'), 250);
+        }
+
+        // Real-time Firestore Listener
+        onSnapshot(doc(db, 'roulette_state', streamerId), (docSnap) => {
+            if (!docSnap.exists()) return;
+
+            const data = docSnap.data();
+
+            // Safe Points
+            const newSafe = (data.safeBank || 0).toLocaleString();
+            if (safeEl.textContent !== newSafe) {
+                safeEl.textContent = newSafe;
+                animateBump(safeEl);
+            }
+
+            // Pot
+            const newPot = (data.currentPot || 0).toLocaleString();
+            if (potEl.textContent !== newPot) {
+                potEl.textContent = newPot;
+                animateBump(potEl);
+            }
+
+            // Streak
+            const currentStreak = data.totalStreak || 0;
+            streakEl.textContent = `${currentStreak} / 50`;
+
+            // Check if current match is a Risk Match
+            if (RISK_MATCHES.includes(currentStreak)) {
+                streakSegment.classList.add('risk');
+                streakLabel.textContent = 'Streak (RISK)';
+            } else {
+                streakSegment.classList.remove('risk');
+                streakLabel.textContent = 'Streak';
+            }
+        });
+    </script>
+</body>
+</html>

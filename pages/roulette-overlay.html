@@ -1,298 +1,344 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Entity's Roulette - Premium Stream Overlay</title>
-    <!-- Premium Fonts: Teko for Numbers, Montserrat for Labels -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Teko:wght@500;700&display=swap" rel="stylesheet">
+
+    <!-- Premium Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&family=Teko:wght@500;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
     <style>
         /* ==========================================================================
-           PREMIUM CSS ARCHITECTURE - OBS TRANSPARENT SETUP
+           PREMIUM CSS ARCHITECTURE - THE FOG'S AESTHETIC
            ========================================================================== */
+        
         :root {
-            /* Premium Core Palette */
+            /* Core Palette */
             --entity-red: #d32f2f;
             --entity-blood: #9a031e;
+            --entity-dark: #4a0000;
             --gold-ascension: #e5b824;
-            --gold-glow: rgba(229, 184, 36, 0.6);
-            --void-black: rgba(5, 5, 8, 0.85);
-            --glass-bg: rgba(15, 10, 15, 0.7);
-            --bone-white: #f0f0f5;
-            --text-muted: #a0a0b5;
-            --neon-streak: #00ffcc;
+            --gold-dark: #b8860b;
+            --bone-white: #ffffff;
+            --muted-bone: #888899;
             --jail-blue: #4a90e2;
-
-            /* Spacing & Sizing */
-            --widget-gap: 12px;
-            --border-radius: 8px;
+            
+            /* Glassmorphism & Backgrounds */
+            --glass-bg: rgba(8, 5, 8, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.07);
+            --glass-highlight: rgba(255, 255, 255, 0.03);
+            
+            /* Glows & Shadows */
+            --shadow-base: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+            --glow-red: 0 0 15px rgba(211, 47, 47, 0.5), inset 0 0 10px rgba(211, 47, 47, 0.2);
+            --glow-gold: 0 0 20px rgba(229, 184, 36, 0.5), inset 0 0 15px rgba(229, 184, 36, 0.2);
             
             /* Typography */
-            --font-ui: 'Teko', sans-serif;
             --font-label: 'Montserrat', sans-serif;
+            --font-value: 'Teko', sans-serif;
+            --font-mono: 'Courier Prime', monospace;
+            
+            /* Spacing & Layout */
+            --module-gap: 16px;
+            --border-radius: 4px;
         }
 
-        /* OBS REQUIRED: Transparent Background */
+        /* 
+         * OBS / XSplit Specific Overrides 
+         * The body MUST be transparent so the game shows behind it.
+         */
         body, html {
             margin: 0;
             padding: 0;
-            width: 100vw;
-            height: 100vh;
-            background: transparent !important;
-            overflow: hidden; /* No scrollbars in OBS */
-            font-family: var(--font-label);
-            display: flex;
-            align-items: flex-start;
-            justify-content: flex-start;
+            width: 100%;
+            height: 100%;
+            background-color: transparent !important;
+            overflow: hidden; /* Prevent scrollbars in OBS */
         }
 
-        /* ==========================================================================
-           WIDGET CONTAINER LAYOUT (Designed for Top-Right or Top-Left corner)
-           ========================================================================== */
-        .overlay-container {
+        /* 
+         * The Main Container 
+         * Designed to sit perfectly in a corner (default: top-right)
+         */
+        #overlay-container {
+            position: absolute;
+            top: 25px;
+            right: 25px;
             display: flex;
             flex-direction: column;
-            gap: var(--widget-gap);
-            padding: 20px;
+            gap: var(--module-gap);
             width: 320px;
-            transform-origin: top left;
-            /* Animation on load */
-            animation: slideIn 1.2s cubic-bezier(0.25, 1, 0.3, 1) forwards;
-            opacity: 0;
+            /* Filter applies to the whole container to make it pop over gameplay */
+            filter: drop-shadow(0px 10px 20px rgba(0,0,0,0.8));
         }
 
         /* ==========================================================================
-           INDIVIDUAL STAT BLOCKS (GLASSMORPHISM EFFECT)
+           MODULAR COMPONENT DESIGN (SEPARATED BLOCKS)
            ========================================================================== */
-        .stat-block {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--void-black);
+        
+        .stat-module {
+            background: var(--glass-bg);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--glass-border);
+            border-left: 4px solid #333; /* Default left border */
             border-radius: var(--border-radius);
-            padding: 12px 18px;
+            padding: 16px 20px;
+            position: relative;
             overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        /* Animated Left Border Gradient */
-        .stat-block::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: rgba(255, 255, 255, 0.2);
-            z-index: 10;
-        }
-
-        /* Content Formatting */
-        .stat-info {
+            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
             display: flex;
             flex-direction: column;
+            justify-content: center;
+        }
+
+        /* The moving gradient line at the top of every module */
+        .stat-module::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: scanline 4s linear infinite;
+        }
+
+        /* ==========================================================================
+           TYPOGRAPHY SCULPTING (NO ICONS)
+           ========================================================================== */
+
+        .stat-label {
+            font-family: var(--font-label);
+            color: var(--muted-bone);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 700;
+            margin-bottom: 2px;
             z-index: 2;
         }
 
-        .stat-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--text-muted);
-            font-weight: 700;
-            margin-bottom: -4px;
-        }
-
         .stat-value {
-            font-family: var(--font-ui);
-            font-size: 2.8rem;
-            font-weight: 700;
-            line-height: 1;
+            font-family: var(--font-value);
             color: var(--bone-white);
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: baseline;
-            gap: 5px;
-        }
-
-        .stat-suffix {
-            font-size: 1rem;
-            color: var(--text-muted);
-            font-family: var(--font-label);
+            font-size: 2.8rem;
+            line-height: 1;
             font-weight: 700;
             letter-spacing: 1px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.8);
+            z-index: 2;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
         }
 
-        /* SVG Icons Background */
-        .stat-icon {
-            position: absolute;
-            right: -10px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 80px;
-            height: 80px;
-            opacity: 0.15;
-            z-index: 1;
-            transition: all 0.5s ease;
+        .stat-subtext {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            color: #666;
+            font-weight: normal;
+            letter-spacing: 0;
         }
 
         /* ==========================================================================
-           PREMIUM THEMES PER STAT
+           THEMATIC MODULE STYLES (COLOR CODING)
            ========================================================================== */
+
+        /* 1. Safe Bank (The Goal) */
+        .module-safe {
+            border-left-color: var(--bone-white);
+            background: linear-gradient(135deg, rgba(15,15,15,0.85) 0%, rgba(5,5,5,0.95) 100%);
+        }
+        .module-safe .stat-value {
+            color: var(--bone-white);
+        }
+
+        /* 2. Active Pot (Greed / Risk) */
+        .module-pot {
+            border-left-color: var(--entity-red);
+            background: linear-gradient(135deg, rgba(30,5,5,0.85) 0%, rgba(10,2,2,0.95) 100%);
+            box-shadow: inset 0 0 0 rgba(211, 47, 47, 0);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+        .module-pot .stat-value {
+            color: var(--entity-red);
+            text-shadow: 0 0 15px rgba(211, 47, 47, 0.4);
+        }
+        .module-pot.has-pot {
+            border-color: var(--entity-red);
+            box-shadow: var(--glow-red);
+            animation: breatheRed 3s infinite alternate;
+        }
+        /* Golden Mode override for Pot */
+        .module-pot.golden-mode {
+            border-color: var(--gold-ascension);
+            border-left-color: var(--gold-ascension);
+            box-shadow: var(--glow-gold);
+            animation: breatheGold 2s infinite alternate;
+        }
+        .module-pot.golden-mode .stat-value {
+            color: var(--gold-ascension);
+            text-shadow: 0 0 15px rgba(229, 184, 36, 0.6);
+        }
+        .module-pot.golden-mode .stat-label::after {
+            content: " [GOLDEN]";
+            color: var(--gold-ascension);
+            animation: flashText 1s infinite;
+        }
+
+        /* 3. Universal Streak (Momentum) */
+        .module-streak {
+            border-left-color: var(--gold-ascension);
+        }
+        .module-streak .stat-value {
+            color: var(--gold-ascension);
+        }
         
-        /* 1. Safe Bank (Gold/Premium) */
-        .theme-safe {
-            border-bottom: 1px solid rgba(229, 184, 36, 0.3);
+        /* 4. Best Streak (Legacy) */
+        .module-best {
+            border-left-color: #555;
+            padding: 12px 20px; /* Slightly smaller to indicate secondary stat */
         }
-        .theme-safe::before { background: linear-gradient(180deg, #fff, var(--gold-ascension)); box-shadow: 0 0 15px var(--gold-ascension); }
-        .theme-safe .stat-value { color: var(--gold-ascension); text-shadow: 0 0 20px rgba(229, 184, 36, 0.4); }
-        .theme-safe .stat-icon { fill: var(--gold-ascension); }
+        .module-best .stat-value {
+            font-size: 2rem;
+            color: #aaa;
+        }
 
-        /* 2. Active Pot (Entity Red/Danger) */
-        .theme-pot {
-            border-bottom: 1px solid rgba(211, 47, 47, 0.3);
-            background: linear-gradient(90deg, var(--void-black) 60%, rgba(154, 3, 30, 0.2) 100%);
+        /* 5. Ransom Jail (Punishment) */
+        .module-jail {
+            border-left-color: var(--jail-blue);
+            padding: 12px 20px;
         }
-        .theme-pot::before { background: linear-gradient(180deg, #ff4d4d, var(--entity-red)); box-shadow: 0 0 15px var(--entity-red); }
-        .theme-pot .stat-value { color: #ff4d4d; animation: pulseGlow 2s infinite; }
-        .theme-pot .stat-icon { fill: var(--entity-red); }
-
-        /* 3. Current Streak (Cyan/Neon Speed) */
-        .theme-streak {
-            border-bottom: 1px solid rgba(0, 255, 204, 0.2);
+        .module-jail .stat-value {
+            font-size: 2rem;
+            color: var(--jail-blue);
         }
-        .theme-streak::before { background: linear-gradient(180deg, #fff, var(--neon-streak)); box-shadow: 0 0 15px var(--neon-streak); }
-        .theme-streak .stat-value { color: var(--neon-streak); text-shadow: 0 0 15px rgba(0, 255, 204, 0.5); }
-        .theme-streak .stat-icon { fill: var(--neon-streak); }
-
-        /* 4. Highest Streak (Purple/Legendary) */
-        .theme-high {
-            border-bottom: 1px solid rgba(170, 0, 255, 0.2);
+        .module-jail.danger {
+            border-left-color: var(--entity-red);
+            animation: glitchBorder 0.2s infinite;
         }
-        .theme-high::before { background: linear-gradient(180deg, #e0b3ff, #aa00ff); box-shadow: 0 0 15px #aa00ff; }
-        .theme-high .stat-value { color: #e0b3ff; }
-        .theme-high .stat-icon { fill: #aa00ff; }
-
-        /* 5. Ransom Jail (Blue/Chains) */
-        .theme-jail {
-            border-bottom: 1px solid rgba(74, 144, 226, 0.2);
-            opacity: 0.9;
-        }
-        .theme-jail::before { background: linear-gradient(180deg, #fff, var(--jail-blue)); box-shadow: 0 0 10px var(--jail-blue); }
-        .theme-jail .stat-value { color: var(--jail-blue); }
-        .theme-jail .stat-icon { fill: var(--jail-blue); }
 
         /* ==========================================================================
-           ANIMATIONS & KEYFRAMES
+           ANIMATIONS & KEYFRAMES FOR PREMIUM FEEL
            ========================================================================== */
-        @keyframes slideIn {
-            0% { transform: translateX(-50px); opacity: 0; }
-            100% { transform: translateX(0); opacity: 1; }
+
+        @keyframes scanline {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
 
-        @keyframes pulseGlow {
-            0%, 100% { text-shadow: 0 0 10px rgba(211,47,47,0.5); }
-            50% { text-shadow: 0 0 25px rgba(211,47,47,0.9), 0 0 40px rgba(211,47,47,0.4); }
+        @keyframes breatheRed {
+            0% { box-shadow: 0 0 10px rgba(211,47,47,0.2), inset 0 0 5px rgba(211,47,47,0.1); }
+            100% { box-shadow: 0 0 25px rgba(211,47,47,0.6), inset 0 0 15px rgba(211,47,47,0.3); }
         }
 
-        /* Update trigger animation for when numbers change */
+        @keyframes breatheGold {
+            0% { box-shadow: 0 0 10px rgba(229,184,36,0.2), inset 0 0 5px rgba(229,184,36,0.1); }
+            100% { box-shadow: 0 0 30px rgba(229,184,36,0.7), inset 0 0 20px rgba(229,184,36,0.4); }
+        }
+
+        @keyframes flashText {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        @keyframes dataUpdate {
+            0% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.05); filter: brightness(1.5); }
+            100% { transform: scale(1); filter: brightness(1); }
+        }
+
         .update-flash {
-            animation: flashHighlight 0.8s ease-out;
-        }
-        @keyframes flashHighlight {
-            0% { background: rgba(255, 255, 255, 0.3); transform: scale(1.02); }
-            100% { background: transparent; transform: scale(1); }
+            animation: dataUpdate 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Player Name Banner */
-        .player-banner {
-            background: linear-gradient(90deg, var(--entity-blood) 0%, rgba(0,0,0,0) 100%);
-            padding: 4px 12px;
-            border-left: 4px solid var(--entity-red);
-            font-size: 0.85rem;
-            color: #fff;
-            font-weight: 900;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-            border-radius: 2px;
-            display: inline-block;
-            text-shadow: 0 2px 4px #000;
+        @keyframes glitchBorder {
+            0% { border-left-color: var(--entity-red); transform: translateX(0); }
+            20% { border-left-color: #fff; transform: translateX(-2px); }
+            40% { border-left-color: var(--entity-red); transform: translateX(2px); }
+            60% { border-left-color: #fff; transform: translateX(-1px); }
+            80% { border-left-color: var(--entity-red); transform: translateX(1px); }
+            100% { border-left-color: var(--entity-red); transform: translateX(0); }
         }
+
+        /* Error state if no user provided */
+        #error-msg {
+            color: var(--entity-red);
+            font-family: var(--font-mono);
+            background: #000;
+            padding: 20px;
+            border: 2px solid var(--entity-red);
+            display: none;
+            text-align: center;
+        }
+
     </style>
 </head>
 <body>
 
-    <div class="overlay-container" id="overlay">
-        <!-- Identifying the Streamer -->
-        <div class="player-banner" id="streamer-name">LOADING...</div>
+    <!-- OBS Error Message -->
+    <div id="error-msg">
+        ERROR: No User Defined.<br>
+        Add ?user=YourUsername to the OBS URL.
+    </div>
 
-        <!-- 1. Safe Points (The Bank) -->
-        <div class="stat-block theme-safe" id="block-safe">
-            <div class="stat-info">
-                <span class="stat-label">Safe Bank</span>
-                <div class="stat-value"><span id="val-safe">0</span> <span class="stat-suffix">PTS</span></div>
+    <!-- Main Overlay Container -->
+    <div id="overlay-container" style="display: none;">
+        
+        <!-- MODULE 1: Safe Bank (Overall Goal) -->
+        <div class="stat-module module-safe" id="mod-safe">
+            <div class="stat-label">Total Safe Bank</div>
+            <div class="stat-value">
+                <span id="val-safe">0</span>
+                <span class="stat-subtext">/ 20,000</span>
             </div>
-            <!-- SVG Vault Icon -->
-            <svg class="stat-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
         </div>
 
-        <!-- 2. Active Pot (The Risk) -->
-        <div class="stat-block theme-pot" id="block-pot">
-            <div class="stat-info">
-                <span class="stat-label">Active Pot</span>
-                <div class="stat-value"><span id="val-pot">0</span> <span class="stat-suffix">PTS</span></div>
+        <!-- MODULE 2: Active Pot (Current Match Risk) -->
+        <div class="stat-module module-pot" id="mod-pot">
+            <div class="stat-label" id="label-pot">Active Pot</div>
+            <div class="stat-value">
+                <span id="val-pot">0</span>
+                <span class="stat-subtext">PTS</span>
             </div>
-            <!-- SVG Fire/Risk Icon -->
-            <svg class="stat-icon" viewBox="0 0 24 24"><path d="M17.5 12.5c0 3.03-2.47 5.5-5.5 5.5s-5.5-2.47-5.5-5.5c0-1.24.41-2.38 1.11-3.32L12 2l4.39 7.18c.7 1.04 1.11 2.08 1.11 3.32zM12 22c5.52 0 10-4.48 10-10S17.52 2 12 2 2 6.48 2 12s4.48 10 10 10zm0-2c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
         </div>
 
-        <!-- 3. Current Universal Streak -->
-        <div class="stat-block theme-streak" id="block-streak">
-            <div class="stat-info">
-                <span class="stat-label">Current Streak</span>
-                <div class="stat-value"><span id="val-streak">0</span></div>
+        <!-- MODULE 3: Universal Streak -->
+        <div class="stat-module module-streak" id="mod-streak">
+            <div class="stat-label">Universal Streak</div>
+            <div class="stat-value">
+                <span id="val-streak">0</span>
+                <span class="stat-subtext">WINS</span>
             </div>
-            <!-- SVG Lightning Icon -->
-            <svg class="stat-icon" viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
         </div>
 
-        <!-- 4. Highest Streak -->
-        <div class="stat-block theme-high" id="block-high">
-            <div class="stat-info">
-                <span class="stat-label">Highest Streak</span>
-                <div class="stat-value"><span id="val-high">0</span></div>
-            </div>
-            <!-- SVG Crown/Star Icon -->
-            <svg class="stat-icon" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+        <!-- MODULE 4: Highest Streak (Smaller Module) -->
+        <div class="stat-module module-best" id="mod-best">
+            <div class="stat-label">Highest Streak</div>
+            <div class="stat-value" id="val-best">0</div>
         </div>
 
-        <!-- 5. Perks in Ransom Jail -->
-        <div class="stat-block theme-jail" id="block-jail">
-            <div class="stat-info">
-                <span class="stat-label">Perks In Jail</span>
-                <div class="stat-value"><span id="val-jail">0</span></div>
-            </div>
-            <!-- SVG Lock/Jail Icon -->
-            <svg class="stat-icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/></svg>
+        <!-- MODULE 5: Ransom Jail (Smaller Module) -->
+        <div class="stat-module module-jail" id="mod-jail">
+            <div class="stat-label">Perks In Jail</div>
+            <div class="stat-value" id="val-jail">0</div>
         </div>
+
     </div>
 
     <!-- ==========================================================================
-         JAVASCRIPT & FIREBASE LOGIC
+         FIREBASE & LOGIC ENGINE
          ========================================================================== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        // IMPORT 'onSnapshot' to listen to live changes without refreshing
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // 1. PASTE YOUR EXACT FIREBASE CONFIG HERE
+        // 1. YOUR FIREBASE CONFIGURATION (Paste your config here)
         const firebaseConfig = {
+            // REPLACE THIS WITH YOUR FIREBASE CONFIG
             apiKey: "AIzaSyBMAxj2E3snmnOcQXIylkIIS1cTnuu0hlY",
             authDomain: "dashboard-1db87.firebaseapp.com",
             projectId: "dashboard-1db87",
@@ -306,113 +352,141 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 2. EXTRACT USERNAME FROM THE OBS BROWSER URL
-        // Example: https://yourdomain.com/roulette_overlay.html?user=YatoTheMad
+        // 2. PARSE THE STREAMER'S USERNAME FROM THE URL
+        // Example OBS URL: http://.../roulette_overlay.html?user=YatoTheMad
         const urlParams = new URLSearchParams(window.location.search);
         const targetUser = urlParams.get('user');
 
         if (!targetUser) {
-            document.getElementById('streamer-name').innerText = "ERROR: NO USER SET";
-            document.getElementById('streamer-name').style.backgroundColor = "red";
-            console.error("Missing ?user= param in URL");
+            // If the streamer forgot to add ?user= in OBS, show a massive error so they fix it.
+            document.getElementById('error-msg').style.display = 'block';
         } else {
-            document.getElementById('streamer-name').innerText = targetUser;
-            startLiveTracker(targetUser);
+            document.getElementById('overlay-container').style.display = 'flex';
+            OverlayEngine.init(targetUser);
         }
 
-        // 3. PREMIUM NUMBER ANIMATION ENGINE
-        // This makes numbers count up smoothly instead of instantly changing
-        class AnimatedNumber {
-            constructor(elementId) {
-                this.element = document.getElementById(elementId);
-                this.blockElement = document.getElementById(`block-${elementId.replace('val-', '')}`);
-                this.currentValue = 0;
-            }
+        // 3. OVERLAY LOGIC ENGINE
+        const OverlayEngine = {
+            // Memory states to trigger animations only when a number actually changes
+            state: {
+                safeBank: null,
+                currentPot: null,
+                totalStreak: null,
+                highestStreak: null,
+                jailCount: null,
+                isGolden: null
+            },
 
-            update(newValue) {
-                if (this.currentValue === newValue) return; // No change
+            init(username) {
+                console.log(`[Entity Overlay] Connecting to feed for: ${username}`);
                 
-                // Trigger flash CSS animation on the parent block
-                if (this.blockElement) {
-                    this.blockElement.classList.remove('update-flash');
-                    void this.blockElement.offsetWidth; // Trigger reflow
-                    this.blockElement.classList.add('update-flash');
+                const docRef = doc(db, "roulette_state", username);
+                
+                // Real-time listener. This triggers instantly whenever the main website saves to DB.
+                onSnapshot(docRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        this.processData(data);
+                    } else {
+                        console.warn("[Entity Overlay] Target user not found in database.");
+                    }
+                }, (error) => {
+                    console.error("[Entity Overlay] Connection severed:", error);
+                });
+            },
+
+            processData(data) {
+                // Safely extract data
+                const safeBank = data.safeBank || 0;
+                const currentPot = data.currentPot || 0;
+                const totalStreak = data.totalStreak || 0;
+                const highestStreak = data.highestStreak || 0;
+                const jailCount = data.ransomJail ? data.ransomJail.length : 0;
+                const isGolden = data.isGoldenMode || false;
+
+                // Update UI visually
+                this.updateElement('val-safe', safeBank, 'safeBank', 'mod-safe');
+                this.updateElement('val-pot', currentPot, 'currentPot', 'mod-pot');
+                this.updateElement('val-streak', totalStreak, 'totalStreak', 'mod-streak');
+                this.updateElement('val-best', highestStreak, 'highestStreak', 'mod-best');
+                this.updateElement('val-jail', jailCount, 'jailCount', 'mod-jail');
+
+                // Handle Special UI States
+                this.handleSpecialStates(currentPot, isGolden, jailCount);
+            },
+
+            updateElement(elementId, newValue, stateKey, parentModuleId) {
+                // Format numbers with commas (e.g., 20,000) for a premium look
+                const formattedValue = newValue.toLocaleString('en-US');
+                
+                if (this.state[stateKey] !== newValue) {
+                    const el = document.getElementById(elementId);
+                    el.textContent = formattedValue;
+                    
+                    // Trigger the flash animation because the data changed
+                    if (this.state[stateKey] !== null) {
+                        this.triggerFlash(parentModuleId);
+                        this.animateNumberCounter(el, this.state[stateKey], newValue);
+                    }
+                    
+                    this.state[stateKey] = newValue;
                 }
+            },
 
-                // Animate the number
-                const start = this.currentValue;
-                const end = newValue;
-                const duration = 1000; // 1 second animation
-                const startTime = performance.now();
+            handleSpecialStates(currentPot, isGolden, jailCount) {
+                const modPot = document.getElementById('mod-pot');
+                const modJail = document.getElementById('mod-jail');
 
-                const animate = (currentTime) => {
-                    const elapsedTime = currentTime - startTime;
-                    const progress = Math.min(elapsedTime / duration, 1);
-                    
-                    // Ease-out cubic formula for smooth slowdown at the end
-                    const easeProgress = 1 - Math.pow(1 - progress, 3); 
-                    const currentStep = Math.floor(start + (end - start) * easeProgress);
-                    
-                    // Format with commas (e.g., 20,000)
-                    this.element.innerText = currentStep.toLocaleString();
-
-                    if (progress < 1) {
-                        requestAnimationFrame(animate);
+                // Pot Logic (Breathe when active, turn Gold when in Golden Spin)
+                if (currentPot > 0) {
+                    modPot.classList.add('has-pot');
+                    if (isGolden) {
+                        modPot.classList.add('golden-mode');
                     } else {
-                        this.element.innerText = end.toLocaleString();
-                        this.currentValue = end;
+                        modPot.classList.remove('golden-mode');
                     }
-                };
-                requestAnimationFrame(animate);
-            }
-        }
-
-        // Initialize the animators
-        const animators = {
-            safe: new AnimatedNumber('val-safe'),
-            pot: new AnimatedNumber('val-pot'),
-            streak: new AnimatedNumber('val-streak'),
-            high: new AnimatedNumber('val-high'),
-            jail: new AnimatedNumber('val-jail')
-        };
-
-        // 4. THE LIVE LISTENER (THE MAGIC)
-        // This attaches to the specific user's document. Every time they click "Win", "Lose",
-        // or "Cash Out" on the main website, this overlay instantly updates inside OBS.
-        function startLiveTracker(username) {
-            const docRef = doc(db, 'roulette_state', username);
-            
-            // onSnapshot triggers immediately once, and then again every time the DB changes
-            onSnapshot(docRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    
-                    // Feed new data to the Animation Engine
-                    animators.safe.update(data.safeBank || 0);
-                    animators.pot.update(data.currentPot || 0);
-                    animators.streak.update(data.totalStreak || 0);
-                    animators.high.update(data.highestStreak || 0);
-                    
-                    // Jail is an array of strings, we just want the length
-                    const jailCount = (data.ransomJail) ? data.ransomJail.length : 0;
-                    animators.jail.update(jailCount);
-                    
-                    // Optional visual tweak: Dim the pot if it's 0 to reduce clutter
-                    if ((data.currentPot || 0) === 0) {
-                        document.getElementById('block-pot').style.opacity = '0.5';
-                    } else {
-                        document.getElementById('block-pot').style.opacity = '1';
-                    }
-
                 } else {
-                    console.warn("No data found for this streamer yet. Waiting for them to play.");
+                    modPot.classList.remove('has-pot');
+                    modPot.classList.remove('golden-mode');
                 }
-            }, (error) => {
-                console.error("Error listening to Firebase:", error);
-                document.getElementById('streamer-name').innerText = "CONNECTION LOST";
-                document.getElementById('streamer-name').style.backgroundColor = "red";
-            });
-        }
+
+                // Jail Logic (Glitch border if jail is getting dangerously full)
+                if (jailCount > 10) {
+                    modJail.classList.add('danger');
+                } else {
+                    modJail.classList.remove('danger');
+                }
+            },
+
+            triggerFlash(moduleId) {
+                const mod = document.getElementById(moduleId);
+                // Remove class, trigger reflow, add class to restart CSS animation
+                mod.classList.remove('update-flash');
+                void mod.offsetWidth; 
+                mod.classList.add('update-flash');
+            },
+
+            // Premium Number Ticking Animation
+            animateNumberCounter(element, start, end) {
+                // If the jump is massive or it's a reset, just snap to it to avoid long counting
+                if (Math.abs(end - start) > 5000 || end === 0) {
+                    element.textContent = end.toLocaleString('en-US');
+                    return;
+                }
+
+                let current = start;
+                const range = end - start;
+                const increment = end > start ? Math.max(1, Math.floor(range / 20)) : Math.min(-1, Math.ceil(range / 20));
+                const timer = setInterval(() => {
+                    current += increment;
+                    if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                        clearInterval(timer);
+                        current = end;
+                    }
+                    element.textContent = current.toLocaleString('en-US');
+                }, 30);
+            }
+        };
     </script>
 </body>
 </html>

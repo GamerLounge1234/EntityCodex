@@ -2,113 +2,106 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roulette HUD</title>
+    <title>Entity's Roulette Overlay</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Teko:wght@700&family=Montserrat:wght@900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Courier+New&display=swap');
 
-        :root {
-            --entity-red: #d32f2f;
-            --gold-ascension: #e5b824;
-            --bg-panel: rgba(10, 5, 5, 0.85);
+        /* Crucial: Transparent background for OBS */
+        body { 
+            background: transparent; 
+            margin: 0; 
+            padding: 20px; 
+            overflow: hidden; 
         }
 
-        /* Transparent background is required for OBS overlays */
-        body {
-            background-color: transparent;
-            margin: 0;
-            padding: 10px;
-            display: flex;
-            gap: 15px;
-            overflow: hidden;
+        .overlay-container {
+            background: rgba(10, 5, 5, 0.85);
+            border: 2px solid #d32f2f;
+            border-radius: 8px;
+            padding: 15px 30px;
+            display: inline-flex;
+            gap: 40px;
+            box-shadow: 0 0 20px rgba(211, 47, 47, 0.5), inset 0 0 10px rgba(0,0,0,0.8);
+            font-family: 'Montserrat', sans-serif;
         }
 
-        .hud-box {
-            background: var(--bg-panel);
-            border: 2px solid var(--entity-red);
-            border-radius: 6px;
-            padding: 10px 20px;
+        .stat-block {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 15px rgba(211, 47, 47, 0.4), inset 0 0 10px rgba(0,0,0,0.8);
-            min-width: 120px;
         }
 
-        .hud-label {
-            font-family: 'Teko', sans-serif;
-            color: #b8a5a5;
-            font-size: 1.2rem;
+        .stat-label {
+            font-size: 14px;
             text-transform: uppercase;
+            color: #888899;
             letter-spacing: 2px;
-            margin-bottom: -5px;
+            margin-bottom: 5px;
         }
 
-        .hud-value {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 2.2rem;
+        .stat-value {
+            font-size: 38px;
             font-weight: 900;
-            color: #ffffff;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            font-family: 'Courier New', monospace;
         }
 
-        .streak-val {
-            color: #00ff66;
-            text-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+        .points {
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(211, 47, 47, 0.9);
+        }
+
+        .streak {
+            color: #e5b824;
+            text-shadow: 0 0 15px rgba(229, 184, 36, 0.9);
         }
     </style>
 </head>
 <body>
-    <div class="hud-box">
-        <div class="hud-label">SAFE BANK</div>
-        <div class="hud-value" id="safe-bank">0</div>
-    </div>
-    <div class="hud-box">
-        <div class="hud-label">STREAK</div>
-        <div class="hud-value streak-val" id="total-streak">0</div>
+
+    <div class="overlay-container">
+        <div class="stat-block">
+            <span class="stat-label">Safe Points</span>
+            <span class="stat-value points" id="overlay-points">0</span>
+        </div>
+        <div class="stat-block">
+            <span class="stat-label">Entity Streak</span>
+            <span class="stat-value streak" id="overlay-streak">0</span>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        // Notice we import onSnapshot instead of getDoc for real-time live updates
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // PASTE YOUR FIREBASE CONFIG HERE
+        // Paste your exact Firebase Config here
         const firebaseConfig = {
-            
+            // YOUR CONFIG HERE
         };
-
+        
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Extract streamer username from the URL parameter
-        const params = new URLSearchParams(window.location.search);
-        const streamerName = params.get('user');
+        // This grabs the username from the URL (e.g., overlay.html?user=StreamerName)
+        const urlParams = new URLSearchParams(window.location.search);
+        const streamerName = urlParams.get('user');
 
         if (streamerName) {
-            // onSnapshot triggers automatically every time the database changes
-            onSnapshot(doc(db, 'roulette_state', streamerName), (docSnap) => {
+            const docRef = doc(db, 'roulette_state', streamerName);
+            
+            // onSnapshot actively listens to the database. 
+            // When the streamer updates their points on the main site, this triggers instantly.
+            onSnapshot(docRef, (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
-                    
-                    // Update HTML
-                    document.getElementById('safe-bank').innerText = (data.safeBank || 0).toLocaleString();
-                    document.getElementById('total-streak').innerText = data.totalStreak || 0;
-                    
-                    // Aesthetic check: Turn the streak Gold if they hit the 50 goal
-                    const streakEl = document.getElementById('total-streak');
-                    if (data.totalStreak >= 50) {
-                        streakEl.style.color = "var(--gold-ascension)";
-                        streakEl.style.textShadow = "0 0 20px rgba(229, 184, 36, 0.8)";
-                    } else {
-                        streakEl.style.color = "#00ff66";
-                        streakEl.style.textShadow = "0 0 15px rgba(0, 255, 102, 0.4)";
-                    }
+                    document.getElementById('overlay-points').innerText = data.safeBank || 0;
+                    document.getElementById('overlay-streak').innerText = data.totalStreak || 0;
                 }
             });
         } else {
-            document.getElementById('safe-bank').innerText = "ERR";
-            document.getElementById('total-streak').innerText = "NO_USER";
+            document.getElementById('overlay-points').innerText = "ERR";
+            document.getElementById('overlay-streak').innerText = "ERR";
+            console.error("No user specified in URL. Format must be: overlay.html?user=Username");
         }
     </script>
 </body>

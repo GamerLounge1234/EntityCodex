@@ -2,81 +2,167 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Entity's Roulette Overlay</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entity's Roulette - Stream Overlay</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Courier+New&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Courier+Prime:wght@700&display=swap');
 
-        /* Crucial: Transparent background for OBS */
-        body { 
-            background: transparent; 
-            margin: 0; 
-            padding: 20px; 
-            overflow: hidden; 
+        /* Transparent background for OBS */
+        body, html {
+            margin: 0; padding: 0;
+            width: 100vw; height: 100vh;
+            background: transparent;
+            overflow: hidden;
+            font-family: 'Teko', sans-serif;
+            color: #fff;
         }
 
-        .overlay-container {
-            background: rgba(10, 5, 5, 0.85);
-            border: 2px solid #d32f2f;
-            border-radius: 8px;
-            padding: 15px 30px;
-            display: inline-flex;
-            gap: 40px;
-            box-shadow: 0 0 20px rgba(211, 47, 47, 0.5), inset 0 0 10px rgba(0,0,0,0.8);
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        .stat-block {
+        /* Widget Container */
+        .hud-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            gap: 15px;
+            width: 320px;
         }
 
-        .stat-label {
-            font-size: 14px;
-            text-transform: uppercase;
+        /* Individual Stat Panels */
+        .stat-panel {
+            background: linear-gradient(90deg, rgba(15, 5, 5, 0.95) 0%, rgba(5, 5, 8, 0.85) 100%);
+            border-left: 4px solid #d32f2f;
+            border-top: 1px solid rgba(211, 47, 47, 0.3);
+            border-bottom: 1px solid rgba(211, 47, 47, 0.3);
+            border-right: 1px solid rgba(211, 47, 47, 0.3);
+            padding: 10px 20px;
+            border-radius: 4px 12px 12px 4px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8), inset 0 0 10px rgba(211, 47, 47, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(211, 47, 47, 0.1), transparent);
+            transform: translateX(-100%);
+            animation: scanline 4s infinite linear;
+        }
+
+        .stat-title {
+            font-size: 1.2rem;
             color: #888899;
+            text-transform: uppercase;
             letter-spacing: 2px;
+            line-height: 1;
             margin-bottom: 5px;
         }
 
         .stat-value {
-            font-size: 38px;
-            font-weight: 900;
-            font-family: 'Courier New', monospace;
-        }
-
-        .points {
+            font-size: 3.5rem;
+            font-family: 'Courier Prime', monospace;
+            font-weight: 700;
+            line-height: 1;
             color: #ffffff;
-            text-shadow: 0 0 15px rgba(211, 47, 47, 0.9);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
         }
 
-        .streak {
-            color: #e5b824;
-            text-shadow: 0 0 15px rgba(229, 184, 36, 0.9);
+        /* Specific Highlights */
+        .safe-points .stat-value {
+            color: #e5b824; /* Gold */
+            text-shadow: 0 0 15px rgba(229, 184, 36, 0.6);
+        }
+        
+        .active-pot .stat-value {
+            color: #ff0505; /* Arterial Spray */
+            text-shadow: 0 0 15px rgba(255, 5, 5, 0.6);
+        }
+
+        .mini-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            border-top: 1px dashed rgba(255,255,255,0.1);
+            padding-top: 5px;
+        }
+
+        .mini-stat {
+            font-size: 1.1rem;
+            color: #ccc;
+        }
+
+        .mini-stat span {
+            color: #ff5500;
+            font-family: 'Courier Prime', monospace;
+        }
+
+        /* Animations */
+        @keyframes scanline {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .pulse-update {
+            animation: updatePulse 0.5s ease-out;
+        }
+
+        @keyframes updatePulse {
+            0% { transform: scale(1); color: #fff; text-shadow: 0 0 30px #fff; }
+            50% { transform: scale(1.1); color: #00ff66; text-shadow: 0 0 40px #00ff66; }
+            100% { transform: scale(1); }
+        }
+
+        /* Error/Loading State */
+        #status-msg {
+            background: rgba(0,0,0,0.8);
+            color: #ff4444;
+            padding: 10px;
+            font-family: monospace;
+            border-left: 3px solid red;
         }
     </style>
 </head>
 <body>
 
-    <div class="overlay-container">
-        <div class="stat-block">
-            <span class="stat-label">Safe Points</span>
-            <span class="stat-value points" id="overlay-points">0</span>
+    <div id="status-msg">Connecting to Entity Database...</div>
+
+    <div class="hud-container" id="hud" style="display: none;">
+        <!-- Safe Bank -->
+        <div class="stat-panel safe-points">
+            <div class="stat-title">Safe Bank</div>
+            <div class="stat-value" id="val-safe">0</div>
         </div>
-        <div class="stat-block">
-            <span class="stat-label">Entity Streak</span>
-            <span class="stat-value streak" id="overlay-streak">0</span>
+
+        <!-- Current Pot & Multiplier -->
+        <div class="stat-panel active-pot">
+            <div class="stat-title">Active Pot</div>
+            <div class="stat-value" id="val-pot">0</div>
+            <div class="mini-stats">
+                <div class="mini-stat">Mult: <span id="val-mult">1.0x</span></div>
+                <div class="mini-stat">Jailed: <span id="val-jail">0</span></div>
+            </div>
+        </div>
+
+        <!-- Universal Streak -->
+        <div class="stat-panel">
+            <div class="stat-title">Universal Streak</div>
+            <div class="stat-value" id="val-streak" style="color: #00ff66;">0</div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        // Notice we import onSnapshot instead of getDoc for real-time live updates
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Paste your exact Firebase Config here
+        // PAST YOUR FIREBASE CONFIG HERE
         const firebaseConfig = {
-            // YOUR CONFIG HERE
+            // apiKey: "...",
+            // authDomain: "...",
+            // projectId: "...",
+            // ...
             apiKey: "AIzaSyBMAxj2E3snmnOcQXIylkIIS1cTnuu0hlY",
             authDomain: "dashboard-1db87.firebaseapp.com",
             projectId: "dashboard-1db87",
@@ -85,30 +171,81 @@
             appId: "1:711217707380:web:247cfdfb2dc3c2c4485421",
             measurementId: "G-Z4WBDQ9HEH"
         };
-        
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // This grabs the username from the URL (e.g., overlay.html?user=StreamerName)
+        // Extract the streamer's username from the URL
         const urlParams = new URLSearchParams(window.location.search);
-        const streamerName = urlParams.get('user');
+        const targetUser = urlParams.get('user');
 
-        if (streamerName) {
-            const docRef = doc(db, 'roulette_state', streamerName);
-            
-            // onSnapshot actively listens to the database. 
-            // When the streamer updates their points on the main site, this triggers instantly.
+        const statusMsg = document.getElementById('status-msg');
+        const hud = document.getElementById('hud');
+
+        if (!targetUser) {
+            statusMsg.innerHTML = "ERROR: No user specified.<br>Use: overlay.html?user=STREAMER_NAME";
+        } else {
+            statusMsg.style.display = 'none';
+            hud.style.display = 'flex';
+
+            // Reference to this specific streamer's document
+            const docRef = doc(db, 'roulette_state', targetUser);
+
+            // Previous values to trigger animations on change
+            let prevSafe = null;
+            let prevPot = null;
+            let prevStreak = null;
+
+            // onSnapshot automatically updates the overlay instantly when the database changes
             onSnapshot(docRef, (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
-                    document.getElementById('overlay-points').innerText = data.safeBank || 0;
-                    document.getElementById('overlay-streak').innerText = data.totalStreak || 0;
+                    
+                    // Extract Data
+                    const safeBank = data.safeBank || 0;
+                    const currentPot = data.currentPot || 0;
+                    const totalStreak = data.totalStreak || 0;
+                    const jailedCount = (data.ransomJail || []).length;
+                    
+                    // Calculate multiplier exactly like the main dashboard
+                    const localStreak = data.currentLocalStreak || 0;
+                    const multiplier = (1.0 + (localStreak * 0.5)).toFixed(1);
+
+                    // Update DOM Elements
+                    const elSafe = document.getElementById('val-safe');
+                    const elPot = document.getElementById('val-pot');
+                    const elStreak = document.getElementById('val-streak');
+
+                    elSafe.innerText = safeBank;
+                    elPot.innerText = currentPot;
+                    elStreak.innerText = totalStreak;
+                    document.getElementById('val-mult').innerText = multiplier + 'x';
+                    document.getElementById('val-jail').innerText = jailedCount;
+
+                    // Trigger pulse animations if values increased
+                    if (prevSafe !== null && safeBank > prevSafe) animateUpdate(elSafe);
+                    if (prevPot !== null && currentPot > prevPot) animateUpdate(elPot);
+                    if (prevStreak !== null && totalStreak > prevStreak) animateUpdate(elStreak);
+
+                    prevSafe = safeBank;
+                    prevPot = currentPot;
+                    prevStreak = totalStreak;
+                } else {
+                    statusMsg.style.display = 'block';
+                    statusMsg.innerHTML = `Waiting for ${targetUser} to start a run...`;
+                    hud.style.display = 'none';
                 }
+            }, (error) => {
+                console.error("Overlay read error:", error);
+                statusMsg.style.display = 'block';
+                statusMsg.innerHTML = "Connection to Entity lost.";
             });
-        } else {
-            document.getElementById('overlay-points').innerText = "ERR";
-            document.getElementById('overlay-streak').innerText = "ERR";
-            console.error("No user specified in URL. Format must be: overlay.html?user=Username");
+        }
+
+        function animateUpdate(element) {
+            element.classList.remove('pulse-update');
+            void element.offsetWidth; // Trigger DOM reflow
+            element.classList.add('pulse-update');
         }
     </script>
 </body>

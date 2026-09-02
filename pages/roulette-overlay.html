@@ -3,330 +3,277 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entity's Roulette - Premium Stream Overlay</title>
+    <title>Entity's Roulette - Premium OBS Overlay</title>
+    
+    <!-- Premium Fonts: Teko for Numbers, Montserrat for Labels -->
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;900&family=Teko:wght@400;600;700&display=swap');
+
         /* ==========================================================================
-           PREMIUM STREAM OVERLAY STYLES
-           Designed for OBS Browser Source (Transparent, High-Contrast, Glowing)
+           PREMIUM OBS OVERLAY STYLES
            ========================================================================== */
-        
-        @import url('https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Montserrat:wght@400;700;900&family=Courier+New&display=swap');
-
         :root {
-            /* Premium Entity Color Palette */
-            --entity-crimson: #d32f2f;
-            --entity-blood: #9a031e;
-            --entity-gold: #e5b824;
-            --bone-white: #f0f0f5;
-            --muted-bone: #888899;
-            --void-black: rgba(5, 3, 5, 0.85);
-            --glass-border: rgba(211, 47, 47, 0.4);
+            --glass-bg: rgba(5, 2, 2, 0.45);
+            --glass-border: rgba(255, 40, 40, 0.15);
+            --glass-highlight: rgba(255, 255, 255, 0.05);
             
-            /* Advanced Glow Effects */
-            --glow-red: 0 0 15px rgba(211, 47, 47, 0.6), inset 0 0 10px rgba(154, 3, 30, 0.4);
-            --glow-gold: 0 0 20px rgba(229, 184, 36, 0.6), inset 0 0 15px rgba(229, 184, 36, 0.3);
-            --text-glow-red: 0 0 10px rgba(255, 50, 50, 0.8);
-            --text-glow-gold: 0 0 12px rgba(229, 184, 36, 0.9);
-            --text-glow-white: 0 0 8px rgba(255, 255, 255, 0.5);
-
-            /* Typography */
-            --font-ui: 'Teko', sans-serif;
-            --font-data: 'Montserrat', sans-serif;
-            --font-mono: 'Courier New', monospace;
+            --blood-red: #d32f2f;
+            --neon-red: #ff1e1e;
+            --dark-red: #7a0000;
+            
+            --gold-base: #e5b824;
+            --gold-neon: #ffcf33;
+            
+            --text-muted: #a0a0b0;
+            --text-bright: #ffffff;
+            
+            --glow-red: 0 0 10px rgba(255, 30, 30, 0.6), 0 0 20px rgba(255, 30, 30, 0.4), 0 0 40px rgba(211, 47, 47, 0.2);
+            --glow-gold: 0 0 10px rgba(229, 184, 36, 0.6), 0 0 20px rgba(229, 184, 36, 0.4), 0 0 40px rgba(229, 184, 36, 0.2);
+            --glow-white: 0 0 10px rgba(255, 255, 255, 0.4), 0 0 20px rgba(255, 255, 255, 0.2);
         }
 
-        /* Essential for OBS: Transparent Background */
-        body, html {
+        /* Transparent background for OBS */
+        body {
             margin: 0;
-            padding: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: transparent !important;
+            padding: 20px;
+            background-color: transparent; /* CRITICAL FOR OBS */
             overflow: hidden;
-            font-family: var(--font-data);
-            color: var(--bone-white);
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-bright);
         }
 
-        /* Overlay Layout Container */
+        /* Container Layout - Separated Floating Panels */
         .overlay-container {
-            position: absolute;
-            top: 20px;
-            right: 20px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            width: 320px;
-            /* Prevents anti-aliasing artifacts on stream */
-            -webkit-font-smoothing: antialiased; 
+            gap: 20px; /* Separation between panels */
+            width: 320px; /* Fixed width for consistent stream layout */
         }
 
-        /* Separation of Elements for Premium Aesthetic */
-        .data-module {
-            background: var(--void-black);
-            border-left: 4px solid var(--entity-crimson);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            padding: 15px 20px;
-            border-radius: 4px 12px 12px 4px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+        /* Advanced Glassmorphism Panel */
+        .premium-panel {
+            background: linear-gradient(135deg, var(--glass-bg) 0%, rgba(0, 0, 0, 0.8) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid var(--glass-highlight);
+            border-left: 1px solid var(--glass-highlight);
+            border-right: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--dark-red);
+            border-radius: 8px;
+            padding: 16px 24px;
             position: relative;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.25, 1, 0.3, 1);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(255, 0, 0, 0.05);
+            transform-origin: left center;
+            animation: slideIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
         }
 
-        /* Dynamic Module States */
-        .data-module.pot-active {
-            border-left-color: var(--entity-crimson);
-            box-shadow: var(--glow-red), 0 15px 30px rgba(0,0,0,0.9);
-            animation: pulseThreat 3s infinite alternate;
+        /* Animated background pulse for panels */
+        .premium-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(255, 40, 40, 0.1) 0%, transparent 70%);
+            z-index: 0;
+            animation: breathe 4s infinite alternate;
         }
 
-        .data-module.streak-active {
-            border-left-color: var(--entity-gold);
-            box-shadow: var(--glow-gold), 0 15px 30px rgba(0,0,0,0.9);
-        }
-
-        /* Title Styling */
-        .module-header {
+        /* Content Wrapper (keeps text above absolute background) */
+        .panel-content {
+            position: relative;
+            z-index: 1;
             display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 4px;
+            flex-direction: column;
         }
 
-        .module-title {
-            font-family: var(--font-ui);
-            font-size: 1.4rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--muted-bone);
-            margin: 0;
-            line-height: 1;
-        }
-
-        .module-subtitle {
-            font-family: var(--font-mono);
+        /* Typography */
+        .label {
             font-size: 0.75rem;
-            color: var(--entity-crimson);
-            font-weight: bold;
-            letter-spacing: 1px;
             text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: -5px;
+            text-shadow: 1px 1px 2px #000;
         }
 
-        /* Data Readouts */
-        .data-row {
+        .value {
+            font-family: 'Teko', sans-serif;
+            font-size: 3.8rem;
+            font-weight: 700;
+            line-height: 1;
+            margin: 0;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        .sub-value {
+            font-family: 'Teko', sans-serif;
+            font-size: 2rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            margin-left: 8px;
+        }
+
+        /* Specific Glow Colors */
+        .color-safe {
+            color: var(--text-bright);
+            text-shadow: var(--glow-white);
+        }
+        
+        .color-pot {
+            color: var(--neon-red);
+            text-shadow: var(--glow-red);
+        }
+
+        .color-streak {
+            color: var(--gold-neon);
+            text-shadow: var(--glow-gold);
+        }
+
+        .color-jail {
+            color: var(--blood-red);
+            text-shadow: 0 0 10px rgba(122, 0, 0, 0.8);
+        }
+
+        /* Multi-stat layout (for streaks) */
+        .split-stat {
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            margin-top: 5px;
         }
 
-        .data-label {
-            font-size: 0.8rem;
-            color: var(--muted-bone);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 700;
-        }
-
-        .data-value {
-            font-family: var(--font-mono);
-            font-size: 2.2rem;
-            font-weight: 900;
-            line-height: 1;
-            color: var(--bone-white);
-            text-shadow: var(--text-glow-white);
-            transition: color 0.3s ease;
-        }
-
-        /* Specialized Highlight Classes */
-        .value-safe { color: #fff; }
-        .value-pot { color: var(--entity-crimson); text-shadow: var(--text-glow-red); font-size: 2.8rem; }
-        .value-streak { color: var(--entity-gold); text-shadow: var(--text-glow-gold); }
-        .value-jail { color: var(--muted-bone); }
-        
-        .jail-warning .value-jail {
-            color: var(--entity-crimson);
-            text-shadow: var(--text-glow-red);
-            animation: glitchText 4s infinite;
-        }
-
-        /* Live Connection Indicator */
-        .connection-status {
-            position: absolute;
-            top: -10px;
-            right: 20px;
-            background: var(--void-black);
-            border: 1px solid var(--entity-crimson);
-            padding: 4px 10px;
-            border-radius: 0 0 8px 8px;
+        .split-stat .stat-block {
             display: flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.5);
-            transform: translateY(0);
-            transition: transform 0.3s ease;
+            flex-direction: column;
         }
 
-        .connection-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #00ff66;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #00ff66;
-            animation: pulseDot 2s infinite;
+        .stat-divider {
+            width: 1px;
+            height: 50px;
+            background: linear-gradient(to bottom, transparent, var(--glass-border), transparent);
+            margin: 0 15px;
         }
 
-        .connection-text {
-            font-family: var(--font-ui);
-            font-size: 0.9rem;
-            letter-spacing: 1.5px;
-            color: #00ff66;
-            text-transform: uppercase;
+        /* State Modifiers */
+        .value.update-flash {
+            animation: dataFlash 0.5s ease-out;
         }
 
-        .streamer-identity {
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            color: var(--muted-bone);
-            text-align: right;
-            margin-bottom: -5px;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        /* Loading / Error State */
+        #status-panel {
+            text-align: center;
+            border-bottom-color: var(--glass-border);
+        }
+        
+        .status-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            animation: pulseOpacity 2s infinite;
         }
 
-        /* Animations */
-        @keyframes pulseThreat {
-            0% { box-shadow: 0 0 10px rgba(211, 47, 47, 0.4), inset 0 0 5px rgba(211, 47, 47, 0.1); }
-            100% { box-shadow: 0 0 25px rgba(211, 47, 47, 0.8), inset 0 0 20px rgba(211, 47, 47, 0.3); border-left-color: #ff3333; }
+        /* Keyframe Animations */
+        @keyframes slideIn {
+            0% { transform: translateX(-50px) scale(0.95); opacity: 0; filter: blur(5px); }
+            100% { transform: translateX(0) scale(1); opacity: 1; filter: blur(0); }
         }
 
-        @keyframes pulseDot {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.8); }
+        @keyframes breathe {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.8; }
         }
 
-        @keyframes numberUpdate {
-            0% { transform: translateY(10px); opacity: 0; filter: blur(4px); }
-            100% { transform: translateY(0); opacity: 1; filter: blur(0); }
+        @keyframes dataFlash {
+            0% { transform: scale(1); filter: brightness(1); }
+            20% { transform: scale(1.1); filter: brightness(2); color: #fff; }
+            100% { transform: scale(1); filter: brightness(1); }
         }
 
-        .animate-update {
-            animation: numberUpdate 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        @keyframes pulseOpacity {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
-        @keyframes glitchText {
-            0%, 100% { transform: translate(0); }
-            20% { transform: translate(-2px, 1px); }
-            40% { transform: translate(2px, -1px); }
-            60% { transform: translate(-1px, -2px); }
-            80% { transform: translate(1px, 2px); }
-        }
+        /* Staggered load animation */
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
 
-        /* Goal Progress Bar */
-        .overlay-progress-bar {
-            width: 100%;
-            height: 4px;
-            background: rgba(0, 0, 0, 0.6);
-            border-radius: 2px;
-            margin-top: 10px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .overlay-progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #9a031e, var(--entity-crimson));
-            width: 0%;
-            transition: width 1.5s cubic-bezier(0.25, 1, 0.3, 1);
-            box-shadow: 0 0 10px var(--entity-crimson);
-        }
     </style>
 </head>
 <body>
 
-    <!-- Connection Badge -->
-    <div class="connection-status" id="connectionBadge">
-        <div class="connection-dot" id="connectionIndicator"></div>
-        <div class="connection-text" id="connectionText">SYS_LINK</div>
+    <!-- Connection Status -->
+    <div id="status-panel" class="premium-panel">
+        <div class="panel-content">
+            <div class="status-text" id="connection-status">AWAITING ENTITY CONNECTION...</div>
+        </div>
     </div>
 
-    <!-- Main Overlay Container -->
-    <div class="overlay-container">
+    <!-- Main Overlay Container (Hidden until connected) -->
+    <div class="overlay-container" id="main-overlay" style="display: none;">
         
-        <div class="streamer-identity" id="displayStreamerName">SUBJECT: UNKNOWN</div>
-
-        <!-- Safe Bank Module -->
-        <div class="data-module">
-            <div class="module-header">
-                <h3 class="module-title" style="color: var(--bone-white);">Safe Bank</h3>
-                <span class="module-subtitle">Goal: 20k</span>
-            </div>
-            <div class="data-row">
-                <span class="data-label">Secured</span>
-                <span class="data-value value-safe" id="val-safebank">0</span>
-            </div>
-            <div class="overlay-progress-bar">
-                <div class="overlay-progress-fill" id="bar-safebank"></div>
+        <!-- Safe Bank Panel -->
+        <div class="premium-panel delay-1">
+            <div class="panel-content">
+                <div class="label">Total Safe Bank</div>
+                <div class="value color-safe" id="ov-safe">0</div>
             </div>
         </div>
 
-        <!-- Active Pot Module -->
-        <div class="data-module" id="mod-pot">
-            <div class="module-header">
-                <h3 class="module-title" style="color: var(--entity-crimson);">Active Trial Pot</h3>
-                <span class="module-subtitle" id="val-multiplier">1.0x MULT</span>
-            </div>
-            <div class="data-row">
-                <span class="data-label" style="color: var(--entity-crimson);">At Risk</span>
-                <span class="data-value value-pot" id="val-pot">0</span>
+        <!-- Active Pot Panel -->
+        <div class="premium-panel delay-2">
+            <div class="panel-content">
+                <div class="label">Active Risk Pot</div>
+                <div class="value color-pot" id="ov-pot">0</div>
             </div>
         </div>
 
-        <!-- Universal Streak Module -->
-        <div class="data-module" id="mod-streak">
-            <div class="module-header">
-                <h3 class="module-title" style="color: var(--entity-gold);">Universal Streak</h3>
-                <span class="module-subtitle" style="color: var(--entity-gold);">Goal: 50</span>
-            </div>
-            <div class="data-row">
-                <span class="data-label">Current / Peak</span>
-                <div>
-                    <span class="data-value value-streak" id="val-streak">0</span>
-                    <span style="color: var(--muted-bone); font-family: var(--font-mono); font-size: 1.2rem; margin: 0 5px;">/</span>
-                    <span class="data-value" style="font-size: 1.5rem; color: var(--muted-bone);" id="val-peakstreak">0</span>
+        <!-- Streaks Panel (Current / Best) -->
+        <div class="premium-panel delay-3">
+            <div class="panel-content">
+                <div class="split-stat">
+                    <div class="stat-block">
+                        <div class="label">Current Streak</div>
+                        <div class="value color-streak" id="ov-streak-current">0</div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-block" style="align-items: flex-end;">
+                        <div class="label">Best Run</div>
+                        <div class="value color-streak" style="font-size: 2.8rem; opacity: 0.8;" id="ov-streak-best">0</div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Ransom Jail Module -->
-        <div class="data-module" id="mod-jail">
-            <div class="module-header">
-                <h3 class="module-title">Ransom Jail</h3>
-                <span class="module-subtitle" style="color: var(--muted-bone);">Perks Locked</span>
-            </div>
-            <div class="data-row">
-                <span class="data-label">Tools Lost</span>
-                <span class="data-value value-jail" id="val-jail">0</span>
+        <!-- Ransom Jail Panel -->
+        <div class="premium-panel delay-4">
+            <div class="panel-content">
+                <div class="split-stat">
+                    <div class="stat-block">
+                        <div class="label">Perks in Jail</div>
+                        <div class="value color-jail" id="ov-jail">0</div>
+                    </div>
+                    <div class="stat-block" style="justify-content: center; text-align: right;">
+                        <div class="label" style="font-size: 0.6rem; color: #555;">Entity's<br>Ransom</div>
+                    </div>
+                </div>
             </div>
         </div>
 
     </div>
 
-    <!-- Firebase Real-Time Logic -->
+    <!-- ==========================================================================
+         JAVASCRIPT DATA BINDING & ANIMATION ENGINE
+         ========================================================================== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // ======================================================================
-        // FIREBASE CONFIGURATION
-        // Replace this with the identical config from your main game file
-        // ======================================================================
+        // IMPORTANT: PASTE YOUR FIREBASE CONFIG HERE
         const firebaseConfig = {
             apiKey: "AIzaSyBMAxj2E3snmnOcQXIylkIIS1cTnuu0hlY",
             authDomain: "dashboard-1db87.firebaseapp.com",
@@ -337,169 +284,134 @@
             measurementId: "G-Z4WBDQ9HEH"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // ======================================================================
-        // IDENTIFY THE STREAMER
-        // Overlay reads the URL parameter to know which database doc to pull.
-        // Example OBS URL:  https://yourdomain.com/overlay.html?user=StreamerName
-        // ======================================================================
-        const urlParams = new URLSearchParams(window.location.search);
-        const streamerName = urlParams.get('user') || 'Demo_Subject';
-        
-        document.getElementById('displayStreamerName').innerText = `SUBJECT: ${streamerName.toUpperCase()}`;
-
-        // ======================================================================
-        // STATE MANAGEMENT & ANIMATION ENGINE
-        // Prevents hard snaps, ensures numbers count up smoothly
-        // ======================================================================
-        const OverlayState = {
-            safeBank: 0,
-            currentPot: 0,
-            totalStreak: 0,
-            highestStreak: 0,
-            jailCount: 0,
-            multiplier: 1.0
-        };
-
-        // Easing function for smooth number counting
-        function easeOutExpo(t) {
-            return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+        let app, db;
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+        } catch(e) {
+            document.getElementById('connection-status').innerText = "FIREBASE CONFIGURATION MISSING";
+            document.getElementById('connection-status').style.color = "var(--neon-red)";
+            console.error("Firebase Init Error:", e);
         }
 
-        // Advanced Number Animator
-        function animateNumber(elementId, startVal, endVal, duration = 1000) {
-            if (startVal === endVal) return;
-            const element = document.getElementById(elementId);
-            let startTime = null;
+        // --- URL Parameter Parsing ---
+        // Expects OBS browser source URL to look like: obs_overlay.html?user=StreamerName
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetUser = urlParams.get('user');
 
-            // Trigger CSS flash animation
-            element.classList.remove('animate-update');
-            void element.offsetWidth; // Trigger DOM reflow to restart animation
-            element.classList.add('animate-update');
+        // --- Custom Number Tween Engine ---
+        // Smoothly animates numbers counting up/down instead of snapping instantly
+        class NumberTweener {
+            constructor(elementId, duration = 1000) {
+                this.element = document.getElementById(elementId);
+                this.currentValue = 0;
+                this.targetValue = 0;
+                this.duration = duration;
+                this.startTime = null;
+                this.startValue = 0;
+                this.animationFrame = null;
+            }
 
-            function step(currentTime) {
-                if (!startTime) startTime = currentTime;
-                const progress = Math.min((currentTime - startTime) / duration, 1);
-                const easedProgress = easeOutExpo(progress);
+            update(newValue) {
+                if (this.targetValue === newValue) return; // No change
                 
-                const currentVal = Math.floor(startVal + (endVal - startVal) * easedProgress);
-                element.innerText = currentVal.toLocaleString(); // Add commas for premium look
+                // Trigger CSS flash animation
+                this.element.classList.remove('update-flash');
+                void this.element.offsetWidth; // Trigger reflow
+                this.element.classList.add('update-flash');
+
+                this.startValue = this.currentValue;
+                this.targetValue = newValue;
+                this.startTime = performance.now();
+                
+                if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
+                this.animationFrame = requestAnimationFrame((time) => this.tick(time));
+            }
+
+            tick(currentTime) {
+                const elapsed = currentTime - this.startTime;
+                const progress = Math.min(elapsed / this.duration, 1);
+                
+                // Ease Out Cubic function for smooth deceleration
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                
+                this.currentValue = Math.floor(this.startValue + (this.targetValue - this.startValue) * easeOut);
+                
+                // Format with commas for premium look (e.g., 20,000)
+                this.element.innerText = this.currentValue.toLocaleString();
 
                 if (progress < 1) {
-                    window.requestAnimationFrame(step);
+                    this.animationFrame = requestAnimationFrame((t) => this.tick(t));
                 } else {
-                    element.innerText = endVal.toLocaleString();
+                    this.currentValue = this.targetValue;
+                    this.element.innerText = this.targetValue.toLocaleString();
                 }
             }
-            window.requestAnimationFrame(step);
         }
 
-        // ======================================================================
-        // REAL-TIME DATABASE LISTENER
-        // Connects to the specific 'roulette_state' document based on URL param
-        // ======================================================================
-        const docRef = doc(db, 'roulette_state', streamerName);
+        // Initialize Animators for each metric
+        const animators = {
+            safe: new NumberTweener('ov-safe', 1500),
+            pot: new NumberTweener('ov-pot', 1000),
+            streak: new NumberTweener('ov-streak-current', 800),
+            best: new NumberTweener('ov-streak-best', 800),
+            jail: new NumberTweener('ov-jail', 500)
+        };
 
-        onSnapshot(docRef, (docSnap) => {
-            const statusDot = document.getElementById('connectionIndicator');
-            const statusText = document.getElementById('connectionText');
-            
-            if (!docSnap.exists()) {
-                statusDot.style.backgroundColor = "var(--entity-crimson)";
-                statusDot.style.boxShadow = "0 0 8px var(--entity-crimson)";
-                statusText.innerText = "NO DATA";
-                statusText.style.color = "var(--entity-crimson)";
+        // --- Real-time Firebase Listener Engine ---
+        function initializeTracker() {
+            const statusPanel = document.getElementById('status-panel');
+            const mainOverlay = document.getElementById('main-overlay');
+
+            if (!targetUser) {
+                statusPanel.innerHTML = '<span style="color:var(--neon-red);">URL ERROR: NO ?user= PARAMETER FOUND</span>';
                 return;
             }
+            if (!db) return;
 
-            // Connection Active
-            statusDot.style.backgroundColor = "#00ff66";
-            statusDot.style.boxShadow = "0 0 8px #00ff66";
-            statusText.innerText = "LIVE SYNC";
-            statusText.style.color = "#00ff66";
-
-            // Extract Data from Firebase
-            const data = docSnap.data();
-            const newSafeBank = data.safeBank || 0;
-            const newCurrentPot = data.currentPot || 0;
-            const newTotalStreak = data.totalStreak || 0;
-            const newHighestStreak = data.highestStreak || 0;
-            const newJailCount = (data.ransomJail || []).length;
+            statusPanel.innerHTML = `<span style="color:var(--gold-neon);">MONITORING: ${targetUser.toUpperCase()}</span>`;
             
-            // Calculate Current Multiplier derived from Local Streak
-            const localStreak = data.currentLocalStreak || 0;
-            const newMultiplier = 1.0 + (localStreak * 0.5);
+            // Fade out status and fade in overlay after 2 seconds
+            setTimeout(() => {
+                statusPanel.style.display = 'none';
+                mainOverlay.style.display = 'flex';
+            }, 2000);
 
-            // 1. Process Safe Bank
-            if (newSafeBank !== OverlayState.safeBank) {
-                animateNumber('val-safebank', OverlayState.safeBank, newSafeBank);
-                OverlayState.safeBank = newSafeBank;
-                
-                // Update Progress Bar
-                const goalPercent = Math.min(100, (newSafeBank / 20000) * 100);
-                document.getElementById('bar-safebank').style.width = `${goalPercent}%`;
-            }
-
-            // 2. Process Active Pot & Multiplier
-            if (newCurrentPot !== OverlayState.currentPot) {
-                animateNumber('val-pot', OverlayState.currentPot, newCurrentPot);
-                OverlayState.currentPot = newCurrentPot;
-                
-                const potModule = document.getElementById('mod-pot');
-                if (newCurrentPot > 0) {
-                    potModule.classList.add('pot-active');
-                } else {
-                    potModule.classList.remove('pot-active');
-                }
-            }
-
-            if (newMultiplier !== OverlayState.multiplier) {
-                document.getElementById('val-multiplier').innerText = `${newMultiplier.toFixed(1)}x MULT`;
-                OverlayState.multiplier = newMultiplier;
-            }
-
-            // 3. Process Streaks
-            if (newTotalStreak !== OverlayState.totalStreak) {
-                animateNumber('val-streak', OverlayState.totalStreak, newTotalStreak);
-                OverlayState.totalStreak = newTotalStreak;
-            }
-            if (newHighestStreak !== OverlayState.highestStreak) {
-                animateNumber('val-peakstreak', OverlayState.highestStreak, newHighestStreak);
-                OverlayState.highestStreak = newHighestStreak;
-            }
-
-            const streakModule = document.getElementById('mod-streak');
-            // Add a golden glow if they are currently matching or beating their personal best
-            if (newTotalStreak > 0 && newTotalStreak >= newHighestStreak) {
-                streakModule.classList.add('streak-active');
-            } else {
-                streakModule.classList.remove('streak-active');
-            }
-
-            // 4. Process Ransom Jail
-            if (newJailCount !== OverlayState.jailCount) {
-                animateNumber('val-jail', OverlayState.jailCount, newJailCount);
-                OverlayState.jailCount = newJailCount;
-
-                const jailModule = document.getElementById('mod-jail');
-                if (newJailCount > 0) {
-                    jailModule.classList.add('jail-warning');
-                } else {
-                    jailModule.classList.remove('jail-warning');
-                }
-            }
+            // Connect to EXACT same path as website - read only.
+            const docRef = doc(db, 'roulette_state', targetUser);
             
-        }, (error) => {
-            console.error("Overlay Sync Error:", error);
-            const statusDot = document.getElementById('connectionIndicator');
-            const statusText = document.getElementById('connectionText');
-            statusDot.style.backgroundColor = "var(--entity-crimson)";
-            statusDot.style.boxShadow = "0 0 8px var(--entity-crimson)";
-            statusText.innerText = "SYNC LOST";
-            statusText.style.color = "var(--entity-crimson)";
-        });
+            // onSnapshot triggers instantly on load, and every time the DB changes
+            onSnapshot(docRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.data();
+                    
+                    // Route data to tweens safely (default to 0 if missing)
+                    animators.safe.update(data.safeBank || 0);
+                    animators.pot.update(data.currentPot || 0);
+                    animators.streak.update(data.totalStreak || 0);
+                    animators.best.update(data.highestStreak || 0);
+                    
+                    // Array length calculation for jail
+                    const jailCount = data.ransomJail ? data.ransomJail.length : 0;
+                    animators.jail.update(jailCount);
+
+                } else {
+                    // Document doesn't exist yet (first time player)
+                    animators.safe.update(0);
+                    animators.pot.update(0);
+                    animators.streak.update(0);
+                    animators.best.update(0);
+                    animators.jail.update(0);
+                }
+            }, (error) => {
+                console.error("Overlay Sync Error:", error);
+                statusPanel.style.display = 'block';
+                statusPanel.innerHTML = '<span style="color:var(--neon-red);">CONNECTION LOST TO ENTITY</span>';
+            });
+        }
+
+        // Boot system
+        window.addEventListener('DOMContentLoaded', initializeTracker);
 
     </script>
 </body>

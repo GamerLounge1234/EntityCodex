@@ -1,155 +1,113 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entity's Roulette - Stream Overlay</title>
+    <title>Roulette Overlay</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Courier+Prime:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Montserrat:wght@700;900&family=Courier+New&display=swap');
 
         /* Transparent background for OBS */
-        body, html {
-            margin: 0; padding: 0;
-            width: 100vw; height: 100vh;
-            background: transparent;
-            overflow: hidden;
-            font-family: 'Teko', sans-serif;
+        body {
+            margin: 0; padding: 0; overflow: hidden;
+            background: transparent; 
+            font-family: 'Montserrat', sans-serif;
             color: #fff;
         }
 
-        /* Widget Container */
-        .hud-container {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+        /* Compact, Premium Glassmorphism Container */
+        .overlay-container {
             width: 320px;
+            background: linear-gradient(135deg, rgba(15, 5, 5, 0.85) 0%, rgba(5, 5, 8, 0.95) 100%);
+            border: 2px solid rgba(211, 47, 47, 0.6);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(211, 47, 47, 0.2);
+            backdrop-filter: blur(8px);
         }
 
-        /* Individual Stat Panels */
-        .stat-panel {
-            background: linear-gradient(90deg, rgba(15, 5, 5, 0.95) 0%, rgba(5, 5, 8, 0.85) 100%);
-            border-left: 4px solid #d32f2f;
-            border-top: 1px solid rgba(211, 47, 47, 0.3);
-            border-bottom: 1px solid rgba(211, 47, 47, 0.3);
-            border-right: 1px solid rgba(211, 47, 47, 0.3);
-            padding: 10px 20px;
-            border-radius: 4px 12px 12px 4px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8), inset 0 0 10px rgba(211, 47, 47, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-panel::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(211, 47, 47, 0.1), transparent);
-            transform: translateX(-100%);
-            animation: scanline 4s infinite linear;
-        }
-
-        .stat-title {
-            font-size: 1.2rem;
-            color: #888899;
+        .header {
+            font-family: 'Teko', sans-serif;
+            font-size: 1.8rem;
+            color: #d32f2f;
             text-transform: uppercase;
             letter-spacing: 2px;
-            line-height: 1;
-            margin-bottom: 5px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(211, 47, 47, 0.8);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .stat-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #b8a5a5;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
         }
 
         .stat-value {
-            font-size: 3.5rem;
-            font-family: 'Courier Prime', monospace;
-            font-weight: 700;
-            line-height: 1;
-            color: #ffffff;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
+            font-size: 1.8rem;
+            font-weight: 900;
+            text-shadow: 2px 2px 4px rgba(0,0,0,1);
         }
 
-        /* Specific Highlights */
-        .safe-points .stat-value {
-            color: #e5b824; /* Gold */
-            text-shadow: 0 0 15px rgba(229, 184, 36, 0.6);
-        }
-        
+        /* Value specific coloring */
+        .val-safe { color: #e5b824; text-shadow: 0 0 10px rgba(229, 184, 36, 0.5), 2px 2px 4px #000; }
+        .val-pot { color: #fff; }
+        .val-streak { color: #00ff66; text-shadow: 0 0 10px rgba(0, 255, 102, 0.5), 2px 2px 4px #000; }
+        .val-jail { color: #ff5500; }
+
+        /* Animation for active pot */
         .active-pot .stat-value {
-            color: #ff0505; /* Arterial Spray */
-            text-shadow: 0 0 15px rgba(255, 5, 5, 0.6);
+            color: #d32f2f;
+            animation: pulseGlow 1.5s infinite alternate;
         }
 
-        .mini-stats {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 5px;
-            border-top: 1px dashed rgba(255,255,255,0.1);
-            padding-top: 5px;
-        }
-
-        .mini-stat {
-            font-size: 1.1rem;
-            color: #ccc;
-        }
-
-        .mini-stat span {
-            color: #ff5500;
-            font-family: 'Courier Prime', monospace;
-        }
-
-        /* Animations */
-        @keyframes scanline {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-        
-        .pulse-update {
-            animation: updatePulse 0.5s ease-out;
-        }
-
-        @keyframes updatePulse {
-            0% { transform: scale(1); color: #fff; text-shadow: 0 0 30px #fff; }
-            50% { transform: scale(1.1); color: #00ff66; text-shadow: 0 0 40px #00ff66; }
-            100% { transform: scale(1); }
-        }
-
-        /* Error/Loading State */
-        #status-msg {
-            background: rgba(0,0,0,0.8);
-            color: #ff4444;
-            padding: 10px;
-            font-family: monospace;
-            border-left: 3px solid red;
+        @keyframes pulseGlow {
+            from { text-shadow: 0 0 5px rgba(211, 47, 47, 0.5), 2px 2px 4px #000; }
+            to { text-shadow: 0 0 20px rgba(211, 47, 47, 1), 2px 2px 4px #000; transform: scale(1.05); }
         }
     </style>
 </head>
 <body>
 
-    <div id="status-msg">Connecting to Entity Database...</div>
-
-    <div class="hud-container" id="hud" style="display: none;">
-        <!-- Safe Bank -->
-        <div class="stat-panel safe-points">
-            <div class="stat-title">Safe Bank</div>
-            <div class="stat-value" id="val-safe">0</div>
-        </div>
-
-        <!-- Current Pot & Multiplier -->
-        <div class="stat-panel active-pot">
-            <div class="stat-title">Active Pot</div>
-            <div class="stat-value" id="val-pot">0</div>
-            <div class="mini-stats">
-                <div class="mini-stat">Mult: <span id="val-mult">1.0x</span></div>
-                <div class="mini-stat">Jailed: <span id="val-jail">0</span></div>
+    <div class="overlay-container">
+        <div class="header">Entity's Roulette</div>
+        
+        <div class="grid">
+            <div class="stat-box">
+                <span class="stat-label">Safe Bank</span>
+                <span class="stat-value val-safe" id="ov-safe">0</span>
             </div>
-        </div>
-
-        <!-- Universal Streak -->
-        <div class="stat-panel">
-            <div class="stat-title">Universal Streak</div>
-            <div class="stat-value" id="val-streak" style="color: #00ff66;">0</div>
+            <div class="stat-box" id="pot-container">
+                <span class="stat-label">Current Pot</span>
+                <span class="stat-value val-pot" id="ov-pot">0</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">Streak</span>
+                <span class="stat-value val-streak" id="ov-streak">0</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">Perks Jailed</span>
+                <span class="stat-value val-jail" id="ov-jail">0</span>
+            </div>
         </div>
     </div>
 
@@ -157,12 +115,9 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // PAST YOUR FIREBASE CONFIG HERE
+        // 1. Paste your exact Firebase Config here
         const firebaseConfig = {
-            // apiKey: "...",
-            // authDomain: "...",
-            // projectId: "...",
-            // ...
+            // YOUR CONFIG HERE
             apiKey: "AIzaSyBMAxj2E3snmnOcQXIylkIIS1cTnuu0hlY",
             authDomain: "dashboard-1db87.firebaseapp.com",
             projectId: "dashboard-1db87",
@@ -175,77 +130,36 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Extract the streamer's username from the URL
+        // 2. Get the target username from the URL (e.g. ?user=StreamerName)
         const urlParams = new URLSearchParams(window.location.search);
-        const targetUser = urlParams.get('user');
+        const streamerName = urlParams.get('user');
 
-        const statusMsg = document.getElementById('status-msg');
-        const hud = document.getElementById('hud');
-
-        if (!targetUser) {
-            statusMsg.innerHTML = "ERROR: No user specified.<br>Use: overlay.html?user=STREAMER_NAME";
+        if (!streamerName) {
+            document.querySelector('.header').innerText = "ERROR";
+            document.querySelector('.header').style.fontSize = "1rem";
+            document.querySelector('.header').innerText = "Add ?user=USERNAME to Browser Source URL";
         } else {
-            statusMsg.style.display = 'none';
-            hud.style.display = 'flex';
-
-            // Reference to this specific streamer's document
-            const docRef = doc(db, 'roulette_state', targetUser);
-
-            // Previous values to trigger animations on change
-            let prevSafe = null;
-            let prevPot = null;
-            let prevStreak = null;
-
-            // onSnapshot automatically updates the overlay instantly when the database changes
+            // 3. Real-time Listener (onSnapshot instead of getDoc)
+            const docRef = doc(db, 'roulette_state', streamerName);
+            
             onSnapshot(docRef, (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     
-                    // Extract Data
-                    const safeBank = data.safeBank || 0;
-                    const currentPot = data.currentPot || 0;
-                    const totalStreak = data.totalStreak || 0;
-                    const jailedCount = (data.ransomJail || []).length;
-                    
-                    // Calculate multiplier exactly like the main dashboard
-                    const localStreak = data.currentLocalStreak || 0;
-                    const multiplier = (1.0 + (localStreak * 0.5)).toFixed(1);
+                    document.getElementById('ov-safe').innerText = data.safeBank || 0;
+                    document.getElementById('ov-pot').innerText = data.currentPot || 0;
+                    document.getElementById('ov-streak').innerText = data.totalStreak || 0;
+                    document.getElementById('ov-jail').innerText = (data.ransomJail || []).length;
 
-                    // Update DOM Elements
-                    const elSafe = document.getElementById('val-safe');
-                    const elPot = document.getElementById('val-pot');
-                    const elStreak = document.getElementById('val-streak');
-
-                    elSafe.innerText = safeBank;
-                    elPot.innerText = currentPot;
-                    elStreak.innerText = totalStreak;
-                    document.getElementById('val-mult').innerText = multiplier + 'x';
-                    document.getElementById('val-jail').innerText = jailedCount;
-
-                    // Trigger pulse animations if values increased
-                    if (prevSafe !== null && safeBank > prevSafe) animateUpdate(elSafe);
-                    if (prevPot !== null && currentPot > prevPot) animateUpdate(elPot);
-                    if (prevStreak !== null && totalStreak > prevStreak) animateUpdate(elStreak);
-
-                    prevSafe = safeBank;
-                    prevPot = currentPot;
-                    prevStreak = totalStreak;
-                } else {
-                    statusMsg.style.display = 'block';
-                    statusMsg.innerHTML = `Waiting for ${targetUser} to start a run...`;
-                    hud.style.display = 'none';
+                    // Animate the Pot if they are Doubling Down
+                    const potContainer = document.getElementById('pot-container');
+                    if ((data.currentPot || 0) > 0) {
+                        potContainer.classList.add('active-pot');
+                    } else {
+                        potContainer.classList.remove('active-pot');
+                    }
                 }
-            }, (error) => {
-                console.error("Overlay read error:", error);
-                statusMsg.style.display = 'block';
-                statusMsg.innerHTML = "Connection to Entity lost.";
             });
-        }
-
-        function animateUpdate(element) {
-            element.classList.remove('pulse-update');
-            void element.offsetWidth; // Trigger DOM reflow
-            element.classList.add('pulse-update');
         }
     </script>
 </body>

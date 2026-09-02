@@ -3,155 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roulette Overlay</title>
+    <title>Entity Roulette - Stream Overlay</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Montserrat:wght@700;900&family=Courier+New&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Montserrat:wght@400;700;900&display=swap');
 
-        /* OBS standard is transparent background */
+        /* Transparent background for OBS */
         body {
+            background: transparent;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
             margin: 0;
             padding: 15px;
-            background: transparent; 
-            overflow: hidden;
-            font-family: 'Montserrat', sans-serif;
-            color: white;
         }
 
-        /* Container for the separated widgets */
         .overlay-container {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            width: 280px; /* Compact width for corners */
+            gap: 15px;
+            width: 320px;
         }
 
-        /* Premium Glass Widget Styling */
-        .widget {
-            background: linear-gradient(135deg, rgba(15, 10, 15, 0.85) 0%, rgba(5, 5, 8, 0.95) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-left: 4px solid #fff;
+        .glass-card {
+            background: rgba(10, 5, 5, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(211, 47, 47, 0.25);
+            border-left: 5px solid #d32f2f;
             border-radius: 8px;
-            padding: 12px 18px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.8), inset 0 0 15px rgba(0,0,0,0.5);
-            backdrop-filter: blur(8px);
+            padding: 15px 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(211, 47, 47, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card.gold-tier {
+            border-left-color: #e5b824;
+            border-color: rgba(229, 184, 36, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(229, 184, 36, 0.1);
+        }
+
+        .data-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #888899;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        .data-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            font-family: 'Teko', sans-serif;
+            letter-spacing: 1px;
+            line-height: 1;
+        }
+
+        .text-safe { color: #f0f0f5; }
+        .text-pot { color: #d32f2f; text-shadow: 0 0 15px rgba(211, 47, 47, 0.6); }
+        .text-streak { color: #e5b824; text-shadow: 0 0 15px rgba(229, 184, 36, 0.6); }
+        .text-jail { color: #ff5500; }
+
+        .split-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative;
-            overflow: hidden;
         }
 
-        /* Label Styling */
-        .label {
-            font-family: 'Teko', sans-serif;
-            font-size: 1.3rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #b8a5a5;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
-            line-height: 1;
+        .sub-metric {
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Value Styling */
-        .value {
-            font-family: 'Courier New', monospace;
-            font-weight: 900;
-            font-size: 1.8rem;
-            text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 0 0 10px rgba(0,0,0,0.8);
-            line-height: 1;
+        /* Subtle pulse animation for the active pot */
+        @keyframes pulsePot {
+            0%, 100% { text-shadow: 0 0 10px rgba(211, 47, 47, 0.5); }
+            50% { text-shadow: 0 0 25px rgba(211, 47, 47, 0.9); }
         }
-
-        /* Specific Color Schemes per Widget */
-        
-        /* 1. Safe Bank (Gold/White) */
-        .w-safe { border-left-color: #e5b824; }
-        .w-safe .value { color: #e5b824; text-shadow: 2px 2px 0 #000, 0 0 15px rgba(229, 184, 36, 0.6); }
-
-        /* 2. Current Pot (Arterial Red) */
-        .w-pot { border-left-color: #ff0505; }
-        .w-pot .value { color: #ff0505; text-shadow: 2px 2px 0 #000, 0 0 15px rgba(255, 5, 5, 0.6); }
-        .pot-active {
-            animation: potPulse 2s infinite;
-            border-color: rgba(255, 5, 5, 0.5);
-        }
-        @keyframes potPulse {
-            0%, 100% { box-shadow: 0 10px 25px rgba(0,0,0,0.8), inset 0 0 10px rgba(255, 5, 5, 0.1); }
-            50% { box-shadow: 0 10px 25px rgba(0,0,0,0.8), inset 0 0 30px rgba(255, 5, 5, 0.4); }
-        }
-
-        /* 3. Streak Container (Green/Gold) */
-        .w-streak { border-left-color: #00ff66; flex-direction: column; align-items: flex-start; gap: 8px;}
-        .streak-row { display: flex; justify-content: space-between; width: 100%; align-items: center; }
-        .w-streak .value-current { color: #00ff66; font-size: 2rem; text-shadow: 2px 2px 0 #000, 0 0 15px rgba(0, 255, 102, 0.5); }
-        .w-streak .value-best { color: #b8a5a5; font-size: 1.2rem; }
-        .best-label { font-size: 1rem; color: #666; }
-
-        /* 4. Ransom Jail (Dark Red / Grey) */
-        .w-jail { border-left-color: #4a0000; }
-        .w-jail .value { color: #ccc; }
-
-        /* Multiplier Badge inside Pot */
-        .pot-multi {
-            position: absolute;
-            bottom: 4px;
-            left: 18px;
-            font-size: 0.8rem;
-            color: #ff4d4d;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: bold;
-        }
-
+        .active-pot-anim { animation: pulsePot 2s infinite; }
     </style>
 </head>
 <body>
 
     <div class="overlay-container" id="overlay-ui" style="display: none;">
         
-        <!-- Safe Points -->
-        <div class="widget w-safe">
-            <span class="label">Safe Bank</span>
-            <span class="value" id="ui-safe">0</span>
+        <!-- Safe Bank & Current Pot -->
+        <div class="glass-card">
+            <div class="data-label">Safe Bank (Points)</div>
+            <div class="data-value text-safe" id="ov-safe">0</div>
+            
+            <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 12px 0;"></div>
+            
+            <div class="data-label" style="color: #d32f2f;">Current Active Pot</div>
+            <div class="data-value text-pot active-pot-anim" id="ov-pot">0</div>
         </div>
 
-        <!-- Current Pot -->
-        <div class="widget w-pot" id="pot-widget">
-            <span class="label">Current Pot</span>
-            <span class="pot-multi" id="ui-multi">1.0x Active</span>
-            <span class="value" id="ui-pot">0</span>
-        </div>
-
-        <!-- Streak Tracker -->
-        <div class="widget w-streak">
-            <div class="streak-row">
-                <span class="label">Entity Streak</span>
-                <span class="value value-current" id="ui-streak">0</span>
-            </div>
-            <div class="streak-row">
-                <span class="label best-label">Highest Record</span>
-                <span class="value value-best" id="ui-best">0</span>
+        <!-- Streaks -->
+        <div class="glass-card gold-tier">
+            <div class="split-row">
+                <div class="sub-metric">
+                    <div class="data-label" style="color: #e5b824;">Active Streak</div>
+                    <div class="data-value text-streak" id="ov-streak">0</div>
+                </div>
+                <div class="sub-metric" style="text-align: right;">
+                    <div class="data-label">Best Streak</div>
+                    <div class="data-value text-safe" id="ov-best-streak" style="font-size: 1.8rem;">0</div>
+                </div>
             </div>
         </div>
 
         <!-- Ransom Jail -->
-        <div class="widget w-jail">
-            <span class="label">Perks in Jail</span>
-            <span class="value" id="ui-jail">0</span>
+        <div class="glass-card" style="border-left-color: #ff5500;">
+            <div class="split-row">
+                <div class="data-label" style="margin: 0;">Perks in Ransom Jail</div>
+                <div class="data-value text-jail" id="ov-jail" style="font-size: 1.8rem;">0</div>
+            </div>
         </div>
 
     </div>
 
-    <!-- Error/Loading message -->
-    <div id="status-msg" style="font-family: 'Teko', sans-serif; font-size: 2rem; color: #ff0505; text-shadow: 2px 2px 0 #000;">
-        Initializing Overlay...
+    <!-- Error State -->
+    <div id="error-msg" style="color: red; font-family: 'Teko', sans-serif; font-size: 1.5rem; text-transform: uppercase;">
+        Awaiting connection...
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // ⚠️ PASTE YOUR FIREBASE CONFIG HERE ⚠️
+        // IMPORTANT: Paste your exact Firebase config here
         const firebaseConfig = {
-            apiKey: "AIzaSyBMAxj2E3snmnOcQXIylkIIS1cTnuu0hlY",
+           apiKey: "AIzaSyBMAxj2E3snmnOcQXIylkIIS1cTnuu0hlY",
             authDomain: "dashboard-1db87.firebaseapp.com",
             projectId: "dashboard-1db87",
             storageBucket: "dashboard-1db87.firebasestorage.app",
@@ -163,64 +145,36 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 1. Get Streamer Username from the URL (e.g., overlay.html?user=Tofu)
+        // 1. Get the streamer's username from the URL (e.g., ?user=Otzdarva)
         const urlParams = new URLSearchParams(window.location.search);
-        const streamerName = urlParams.get('user');
+        const targetUser = urlParams.get('user');
 
-        const statusMsg = document.getElementById('status-msg');
-        const overlayUI = document.getElementById('overlay-ui');
-
-        if (!streamerName) {
-            statusMsg.innerText = "ERROR: No user specified. Add '?user=USERNAME' to the Browser Source URL in OBS.";
+        if (!targetUser) {
+            document.getElementById('error-msg').innerText = "ERROR: NO USER SPECIFIED IN URL. Add ?user=USERNAME";
         } else {
-            statusMsg.innerText = `Connecting to Entity: ${streamerName}...`;
-
-            // 2. Real-Time Listener (onSnapshot)
-            const docRef = doc(db, 'roulette_state', streamerName);
+            // 2. Listen to the database in real-time securely (Read-Only)
+            const docRef = doc(db, 'roulette_state', targetUser);
             
-            onSnapshot(docRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    const data = snapshot.data();
+            onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    document.getElementById('error-msg').style.display = 'none';
+                    document.getElementById('overlay-ui').style.display = 'flex';
                     
-                    // Hide loading, show UI
-                    statusMsg.style.display = 'none';
-                    overlayUI.style.display = 'flex';
-
-                    // Update Safe Bank
-                    document.getElementById('ui-safe').innerText = (data.safeBank || 0).toLocaleString();
-
-                    // Update Pot & Pulse Animation
-                    const pot = data.currentPot || 0;
-                    const potWidget = document.getElementById('pot-widget');
-                    document.getElementById('ui-pot').innerText = pot.toLocaleString();
+                    const data = docSnap.data();
                     
-                    if (pot > 0) {
-                        potWidget.classList.add('pot-active');
-                    } else {
-                        potWidget.classList.remove('pot-active');
-                    }
-
-                    // Update Multiplier
-                    const localStreak = data.currentLocalStreak || 0;
-                    const multiplier = 1.0 + (localStreak * 0.5);
-                    document.getElementById('ui-multi').innerText = `${multiplier.toFixed(1)}x Multiplier`;
-
-                    // Update Streaks
-                    document.getElementById('ui-streak').innerText = data.totalStreak || 0;
-                    document.getElementById('ui-best').innerText = data.highestStreak || 0;
-
-                    // Update Jail
-                    const jail = data.ransomJail || [];
-                    document.getElementById('ui-jail').innerText = jail.length;
-
+                    // Update UI elements instantly
+                    document.getElementById('ov-safe').innerText = data.safeBank || 0;
+                    document.getElementById('ov-pot').innerText = data.currentPot || 0;
+                    document.getElementById('ov-streak').innerText = data.totalStreak || 0;
+                    document.getElementById('ov-best-streak').innerText = data.highestStreak || 0;
+                    document.getElementById('ov-jail').innerText = (data.ransomJail || []).length;
                 } else {
-                    overlayUI.style.display = 'none';
-                    statusMsg.style.display = 'block';
-                    statusMsg.innerText = "Waiting for stream data to initialize. Start a run on the main site!";
+                    document.getElementById('overlay-ui').style.display = 'none';
+                    document.getElementById('error-msg').style.display = 'block';
+                    document.getElementById('error-msg').innerText = `USER '${targetUser}' NOT FOUND.`;
                 }
             }, (error) => {
-                console.error("Overlay Firebase Error:", error);
-                statusMsg.innerText = "Connection lost to the Entity.";
+                console.error("Database connection failed:", error);
             });
         }
     </script>

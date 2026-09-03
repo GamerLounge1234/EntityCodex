@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entity's Descent - Overlay</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Rajdhani:wght@500;700&family=Teko:wght@500;700&display=swap" rel="stylesheet">
+
+    <style>
+     
+        :root {
+            /* Void Glass */
+            --bg-void: rgba(9, 4, 4, 0.85);
+            --bg-void-light: rgba(20, 8, 8, 0.95);
+            
+            /* High-Fidelity Entity Palette */
+            --blood-core: #ff003c;
+            --blood-dark: #8a001a;
+            --blood-glow: rgba(255, 0, 60, 0.8);
+            
+            --gold-core: #ffc400;
+            --gold-dark: #997300;
+            --gold-glow: rgba(255, 196, 0, 0.8);
+
+            --ash-gray: #a3a3b5;
+            
+            /* Typography */
+            --font-ui: 'Teko', sans-serif;
+            --font-num: 'Anton', sans-serif;
+            --font-tech: 'Rajdhani', sans-serif;
+            
+            /* Shapes */
+            --clip-shape: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+
+        body, html {
+            width: 100%; height: 100%;
+            background-color: transparent !important; 
+            overflow: hidden; 
+            -webkit-font-smoothing: antialiased;
+        }
+
+        #overlay-container {
+            position: absolute;
+            top: 35px; right: 35px;
+            display: flex; flex-direction: column; gap: 24px; 
+            width: 450px; 
+            border-right: 2px solid rgba(255, 0, 60, 0.2);
+            padding-right: 25px;
+            z-index: 2;
+        }
+
+        /* Right-side glowing spine */
+        #overlay-container::after {
+            content: ''; position: absolute; top: 0; right: -2px; width: 2px; height: 100%;
+            background: linear-gradient(to bottom, transparent, var(--blood-core), transparent);
+            box-shadow: 0 0 15px var(--blood-core);
+            animation: spinePulse 3s infinite alternate;
+        }
+        @keyframes spinePulse { 0% { opacity: 0.3; } 100% { opacity: 1; } }
+
+    
+        .protocol-banner {
+            background: repeating-linear-gradient(
+                -45deg, 
+                var(--blood-dark), var(--blood-dark) 10px, 
+                rgba(0,0,0,0.8) 10px, rgba(0,0,0,0.8) 20px
+            );
+            padding: 12px 24px;
+            text-align: right;
+            border-right: 6px solid var(--blood-core);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px var(--blood-glow);
+            position: relative;
+            
+            /* Entry Animation */
+            transform-origin: right center;
+            animation: slashReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .protocol-label {
+            font-family: var(--font-ui); font-size: 2.2rem; color: #fff;
+            text-transform: uppercase; letter-spacing: 6px; line-height: 0.9;
+            text-shadow: 0 4px 6px rgba(0,0,0,1);
+        }
+
+        .protocol-sub {
+            font-family: var(--font-tech); font-size: 1.1rem; color: var(--blood-core);
+            font-weight: 700; letter-spacing: 4px; text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0,0,0,1); background: rgba(0,0,0,0.6);
+            display: inline-block; padding: 2px 8px; margin-top: 4px;
+        }
+
+        .hardcore-pulse { animation: hardcoreWarn 0.8s infinite alternate; color: #fff; }
+        @keyframes hardcoreWarn {
+            0% { box-shadow: 0 0 10px var(--blood-core); border-right-color: #fff; }
+            100% { box-shadow: 0 0 40px var(--blood-core), inset 0 0 20px var(--blood-core); border-right-color: var(--blood-core); }
+        }
+
+        
+        .monolith-wrapper {
+            position: relative;
+            width: 100%;
+            background: var(--bg-void);
+            clip-path: var(--clip-shape);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.9);
+            
+            /* Slash Entrance Setup */
+            transform-origin: right center;
+            animation: slashReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        /* Staggered load */
+        #wrap-points { animation-delay: 0.15s; --theme-core: var(--blood-core); --theme-dark: var(--blood-dark); }
+        #wrap-cleared { animation-delay: 0.25s; --theme-core: var(--gold-core); --theme-dark: var(--gold-dark); }
+        #wrap-perks { animation-delay: 0.35s; --theme-core: var(--blood-core); --theme-dark: var(--blood-dark); }
+        #wrap-losses { animation-delay: 0.45s; --theme-core: #888; --theme-dark: #333; }
+
+        @keyframes slashReveal {
+            0% { transform: scaleX(0) scaleY(0.05); filter: brightness(3); opacity: 0; }
+            40% { transform: scaleX(1) scaleY(0.05); filter: brightness(2); opacity: 1; }
+            100% { transform: scaleX(1) scaleY(1); filter: brightness(1); opacity: 1; }
+        }
+
+    
+        .monolith-wrapper::before {
+            content: ''; position: absolute; inset: 0;
+            background: conic-gradient(from 0deg, transparent 0deg, transparent 240deg, var(--theme-dark) 300deg, var(--theme-core) 360deg);
+            animation: radarScan 2.5s linear infinite;
+            /* Creates the perfect inner border */
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            padding: 3px; /* Thickness of the border */
+            z-index: 5;
+            pointer-events: none;
+        }
+        @keyframes radarScan { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Inner Glass Plate */
+        .monolith-block {
+            position: relative;
+            background: linear-gradient(135deg, var(--bg-void) 0%, var(--bg-void-light) 100%);
+            padding: 16px 28px; 
+            display: flex; flex-direction: column; justify-content: center; align-items: flex-end;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.9);
+            z-index: 2;
+        }
+
+        /* Scanlines Overlay */
+        .monolith-block::after {
+            content: ''; position: absolute; inset: 0;
+            background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.02) 2px, rgba(255,255,255,0.02) 4px);
+            pointer-events: none; z-index: 1;
+        }
+
+        .stat-label {
+            font-family: var(--font-ui); font-size: 1.8rem; text-transform: uppercase; letter-spacing: 4px;
+            color: var(--ash-gray); margin-bottom: -15px; font-weight: 700; z-index: 4; position: relative;
+            text-shadow: 0 4px 6px rgba(0,0,0,1);
+        }
+
+        .stat-value {
+            font-family: var(--font-num); font-size: 5.5rem; line-height: 1.05; letter-spacing: 2px; 
+            z-index: 4; position: relative;
+            
+            color: #ffffff;
+            -webkit-text-stroke: 2px #000000;
+            text-shadow: 
+                0 0 15px var(--theme-core), 
+                0 0 30px var(--theme-core), 
+                0 8px 0px #000000, 
+                0 15px 30px rgba(0,0,0,0.9);
+        }
+
+        .stat-subtext {
+            font-family: var(--font-tech); font-size: 1.1rem; letter-spacing: 3px; font-weight: 700;
+            color: var(--gold-core); text-shadow: 0 2px 4px rgba(0,0,0,1); margin-top: -8px; z-index: 4; position: relative;
+        }
+
+        #wrap-losses .stat-value { color: #d0d0d0; -webkit-text-stroke: 2px #000; text-shadow: 0 8px 0px #000000, 0 15px 30px rgba(0,0,0,0.9); }
+
+        .impact-glitch {
+            animation: violentAberration 0.6s cubic-bezier(0.25, 1, 0.5, 1) both;
+        }
+        @keyframes violentAberration {
+            0% { transform: translateX(0); filter: brightness(1) contrast(1); }
+            10% { transform: translateX(-15px) scale(1.05) skewX(-10deg); filter: brightness(2) contrast(1.5); box-shadow: -10px 0 0 rgba(0,255,255,0.5), 10px 0 0 rgba(255,0,60,0.5); }
+            20% { transform: translateX(10px) scale(1.05) skewX(10deg); box-shadow: 10px 0 0 rgba(0,255,255,0.5), -10px 0 0 rgba(255,0,60,0.5); }
+            40% { transform: translateX(-5px) skewX(0deg); }
+            60% { transform: translateX(5px); }
+            100% { transform: translateX(0); filter: brightness(1) contrast(1); box-shadow: none; }
+        }
+
+        .cipher-flash {
+            animation: textCipher 0.6s ease-out forwards;
+        }
+        @keyframes textCipher {
+            0% { transform: scale(1.5) translateZ(50px); color: #fff; text-shadow: 0 0 50px #fff; }
+            100% { transform: scale(1) translateZ(0); color: #fff; }
+        }
+
+        #particle-layer { position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
+        
+        .ember {
+            position: absolute; background: var(--blood-core); border-radius: 50%;
+            box-shadow: 0 0 10px var(--blood-core), 0 0 20px #ff8800;
+            animation: floatEmber linear infinite;
+        }
+
+        @keyframes floatEmber {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(-100px) scale(2) translateX(-50px) rotate(45deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Depth of Field Particle Layer -->
+    <div id="particle-layer"></div>
+
+    <div id="overlay-container">
+        
+        <!-- Top Protocol Banner -->
+        <div class="protocol-banner">
+            <div class="protocol-label" id="tier-display">SYS_INIT</div>
+            <div class="protocol-sub" id="mode-display">AWAITING TARGET</div>
+        </div>
+
+        <!-- 1. Total Points -->
+        <div class="monolith-wrapper" id="wrap-points">
+            <div class="monolith-block">
+                <div class="stat-label">Bloodpoints Extracted</div>
+                <div class="stat-value" id="val-points">0</div>
+            </div>
+        </div>
+
+        <!-- 2. Killers Cleared -->
+        <div class="monolith-wrapper" id="wrap-cleared">
+            <div class="monolith-block">
+                <div class="stat-label">Killers Cleansed</div>
+                <div class="stat-value" id="val-cleared">0</div>
+                <div class="stat-subtext" id="sub-cleared">ROSTER STATUS: UNKNOWN</div>
+            </div>
+        </div>
+
+        <!-- 3. Perks Sacrificed -->
+        <div class="monolith-wrapper" id="wrap-perks">
+            <div class="monolith-block">
+                <div class="stat-label">Perks Shattered</div>
+                <div class="stat-value" id="val-perks">0</div>
+            </div>
+        </div>
+
+        <!-- 4. Total Losses -->
+        <div class="monolith-wrapper" id="wrap-losses">
+            <div class="monolith-block">
+                <div class="stat-label">Total Defeats</div>
+                <div class="stat-value" id="val-losses">0</div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // ----------------------------------------------------------------------
+        // FIREBASE CREDENTIALS
+        // ----------------------------------------------------------------------
+        const firebaseConfig = {
+            apiKey: "AIzaSyBMAxj2E3snmnOcQXIylkIIS1cTnuu0hlY",
+            authDomain: "dashboard-1db87.firebaseapp.com",
+            projectId: "dashboard-1db87",
+            storageBucket: "dashboard-1db87.firebasestorage.app",
+            messagingSenderId: "711217707380",
+            appId: "1:711217707380:web:247cfdfb2dc3c2c4485421",
+            measurementId: "G-Z4WBDQ9HEH"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const urlParams = new URLSearchParams(window.location.search);
+        const streamerUsername = urlParams.get('user');
+        
+        const modeDisplay = document.getElementById('mode-display');
+        const tierDisplay = document.getElementById('tier-display');
+
+     
+        function spawnEmbers() {
+            const layer = document.getElementById('particle-layer');
+            setInterval(() => {
+                const ember = document.createElement('div');
+                ember.classList.add('ember');
+                
+                const size = Math.random() * 5 + 1; 
+                ember.style.width = `${size}px`;
+                ember.style.height = `${size}px`;
+                
+                // Random depth blurring
+                if (Math.random() > 0.6) ember.style.filter = `blur(${Math.random() * 3}px)`;
+                
+                // Spawn on right side of screen
+                ember.style.right = `${Math.random() * 500}px`;
+                ember.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                
+                layer.appendChild(ember);
+                setTimeout(() => ember.remove(), 5000);
+            }, 150); // High density
+        }
+        spawnEmbers();
+
+        if (!streamerUsername) {
+            tierDisplay.innerText = "ERROR";
+            modeDisplay.innerText = "NO TARGET ASSIGNED";
+            document.querySelector('.protocol-banner').classList.add('hardcore-pulse');
+        } else {
+   
+            function cipherRoll(obj, start, end, duration) {
+                let startTimestamp = null;
+                const glitchChars = "¥§%&X#@80Z";
+                
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    
+                    if (progress < 0.8) {
+                        // Glitch phase: Rapidly cycle random symbols
+                        let randomStr = "";
+                        const len = end.toString().length;
+                        for(let i=0; i<len; i++) {
+                            randomStr += glitchChars[Math.floor(Math.random() * glitchChars.length)];
+                        }
+                        obj.innerText = randomStr;
+                    } else {
+                        // Snap phase: ease into actual number
+                        const easeOut = 1 - Math.pow(1 - ((progress - 0.8) * 5), 3);
+                        const current = Math.floor(start + (end - start) * easeOut);
+                        obj.innerText = current.toLocaleString();
+                    }
+                    
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    } else {
+                        obj.innerText = end.toLocaleString();
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+
+
+            const previousState = { points: null, cleared: null, perks: null, losses: null };
+
+            function triggerImpactUpdate(elementId, wrapId, newValue, stateKey) {
+                const el = document.getElementById(elementId);
+                const wrap = document.getElementById(wrapId);
+                
+                if (previousState[stateKey] !== newValue) {
+                    const oldValue = previousState[stateKey] === null ? 0 : previousState[stateKey];
+                    
+                    // Reset Animations instantly via reflow hack
+                    el.classList.remove('cipher-flash');
+                    wrap.classList.remove('impact-glitch');
+                    void wrap.offsetWidth; 
+                    
+                    // Fire violent glitch and decipher
+                    wrap.classList.add('impact-glitch');
+                    el.classList.add('cipher-flash');
+                    
+                    cipherRoll(el, oldValue, newValue, 600);
+                    
+                    previousState[stateKey] = newValue;
+                }
+            }
+
+          
+            const userRef = doc(db, 'player_state', streamerUsername);
+            
+            onSnapshot(userRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    
+                    const data = docSnap.data();
+                    
+                    const points = data.points || 0;
+                    const currentTier = data.currentTier || 0;
+                    const completedArray = data.completed_killers || [];
+                    const currentCleansed = completedArray.length;
+                    
+                    const totalCleansed = (currentTier * 44) + currentCleansed;
+                    
+                    const stats = data.stats || {};
+                    const sacrificed = stats.sacrificed || 0;
+                    const losses = stats.losses || 0;
+                    const mode = data.mode || 'normal';
+
+                    // Update Top Banner
+                    tierDisplay.innerText = `TIER ${currentTier}`;
+                    if (mode === 'hardcore') {
+                        modeDisplay.innerText = "HARDCORE PROTOCOL";
+                        document.querySelector('.protocol-banner').classList.add('hardcore-pulse');
+                    } else {
+                        modeDisplay.innerText = "NORMAL PROTOCOL";
+                        document.querySelector('.protocol-banner').classList.remove('hardcore-pulse');
+                    }
+
+                    document.getElementById('sub-cleared').innerText = `${currentCleansed} / 44 (TIER ${currentTier})`;
+
+                    // Trigger AAA Animations
+                    triggerImpactUpdate('val-points', 'wrap-points', points, 'points');
+                    triggerImpactUpdate('val-cleared', 'wrap-cleared', totalCleansed, 'cleared');
+                    triggerImpactUpdate('val-perks', 'wrap-perks', sacrificed, 'perks');
+                    triggerImpactUpdate('val-losses', 'wrap-losses', losses, 'losses');
+
+                } else {
+                    modeDisplay.innerText = "AWAITING TARGET DATA...";
+                }
+            }, (error) => {
+                tierDisplay.innerText = "ERROR";
+                modeDisplay.innerText = "UPLINK SEVERED";
+                document.querySelector('.protocol-banner').classList.add('hardcore-pulse');
+            });
+        }
+    </script>
+</body>
+</html>

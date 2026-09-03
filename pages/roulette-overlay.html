@@ -3,318 +3,320 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entity's Roulette - Premium Stream Overlay</title>
+    <title>Entity's Roulette - AAA Hologram Overlay</title>
     
-    <!-- Premium Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Ultra Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,700;0,900;1,900&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
         /* ==========================================================================
-           PREMIUM CSS ARCHITECTURE
+           AAA HOLOGRAPHIC DESIGN SYSTEM - HIGH LEGIBILITY EDITION
            ========================================================================== */
         :root {
-            /* Core Colors */
-            --bg-glass: rgba(8, 8, 12, 0.65);
-            --bg-glass-hover: rgba(15, 15, 20, 0.85);
-            --border-glass: rgba(255, 255, 255, 0.08);
+            /* Ultra-Transparent Glassmorphism for OBS */
+            --bg-glass-base: rgba(5, 5, 8, 0.45);
+            --bg-glass-highlight: rgba(15, 15, 25, 0.75);
+            --border-sheen: rgba(255, 255, 255, 0.25);
             
-            /* Thematic Accents */
-            --entity-blood: #ff003c;
-            --entity-blood-glow: rgba(255, 0, 60, 0.7);
-            
-            --safe-gold: #ffd700;
-            --safe-gold-glow: rgba(255, 215, 0, 0.7);
-            
-            --ethereal-streak: #00f0ff;
-            --ethereal-streak-glow: rgba(0, 240, 255, 0.7);
+            /* High-Fidelity Neon Palette */
+            --gold-aura: #ffaa00; --gold-ambient: rgba(255, 170, 0, 0.2);
+            --blood-aura: #ff003c; --blood-ambient: rgba(255, 0, 60, 0.2);
+            --ethereal-aura: #00e5ff; --ethereal-ambient: rgba(0, 229, 255, 0.2);
+            --diamond-aura: #b3d4ff; --diamond-ambient: rgba(179, 212, 255, 0.2);
+            --void-aura: #9d00ff; --void-ambient: rgba(157, 0, 255, 0.2);
 
-            --jail-purple: #9d00ff;
-            --jail-purple-glow: rgba(157, 0, 255, 0.7);
-
-            --text-main: #ffffff;
-            --text-muted: #8a8a9e;
-
-            /* Typography */
             --font-ui: 'Teko', sans-serif;
             --font-data: 'Montserrat', sans-serif;
-
-            /* Animations */
-            --transition-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        /* --------------------------------------------------------------------------
-           BASE SETUP (Transparent for OBS)
-           -------------------------------------------------------------------------- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
 
         body, html {
-            width: 100%;
-            height: 100%;
-            /* TRULY TRANSPARENT FOR OBS */
-            background-color: transparent !important;
-            overflow: hidden; /* Prevent scrollbars in OBS */
+            width: 100%; height: 100%;
+            background-color: transparent !important; 
+            overflow: hidden; 
             font-family: var(--font-data);
+            -webkit-font-smoothing: antialiased;
         }
 
         /* --------------------------------------------------------------------------
-           LAYOUT & CONTAINER
+           3D PERSPECTIVE STAGE
            -------------------------------------------------------------------------- */
+        #perspective-wrapper {
+            position: absolute; top: 0; right: 0;
+            width: 100%; height: 100%;
+            perspective: 2000px; 
+            display: flex; justify-content: flex-end;
+            padding: 30px 40px 0 0; 
+        }
+
         #overlay-container {
-            display: flex;
-            flex-direction: column;
-            gap: 16px; /* Clearly separates each premium block */
-            padding: 20px;
-            width: 320px; /* Perfect width for a stream corner */
-            position: absolute;
-            top: 0;
-            right: 0; /* Align to right by default, streamer can move in OBS */
+            display: flex; flex-direction: column; gap: 20px; 
+            width: 400px; /* Slightly wider for massive text */
+            transform-style: preserve-3d;
+            transform: rotateY(-6deg) rotateX(2deg);
         }
 
         /* --------------------------------------------------------------------------
-           PREMIUM MODULAR BLOCKS (Glassmorphism)
+           PREMIUM DATA BLOCKS (Glass & Independent Parallax)
            -------------------------------------------------------------------------- */
         .stat-block {
             position: relative;
-            background: var(--bg-glass);
-            border: 1px solid var(--border-glass);
-            border-radius: 8px;
-            padding: 16px 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 0, 0, 0.5);
-            transition: var(--transition-smooth);
+            background: linear-gradient(135deg, var(--bg-glass-base) 0%, rgba(2,2,3,0.95) 100%);
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
+            border-top: 1.5px solid var(--border-sheen);
+            border-left: 1.5px solid var(--border-sheen);
+            padding: 12px 25px; /* Tighter padding lets text dominate */
+            display: flex; flex-direction: column; justify-content: center;
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
+            transform-style: preserve-3d;
             overflow: hidden;
-            transform: translateZ(0); /* Hardware acceleration */
+            
+            /* Boot Sequence + Independent Floating */
+            opacity: 0;
+            animation: 
+                hudBootSequence 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, 
+                independentFloat 6s ease-in-out infinite alternate forwards,
+                ambientBreathe 4s ease-in-out infinite alternate;
         }
 
-        /* Animated border gradient line */
-        .stat-block::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: #fff;
-            transition: var(--transition-smooth);
-            z-index: 2;
+        /* Staggered Boot Animations */
+        #box-safe   { animation-delay: 0.1s, 0.1s, 0s; --flash-color: var(--gold-aura); }
+        #box-pot    { animation-delay: 0.3s, 1.2s, 1s; --flash-color: var(--blood-aura); }
+        #box-streak { animation-delay: 0.5s, 2.3s, 2s; --flash-color: var(--ethereal-aura); }
+        #box-best   { animation-delay: 0.7s, 3.4s, 3s; --flash-color: var(--diamond-aura); }
+        #box-jail   { animation-delay: 0.9s, 4.5s, 4s; --flash-color: var(--void-aura); }
+
+        @keyframes hudBootSequence {
+            0% { opacity: 0; transform: translateX(100px) translateZ(-100px) scale(0.8) rotateX(-15deg); filter: blur(20px); }
+            100% { opacity: 1; transform: translateX(0) translateZ(0) scale(1) rotateX(0deg); filter: blur(0); }
         }
 
-        .stat-block:hover {
-            background: var(--bg-glass-hover);
-            transform: translateX(-5px);
+        @keyframes independentFloat {
+            0% { transform: translateY(0px) translateZ(0px) rotateX(0deg); }
+            100% { transform: translateY(-6px) translateZ(20px) rotateX(3deg); }
+        }
+
+        @keyframes ambientBreathe {
+            0% { box-shadow: inset 0 0 20px rgba(0,0,0,0.9); }
+            100% { box-shadow: inset 0 0 60px var(--flash-color); }
         }
 
         /* --------------------------------------------------------------------------
-           TYPOGRAPHY & GLOWS
+           SCANLINES & EDGE GLOWS
+           -------------------------------------------------------------------------- */
+        .stat-block::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 6px; height: 100%; z-index: 2;
+            background: #fff;
+            box-shadow: 0 0 15px var(--flash-color), 0 0 30px var(--flash-color);
+            animation: edgePulse 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes edgePulse {
+            0% { opacity: 0.5; filter: brightness(1); }
+            100% { opacity: 1; filter: brightness(2); box-shadow: 0 0 25px #fff, 0 0 50px var(--flash-color); }
+        }
+
+        /* CRT Diagonal Overlay */
+        .stat-block::after {
+            content: ''; position: absolute; inset: 0;
+            background-image: repeating-linear-gradient(
+                45deg, transparent, transparent 4px, rgba(255, 255, 255, 0.03) 4px, rgba(255, 255, 255, 0.03) 8px
+            );
+            pointer-events: none; z-index: 1; opacity: 1;
+        }
+
+        /* --------------------------------------------------------------------------
+           TYPOGRAPHY: ENGINEERED FOR TINY SIZES
            -------------------------------------------------------------------------- */
         .stat-label {
-            font-family: var(--font-ui);
-            font-size: 1.25rem;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            color: var(--text-muted);
-            margin-bottom: 2px;
-            font-weight: 600;
-            z-index: 2;
-            position: relative;
+            font-family: var(--font-ui); font-size: 1.6rem; text-transform: uppercase; letter-spacing: 5px;
+            margin-bottom: -10px; font-weight: 700; z-index: 4; position: relative;
+            display: flex; justify-content: space-between; align-items: flex-end;
+            transform: translateZ(25px);
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,1), 0 0 10px var(--flash-color);
         }
 
         .stat-value {
-            font-family: var(--font-data);
-            font-size: 2.2rem;
-            font-weight: 900;
-            color: var(--text-main);
-            line-height: 1.1;
-            letter-spacing: 1px;
-            z-index: 2;
-            position: relative;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
-            transition: var(--transition-smooth);
+            font-family: var(--font-data); 
+            font-size: 4.5rem; /* MASSIVE for downscaling */
+            font-weight: 900; font-style: italic; 
+            line-height: 1.05; letter-spacing: 2px; z-index: 4; position: relative;
+            transform: translateZ(40px);
+            
+            /* The Legibility Matrix: Pure white core, black stroke, deep black shadow, neon aura */
+            color: #ffffff;
+            -webkit-text-stroke: 1px rgba(0,0,0,0.6);
+            text-shadow: 
+                0 0 15px var(--flash-color), 
+                0 0 30px var(--flash-color), 
+                0 0 50px var(--flash-color), 
+                0 6px 0px rgba(0,0,0,0.9), /* Hard black 3D block underneath */
+                0 15px 25px rgba(0,0,0,0.9);
         }
 
-        /* --- Individual Color Profiles --- */
-
-        /* 1. Safe Points (Gold) */
-        .block-safe { border-right: 1px solid rgba(255, 215, 0, 0.1); }
-        .block-safe::before { background: var(--safe-gold); box-shadow: 0 0 15px var(--safe-gold); }
-        .block-safe .stat-label { color: rgba(255, 215, 0, 0.8); }
-        .block-safe .stat-value { 
-            text-shadow: 0 0 10px var(--safe-gold-glow), 
-                         0 0 20px var(--safe-gold-glow), 
-                         0 0 40px rgba(255, 215, 0, 0.3); 
+        .stat-subtext {
+            font-family: var(--font-ui); font-size: 1.4rem; letter-spacing: 3px;
+            margin-top: -6px; font-weight: 600; z-index: 4; position: relative;
+            transform: translateZ(20px);
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,1);
         }
 
-        /* 2. Current Pot (Blood Red) */
-        .block-pot { border-right: 1px solid rgba(255, 0, 60, 0.1); }
-        .block-pot::before { background: var(--entity-blood); box-shadow: 0 0 15px var(--entity-blood); }
-        .block-pot .stat-label { color: rgba(255, 0, 60, 0.8); }
-        .block-pot .stat-value { 
-            text-shadow: 0 0 10px var(--entity-blood-glow), 
-                         0 0 25px var(--entity-blood-glow), 
-                         0 0 45px rgba(255, 0, 60, 0.3); 
+        /* Dynamic Multiplier Animation */
+        .multi-high {
+            color: #FFD700 !important;
+            animation: dangerPulse 0.8s infinite alternate !important;
+        }
+        @keyframes dangerPulse {
+            0% { text-shadow: 0 0 10px #ffaa00, 0 2px 4px rgba(0,0,0,1); transform: translateZ(20px) scale(1); }
+            100% { text-shadow: 0 0 30px #ffaa00, 0 0 50px #ffaa00, 0 2px 4px rgba(0,0,0,1); transform: translateZ(30px) scale(1.05); }
         }
 
-        /* 3. Current Streak (Ethereal Blue) */
-        .block-streak { border-right: 1px solid rgba(0, 240, 255, 0.1); }
-        .block-streak::before { background: var(--ethereal-streak); box-shadow: 0 0 15px var(--ethereal-streak); }
-        .block-streak .stat-label { color: rgba(0, 240, 255, 0.8); }
-        .block-streak .stat-value { 
-            text-shadow: 0 0 10px var(--ethereal-streak-glow), 
-                         0 0 20px var(--ethereal-streak-glow); 
-        }
-
-        /* 4. Best Streak (Golden/White Hybrid) */
-        .block-best { border-right: 1px solid rgba(255, 255, 255, 0.1); }
-        .block-best::before { background: #ffffff; box-shadow: 0 0 15px #ffffff; }
-        .block-best .stat-label { color: rgba(255, 255, 255, 0.8); }
-        .block-best .stat-value { 
-            text-shadow: 0 0 10px rgba(255,255,255,0.8), 
-                         0 0 20px rgba(255,215,0,0.5); 
-        }
-
-        /* 5. Ransom Jail (Corrupted Purple) */
-        .block-jail { border-right: 1px solid rgba(157, 0, 255, 0.1); }
-        .block-jail::before { background: var(--jail-purple); box-shadow: 0 0 15px var(--jail-purple); }
-        .block-jail .stat-label { color: rgba(157, 0, 255, 0.8); }
-        .block-jail .stat-value { 
-            text-shadow: 0 0 10px var(--jail-purple-glow), 
-                         0 0 25px var(--jail-purple-glow); 
-        }
+        .block-safe { border-right: 2px solid rgba(255, 170, 0, 0.8); background-color: var(--gold-ambient); }
+        .block-pot { border-right: 2px solid rgba(255, 0, 60, 0.8); background-color: var(--blood-ambient); }
+        .block-streak { border-right: 2px solid rgba(0, 229, 255, 0.8); background-color: var(--ethereal-ambient); }
+        .block-best { border-right: 2px solid rgba(179, 212, 255, 0.8); background-color: var(--diamond-ambient); }
+        .block-jail { border-right: 2px solid rgba(157, 0, 255, 0.8); background-color: var(--void-ambient); }
 
         /* --------------------------------------------------------------------------
-           DYNAMIC UPDATE ANIMATIONS
+           CONTINUOUS ENTITY SPORE PARTICLES
            -------------------------------------------------------------------------- */
-        /* When a value changes, JS will apply this class to make it pop and glow intensely */
-        .value-update-pulse {
-            animation: textPulse 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        .spore {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            box-shadow: 0 0 10px var(--flash-color), 0 0 20px var(--flash-color);
+            animation: floatUp linear infinite;
         }
 
-        @keyframes textPulse {
-            0% { transform: scale(1); filter: brightness(1); }
-            50% { transform: scale(1.15); filter: brightness(1.8); }
-            100% { transform: scale(1); filter: brightness(1); }
-        }
-
-        /* Background pulse effect for the container */
-        .bg-update-flash {
-            animation: bgFlash 0.8s ease-out;
-        }
-
-        @keyframes bgFlash {
-            0% { background: var(--bg-glass); }
-            30% { background: rgba(255, 255, 255, 0.15); }
-            100% { background: var(--bg-glass); }
+        @keyframes floatUp {
+            0% { transform: translateY(100px) scale(0); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
         }
 
         /* --------------------------------------------------------------------------
-           CONNECTION STATUS UI
+           ADVANCED UPDATE PHYSICS
+           -------------------------------------------------------------------------- */
+        .text-glitch-out { animation: glitchOut 0.4s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards; }
+        @keyframes glitchOut {
+            0% { opacity: 1; transform: translateX(0) skewX(0) scale(1); filter: blur(0px); }
+            50% { opacity: 0.8; transform: translateX(10px) skewX(-20deg) scale(1.1); filter: blur(2px); color: #fff; text-shadow: -4px 0 #ff003c, 4px 0 #00e5ff; }
+            100% { opacity: 0; transform: translateX(30px) skewX(-40deg) scale(0.5); filter: blur(10px); }
+        }
+
+        .text-glitch-in { animation: glitchIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes glitchIn {
+            0% { opacity: 0; transform: translateX(-30px) scaleY(1.8) scaleX(0.5) skewX(40deg); filter: blur(10px); color: #fff; text-shadow: -10px 0 #ff003c, 10px 0 #00e5ff; }
+            40% { opacity: 1; transform: translateX(5px) scaleY(0.9) scaleX(1.1) skewX(-10deg); filter: blur(1px); color: #fff; text-shadow: -3px 0 #ff003c, 3px 0 #00e5ff; }
+            100% { opacity: 1; transform: translateX(0) scaleY(1) scaleX(1) skewX(0); filter: blur(0px); }
+        }
+
+        .box-glow-surge { animation: smoothWash 1.2s ease-out forwards; }
+        @keyframes smoothWash {
+            0% { filter: brightness(1); }
+            20% { filter: brightness(2.5); box-shadow: inset 0 0 150px var(--flash-color); background-color: rgba(255,255,255,0.2); }
+            100% { filter: brightness(1); }
+        }
+
+        .scanner-beam {
+            position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+            background: #fff;
+            box-shadow: 0 0 15px #fff, 0 0 30px var(--flash-color), 0 -15px 40px var(--flash-color);
+            opacity: 0; z-index: 5; pointer-events: none;
+        }
+        .fire-scanner { animation: scanDown 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        @keyframes scanDown {
+            0% { top: 0; opacity: 1; height: 2px; }
+            50% { opacity: 1; height: 10px; }
+            100% { top: 100%; opacity: 0; height: 2px; }
+        }
+
+        .data-stream {
+            position: absolute; height: 3px;
+            background: linear-gradient(90deg, transparent, #fff, var(--flash-color), transparent);
+            pointer-events: none; z-index: 10; opacity: 0; border-radius: 2px;
+        }
+
+        /* --------------------------------------------------------------------------
+           HUD HEADER
            -------------------------------------------------------------------------- */
         #connection-status {
-            font-family: var(--font-ui);
-            font-size: 1rem;
-            color: var(--text-muted);
-            text-align: right;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 5px;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 8px;
+            font-family: var(--font-ui); font-size: 1.6rem; color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,1);
+            text-align: right; text-transform: uppercase; letter-spacing: 5px;
+            display: flex; justify-content: flex-end; align-items: center; gap: 14px;
+            padding-right: 5px; font-weight: 700; transform: translateZ(20px);
         }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #ff0000;
-            box-shadow: 0 0 8px #ff0000;
-            transition: background 0.3s, box-shadow 0.3s;
-        }
-
-        .status-dot.connected {
-            background: #00ff66;
-            box-shadow: 0 0 10px #00ff66;
-            animation: heartbeat 2s infinite;
-        }
-
-        @keyframes heartbeat {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.8); }
-        }
-
-        /* Subtext for context (e.g., multiplier display) */
-        .stat-subtext {
-            font-family: var(--font-ui);
-            font-size: 1rem;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-            margin-top: -2px;
-        }
+        .status-dot { width: 14px; height: 14px; border-radius: 50%; background: #ff003c; box-shadow: 0 0 20px #ff003c, 0 0 40px #ff003c; }
+        .status-dot.connected { background: #00ff66; box-shadow: 0 0 20px #00ff66, 0 0 40px #00ff66; animation: statusBeat 1s infinite alternate; }
+        @keyframes statusBeat { 0% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0.5; transform: scale(1); } }
     </style>
 </head>
 <body>
 
-    <div id="overlay-container">
-        
-        <!-- Connection / Streamer Info -->
-        <div id="connection-status">
-            <span id="streamer-name-display">Connecting...</span>
-            <div class="status-dot" id="dot-status"></div>
-        </div>
+    <div id="perspective-wrapper">
+        <div id="overlay-container">
+            
+            <div id="connection-status">
+                <span id="streamer-name-display">ESTABLISHING UPLINK...</span>
+                <div class="status-dot" id="dot-status"></div>
+            </div>
 
-        <!-- 1. Safe Points Block -->
-        <div class="stat-block block-safe" id="box-safe">
-            <div class="stat-label">Safe Bank</div>
-            <div class="stat-value" id="val-safe">0</div>
-        </div>
+            <!-- Block 1 -->
+            <div class="stat-block block-safe" id="box-safe">
+                <div class="scanner-beam"></div>
+                <div class="stat-label">Safe Bank <span style="font-size: 1.2rem; opacity: 0.7; color: #ffaa00;">PTS</span></div>
+                <div class="stat-value" id="val-safe" data-val="0">0</div>
+            </div>
 
-        <!-- 2. Current Pot Block -->
-        <div class="stat-block block-pot" id="box-pot">
-            <div class="stat-label">Active Pot</div>
-            <div class="stat-value" id="val-pot">0</div>
-            <div class="stat-subtext" id="sub-multiplier">Multiplier: 1.0x</div>
-        </div>
+            <!-- Block 2 -->
+            <div class="stat-block block-pot" id="box-pot">
+                <div class="scanner-beam"></div>
+                <div class="stat-label">Active Pot <span style="font-size: 1.2rem; opacity: 0.7; color: #ff003c;">RISK</span></div>
+                <div class="stat-value" id="val-pot" data-val="0">0</div>
+                <div class="stat-subtext" id="sub-multiplier">MULTI: 1.0x</div>
+            </div>
 
-        <!-- 3. Current Streak Block -->
-        <div class="stat-block block-streak" id="box-streak">
-            <div class="stat-label">Current Streak</div>
-            <div class="stat-value" id="val-streak">0</div>
-        </div>
+            <!-- Block 3 -->
+            <div class="stat-block block-streak" id="box-streak">
+                <div class="scanner-beam"></div>
+                <div class="stat-label">Global Streak <span style="font-size: 1.2rem; opacity: 0.7; color: #00e5ff;">WINS</span></div>
+                <div class="stat-value" id="val-streak" data-val="0">0</div>
+            </div>
 
-        <!-- 4. Best Streak Block -->
-        <div class="stat-block block-best" id="box-best">
-            <div class="stat-label">Highest Streak</div>
-            <div class="stat-value" id="val-best">0</div>
-        </div>
+            <!-- Block 4 -->
+            <div class="stat-block block-best" id="box-best">
+                <div class="scanner-beam"></div>
+                <div class="stat-label">Highest Streak <span style="font-size: 1.2rem; opacity: 0.7; color: #b3d4ff;">RECORD</span></div>
+                <div class="stat-value" id="val-best" data-val="0">0</div>
+            </div>
 
-        <!-- 5. Perks In Jail Block -->
-        <div class="stat-block block-jail" id="box-jail">
-            <div class="stat-label">Perks in Jail</div>
-            <div class="stat-value" id="val-jail">0</div>
-        </div>
+            <!-- Block 5 -->
+            <div class="stat-block block-jail" id="box-jail">
+                <div class="scanner-beam"></div>
+                <div class="stat-label">Perks in Jail <span style="font-size: 1.2rem; opacity: 0.7; color: #9d00ff;">LOCKED</span></div>
+                <div class="stat-value" id="val-jail" data-val="0">0</div>
+            </div>
 
+        </div>
     </div>
 
     <!-- ==========================================================================
-         JAVASCRIPT / FIREBASE LOGIC
+         JAVASCRIPT LOGIC & ADVANCED PHYSICS
          ========================================================================== -->
     <script type="module">
-        // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // ----------------------------------------------------------------------
-        // YOUR FIREBASE CONFIGURATION
-        // (Paste your exact config here - same as your main website)
+        // FIREBASE CREDENTIALS
         // ----------------------------------------------------------------------
         const firebaseConfig = {
             apiKey: "AIzaSyBMAxj2E3snmnOcQXIylkIIS1cTnuu0hlY",
@@ -326,110 +328,179 @@
             measurementId: "G-Z4WBDQ9HEH"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
-        // ----------------------------------------------------------------------
-        // GET STREAMER USERNAME FROM URL
-        // Expected URL in OBS: https://yourdomain.com/overlay.html?user=StreamerName
-        // ----------------------------------------------------------------------
         const urlParams = new URLSearchParams(window.location.search);
         const streamerUsername = urlParams.get('user');
         
         const statusText = document.getElementById('streamer-name-display');
         const statusDot = document.getElementById('dot-status');
 
+        // ----------------------------------------------------------------------
+        // AMBIENT SPORE PARTICLE GENERATOR
+        // ----------------------------------------------------------------------
+        function createAmbientSpores() {
+            const blocks = document.querySelectorAll('.stat-block');
+            blocks.forEach(block => {
+                setInterval(() => {
+                    const spore = document.createElement('div');
+                    spore.classList.add('spore');
+                    
+                    const size = Math.random() * 4 + 2; // 2px to 6px
+                    spore.style.width = `${size}px`;
+                    spore.style.height = `${size}px`;
+                    spore.style.left = `${Math.random() * 100}%`;
+                    spore.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                    
+                    block.appendChild(spore);
+                    setTimeout(() => spore.remove(), 5000);
+                }, 800); // Spawn a new spore every 800ms per block
+            });
+        }
+        createAmbientSpores();
+
         if (!streamerUsername) {
-            statusText.innerText = "ERROR: No ?user= param";
-            statusText.style.color = "var(--entity-blood)";
-            console.error("Please add ?user=USERNAME to the Browser Source URL in OBS.");
+            statusText.innerText = "NO TARGET ASSIGNED";
+            statusText.style.color = "var(--blood-aura)";
         } else {
-            statusText.innerText = `${streamerUsername.toUpperCase()} // LIVE`;
+            statusText.innerText = `UPLINK: ${streamerUsername.toUpperCase()}`;
             
             // ----------------------------------------------------------------------
-            // PREVIOUS STATE TRACKING (To trigger CSS animations only when numbers change)
+            // HACKER DECRYPTION SCRAMBLE
             // ----------------------------------------------------------------------
-            const previousState = {
-                safeBank: null,
-                currentPot: null,
-                totalStreak: null,
-                highestStreak: null,
-                ransomJail: null
-            };
+            function scrambleValue(obj, start, end, duration) {
+                let startTimestamp = null;
+                const cyberChars = '01XYZ%#@&¥';
+                
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+                    const current = Math.floor(start + (end - start) * easeProgress);
+                    
+                    if (progress < 1) {
+                        let currentStr = current.toString();
+                        let scrambled = currentStr.split('').map(c => 
+                            Math.random() < 0.5 ? cyberChars[Math.floor(Math.random() * cyberChars.length)] : c
+                        ).join('');
+                        obj.innerText = scrambled;
+                        window.requestAnimationFrame(step);
+                    } else {
+                        obj.innerText = end.toLocaleString();
+                        obj.setAttribute('data-val', end); 
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
 
             // ----------------------------------------------------------------------
-            // UI UPDATE FUNCTION WITH ANIMATIONS
+            // HORIZONTAL DATA STREAM PARTICLES
             // ----------------------------------------------------------------------
-            function updateStatUI(elementId, boxId, newValue, stateKey, prefix = "", suffix = "") {
+            function spawnDataStreams(box) {
+                const streamCount = 5 + Math.floor(Math.random() * 5); 
+                for (let i = 0; i < streamCount; i++) {
+                    const stream = document.createElement('div');
+                    stream.classList.add('data-stream');
+                    
+                    stream.style.width = `${40 + Math.random() * 100}px`;
+                    stream.style.top = `${10 + Math.random() * 80}%`;
+                    stream.style.left = '-150px';
+                    
+                    box.appendChild(stream);
+                    
+                    stream.animate([
+                        { transform: `translateX(0)`, opacity: 0 },
+                        { opacity: 1, offset: 0.1 },
+                        { opacity: 1, offset: 0.9 },
+                        { transform: `translateX(600px)`, opacity: 0 }
+                    ], {
+                        duration: 300 + Math.random() * 300,
+                        easing: 'linear',
+                        fill: 'forwards'
+                    });
+                    
+                    setTimeout(() => stream.remove(), 700);
+                }
+            }
+
+            // ----------------------------------------------------------------------
+            // ADVANCED ANIMATION COORDINATOR
+            // ----------------------------------------------------------------------
+            const previousState = {
+                safeBank: null, currentPot: null, totalStreak: null, highestStreak: null, ransomJail: null
+            };
+
+            function triggerPremiumUpdate(elementId, boxId, newValue, stateKey) {
                 const el = document.getElementById(elementId);
                 const box = document.getElementById(boxId);
+                const scanner = box.querySelector('.scanner-beam');
                 
-                // Only animate and update if the value actually changed
                 if (previousState[stateKey] !== newValue) {
+                    const oldValue = previousState[stateKey] === null ? 0 : previousState[stateKey];
                     
-                    // Update Text
-                    el.innerText = `${prefix}${newValue.toLocaleString()}${suffix}`;
+                    el.classList.remove('text-glitch-in');
+                    el.classList.add('text-glitch-out');
                     
-                    // Trigger Pulse Animations by re-applying the class
-                    el.classList.remove('value-update-pulse');
-                    box.classList.remove('bg-update-flash');
+                    box.classList.remove('box-glow-surge');
+                    scanner.classList.remove('fire-scanner');
+                    void box.offsetWidth; 
                     
-                    // Slight delay forces browser reflow to restart animation
-                    void el.offsetWidth; 
+                    box.classList.add('box-glow-surge');
+                    scanner.classList.add('fire-scanner'); 
                     
-                    el.classList.add('value-update-pulse');
-                    box.classList.add('bg-update-flash');
+                    setTimeout(() => {
+                        el.classList.remove('text-glitch-out');
+                        el.classList.add('text-glitch-in');
+                        spawnDataStreams(box);
+                        scrambleValue(el, oldValue, newValue, 600);
+                    }, 400); 
                     
-                    // Save new state
                     previousState[stateKey] = newValue;
                 }
             }
 
             // ----------------------------------------------------------------------
-            // REAL-TIME DATABASE LISTENER
-            // (Requires NO changes to database rules! Reads exactly what the webapp writes)
+            // FIREBASE REAL-TIME SYNC
             // ----------------------------------------------------------------------
             const userRef = doc(db, 'roulette_state', streamerUsername);
             
             onSnapshot(userRef, (docSnap) => {
                 if (docSnap.exists()) {
-                    // Connected successfully
                     statusDot.classList.add('connected');
                     
                     const data = docSnap.data();
-                    
-                    // Extract Data (Fallback to 0 if undefined)
                     const safeBank = data.safeBank || 0;
                     const currentPot = data.currentPot || 0;
                     const totalStreak = data.totalStreak || 0;
                     const highestStreak = data.highestStreak || 0;
                     
-                    // Calculate multiplier for the subtext
                     const currentLocalStreak = data.currentLocalStreak || 0;
                     const multiplier = 1.0 + (currentLocalStreak * 0.5);
-                    document.getElementById('sub-multiplier').innerText = `Multiplier: ${multiplier.toFixed(1)}x`;
+                    const multiEl = document.getElementById('sub-multiplier');
+                    multiEl.innerText = `MULTI: ${multiplier.toFixed(1)}x`;
+                    
+                    // Activate Danger Pulse for high multipliers
+                    if (multiplier >= 2.0) {
+                        multiEl.classList.add('multi-high');
+                    } else {
+                        multiEl.classList.remove('multi-high');
+                    }
 
-                    // Jail array length calculation
                     const jailArray = data.ransomJail || [];
                     const perksInJail = jailArray.length;
 
-                    // Update UI via our custom animated function
-                    updateStatUI('val-safe', 'box-safe', safeBank, 'safeBank');
-                    updateStatUI('val-pot', 'box-pot', currentPot, 'currentPot');
-                    updateStatUI('val-streak', 'box-streak', totalStreak, 'totalStreak');
-                    updateStatUI('val-best', 'box-best', highestStreak, 'highestStreak');
-                    updateStatUI('val-jail', 'box-jail', perksInJail, 'ransomJail');
+                    triggerPremiumUpdate('val-safe', 'box-safe', safeBank, 'safeBank');
+                    triggerPremiumUpdate('val-pot', 'box-pot', currentPot, 'currentPot');
+                    triggerPremiumUpdate('val-streak', 'box-streak', totalStreak, 'totalStreak');
+                    triggerPremiumUpdate('val-best', 'box-best', highestStreak, 'highestStreak');
+                    triggerPremiumUpdate('val-jail', 'box-jail', perksInJail, 'ransomJail');
 
                 } else {
-                    // Document doesn't exist yet (Streamer hasn't played/saved yet)
-                    statusText.innerText = "AWAITING ENTITY...";
+                    statusText.innerText = "AWAITING TARGET DATA...";
                     statusDot.classList.remove('connected');
                 }
             }, (error) => {
-                // Connection Error Handling
-                console.error("Firestore Listen Error:", error);
-                statusText.innerText = "CONNECTION LOST";
+                statusText.innerText = "UPLINK SEVERED";
                 statusDot.classList.remove('connected');
             });
         }

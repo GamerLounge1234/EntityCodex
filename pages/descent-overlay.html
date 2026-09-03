@@ -3,37 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entity's Descent - Overlay</title>
+    <title>Entity's Descent - Next Gen Killer Overlay</title>
     
+    <!-- Ultra Premium Fonts: Anton for heavy numbers, Teko for UI, Rajdhani for tech-subs -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Rajdhani:wght@500;700&family=Teko:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
-     
+        /* ==========================================================================
+           NEXT-GEN BRUTALIST SYSTEM - HIGH-END PREMIUM AESTHETIC
+           ========================================================================== */
         :root {
-            /* Void Glass */
-            --bg-void: rgba(9, 4, 4, 0.85);
-            --bg-void-light: rgba(20, 8, 8, 0.95);
+            /* Deep Void Obsidian */
+            --bg-void: rgba(12, 10, 15, 0.90);
+            --bg-void-light: rgba(22, 18, 26, 0.95);
             
-            /* High-Fidelity Entity Palette */
+            /* Premium Neon Palette */
             --blood-core: #ff003c;
-            --blood-dark: #8a001a;
             --blood-glow: rgba(255, 0, 60, 0.8);
             
-            --gold-core: #ffc400;
-            --gold-dark: #997300;
-            --gold-glow: rgba(255, 196, 0, 0.8);
+            --gold-core: #ffc800;
+            --gold-glow: rgba(255, 200, 0, 0.8);
 
-            --ash-gray: #a3a3b5;
+            --cyan-core: #00f0ff;
+            
+            --ash-gray: #b8b8cc;
             
             /* Typography */
             --font-ui: 'Teko', sans-serif;
             --font-num: 'Anton', sans-serif;
             --font-tech: 'Rajdhani', sans-serif;
             
-            /* Shapes */
-            --clip-shape: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
+            /* Geometric Cuts */
+            --clip-monolith: polygon(25px 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%, 0 25px);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
@@ -45,186 +48,213 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        /* --------------------------------------------------------------------------
+           STAGE ALIGNMENT (Flattened for Pixel-Perfect OBS Scaling)
+           -------------------------------------------------------------------------- */
         #overlay-container {
             position: absolute;
-            top: 35px; right: 35px;
-            display: flex; flex-direction: column; gap: 24px; 
-            width: 450px; 
-            border-right: 2px solid rgba(255, 0, 60, 0.2);
-            padding-right: 25px;
+            top: 40px; right: 40px;
+            display: flex; flex-direction: column; gap: 26px; 
+            width: 460px; 
             z-index: 2;
+            padding-right: 15px;
+            border-right: 3px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Right-side glowing spine */
+        /* Continuous Energy Flow along the spine */
         #overlay-container::after {
-            content: ''; position: absolute; top: 0; right: -2px; width: 2px; height: 100%;
-            background: linear-gradient(to bottom, transparent, var(--blood-core), transparent);
-            box-shadow: 0 0 15px var(--blood-core);
-            animation: spinePulse 3s infinite alternate;
+            content: ''; position: absolute; top: 0; right: -3px; width: 3px; height: 100%;
+            background: linear-gradient(to bottom, transparent, var(--blood-core), #fff, var(--blood-core), transparent);
+            background-size: 100% 300%;
+            animation: spineFlow 3s infinite linear;
+            box-shadow: 0 0 20px var(--blood-glow);
         }
-        @keyframes spinePulse { 0% { opacity: 0.3; } 100% { opacity: 1; } }
+        @keyframes spineFlow { 0% { background-position: 0% -100%; } 100% { background-position: 0% 200%; } }
 
-    
+        /* --------------------------------------------------------------------------
+           THE PROTOCOL BANNER (WARNING TAPE)
+           -------------------------------------------------------------------------- */
         .protocol-banner {
-            background: repeating-linear-gradient(
-                -45deg, 
-                var(--blood-dark), var(--blood-dark) 10px, 
-                rgba(0,0,0,0.8) 10px, rgba(0,0,0,0.8) 20px
-            );
-            padding: 12px 24px;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 12px 25px;
             text-align: right;
             border-right: 6px solid var(--blood-core);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px var(--blood-glow);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,0,60,0.2);
             position: relative;
             
-            /* Entry Animation */
+            /* Cinematic Reveal */
             transform-origin: right center;
-            animation: slashReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+            animation: cinematicReveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .protocol-label {
-            font-family: var(--font-ui); font-size: 2.2rem; color: #fff;
-            text-transform: uppercase; letter-spacing: 6px; line-height: 0.9;
-            text-shadow: 0 4px 6px rgba(0,0,0,1);
+            font-family: var(--font-ui); font-size: 2.4rem; color: #fff;
+            text-transform: uppercase; letter-spacing: 8px; line-height: 0.9;
+            text-shadow: 0 4px 6px rgba(0,0,0,1), 0 0 15px var(--blood-core);
         }
 
         .protocol-sub {
-            font-family: var(--font-tech); font-size: 1.1rem; color: var(--blood-core);
-            font-weight: 700; letter-spacing: 4px; text-transform: uppercase;
-            text-shadow: 0 2px 4px rgba(0,0,0,1); background: rgba(0,0,0,0.6);
-            display: inline-block; padding: 2px 8px; margin-top: 4px;
+            font-family: var(--font-tech); font-size: 1.15rem; color: var(--ash-gray);
+            font-weight: 700; letter-spacing: 5px; text-transform: uppercase;
+            background: rgba(255,0,60,0.15); display: inline-block; padding: 3px 10px; margin-top: 5px;
+            border: 1px solid rgba(255,0,60,0.3);
         }
 
-        .hardcore-pulse { animation: hardcoreWarn 0.8s infinite alternate; color: #fff; }
-        @keyframes hardcoreWarn {
-            0% { box-shadow: 0 0 10px var(--blood-core); border-right-color: #fff; }
-            100% { box-shadow: 0 0 40px var(--blood-core), inset 0 0 20px var(--blood-core); border-right-color: var(--blood-core); }
-        }
+        .hardcore-pulse .protocol-sub { color: #fff; background: var(--blood-core); border-color: #fff; box-shadow: 0 0 20px var(--blood-core); animation: dangerFlash 1s infinite alternate; }
+        @keyframes dangerFlash { 0% { filter: brightness(1); } 100% { filter: brightness(1.5); box-shadow: 0 0 40px var(--blood-core); } }
 
-        
+        /* --------------------------------------------------------------------------
+           AAA MONOLITH PANELS (Breathing Plasma Borders)
+           -------------------------------------------------------------------------- */
         .monolith-wrapper {
             position: relative;
-            width: 100%;
-            background: var(--bg-void);
-            clip-path: var(--clip-shape);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.9);
+            padding: 4px; /* Thick Plasma Border */
+            background: var(--theme-core); /* Acts as the border color */
+            clip-path: var(--clip-monolith);
+            box-shadow: 0 25px 45px rgba(0,0,0,0.9);
             
-            /* Slash Entrance Setup */
+            /* Breathing Plasma Animation on the background color */
+            animation: 
+                cinematicReveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+                plasmaBreath 3s ease-in-out infinite alternate;
+            
             transform-origin: right center;
-            animation: slashReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+            opacity: 0;
         }
 
-        /* Staggered load */
-        #wrap-points { animation-delay: 0.15s; --theme-core: var(--blood-core); --theme-dark: var(--blood-dark); }
-        #wrap-cleared { animation-delay: 0.25s; --theme-core: var(--gold-core); --theme-dark: var(--gold-dark); }
-        #wrap-perks { animation-delay: 0.35s; --theme-core: var(--blood-core); --theme-dark: var(--blood-dark); }
-        #wrap-losses { animation-delay: 0.45s; --theme-core: #888; --theme-dark: #333; }
+        /* Staggered load & Theme Mapping */
+        #wrap-points { animation-delay: 0.1s, 0.1s; --theme-core: var(--blood-core); --theme-glow: var(--blood-glow); }
+        #wrap-cleared { animation-delay: 0.2s, 0.2s; --theme-core: var(--gold-core); --theme-glow: var(--gold-glow); }
+        #wrap-perks { animation-delay: 0.3s, 0.3s; --theme-core: var(--blood-core); --theme-glow: var(--blood-glow); }
+        #wrap-losses { animation-delay: 0.4s, 0.4s; --theme-core: #555; --theme-glow: rgba(255,255,255,0.2); }
 
-        @keyframes slashReveal {
-            0% { transform: scaleX(0) scaleY(0.05); filter: brightness(3); opacity: 0; }
-            40% { transform: scaleX(1) scaleY(0.05); filter: brightness(2); opacity: 1; }
-            100% { transform: scaleX(1) scaleY(1); filter: brightness(1); opacity: 1; }
+        @keyframes cinematicReveal {
+            0% { transform: scaleX(0); filter: brightness(3); opacity: 0; }
+            100% { transform: scaleX(1); filter: brightness(1); opacity: 1; }
         }
 
-    
-        .monolith-wrapper::before {
-            content: ''; position: absolute; inset: 0;
-            background: conic-gradient(from 0deg, transparent 0deg, transparent 240deg, var(--theme-dark) 300deg, var(--theme-core) 360deg);
-            animation: radarScan 2.5s linear infinite;
-            /* Creates the perfect inner border */
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            padding: 3px; /* Thickness of the border */
-            z-index: 5;
-            pointer-events: none;
+        @keyframes plasmaBreath {
+            0% { background: var(--theme-core); filter: drop-shadow(0 0 5px var(--theme-core)); }
+            100% { background: #ffffff; filter: drop-shadow(0 0 15px var(--theme-core)); }
         }
-        @keyframes radarScan { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* Inner Glass Plate */
         .monolith-block {
             position: relative;
-            background: linear-gradient(135deg, var(--bg-void) 0%, var(--bg-void-light) 100%);
-            padding: 16px 28px; 
+            background: linear-gradient(145deg, var(--bg-void) 0%, var(--bg-void-light) 100%);
+            /* Mathematical inner clip-path to perfectly fit inside the 4px border */
+            clip-path: polygon(23px 0, 100% 0, 100% calc(100% - 23px), calc(100% - 23px) 100%, 0 100%, 0 23px);
+            padding: 15px 30px; 
             display: flex; flex-direction: column; justify-content: center; align-items: flex-end;
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.9);
             z-index: 2;
+            overflow: hidden; /* Contains the scanlines and sweeps */
         }
 
-        /* Scanlines Overlay */
-        .monolith-block::after {
+        /* --------------------------------------------------------------------------
+           HOLOGRAPHIC SCANLINES & LIGHT SWEEPS
+           -------------------------------------------------------------------------- */
+        /* Rolling CRT Scanlines */
+        .monolith-block::before {
             content: ''; position: absolute; inset: 0;
-            background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.02) 2px, rgba(255,255,255,0.02) 4px);
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px);
+            background-size: 100% 200%;
+            animation: scanlineRoll 10s linear infinite;
             pointer-events: none; z-index: 1;
         }
+        @keyframes scanlineRoll { 0% { background-position: 0 0; } 100% { background-position: 0 100%; } }
 
+        /* Periodic Glossy Light Sweep */
+        .monolith-block::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transform: skewX(-25deg);
+            z-index: 2;
+            animation: glossSweep 6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+        }
+        @keyframes glossSweep { 0% { left: -100%; } 15% { left: 200%; } 100% { left: 200%; } }
+
+        /* --------------------------------------------------------------------------
+           TYPOGRAPHY: MASSIVE HIGH-CONTRAST CORE
+           -------------------------------------------------------------------------- */
         .stat-label {
-            font-family: var(--font-ui); font-size: 1.8rem; text-transform: uppercase; letter-spacing: 4px;
+            font-family: var(--font-ui); font-size: 1.85rem; text-transform: uppercase; letter-spacing: 5px;
             color: var(--ash-gray); margin-bottom: -15px; font-weight: 700; z-index: 4; position: relative;
             text-shadow: 0 4px 6px rgba(0,0,0,1);
         }
 
         .stat-value {
-            font-family: var(--font-num); font-size: 5.5rem; line-height: 1.05; letter-spacing: 2px; 
+            font-family: var(--font-num); font-size: 5.8rem; line-height: 1.05; letter-spacing: 2px; 
             z-index: 4; position: relative;
             
+            /* The Unbreakable Legibility Core */
             color: #ffffff;
-            -webkit-text-stroke: 2px #000000;
+            -webkit-text-stroke: 3px #000000;
             text-shadow: 
-                0 0 15px var(--theme-core), 
-                0 0 30px var(--theme-core), 
+                0 0 25px var(--theme-core), 
+                0 0 45px var(--theme-core), 
                 0 8px 0px #000000, 
-                0 15px 30px rgba(0,0,0,0.9);
+                0 15px 30px rgba(0,0,0,1);
+                
+            transform-origin: right center;
         }
 
         .stat-subtext {
-            font-family: var(--font-tech); font-size: 1.1rem; letter-spacing: 3px; font-weight: 700;
-            color: var(--gold-core); text-shadow: 0 2px 4px rgba(0,0,0,1); margin-top: -8px; z-index: 4; position: relative;
+            font-family: var(--font-tech); font-size: 1.2rem; letter-spacing: 4px; font-weight: 700;
+            color: var(--gold-core); text-shadow: 0 3px 5px rgba(0,0,0,1); margin-top: -5px; z-index: 4; position: relative;
+            background: rgba(0,0,0,0.5); padding: 2px 8px; border-radius: 4px;
         }
 
-        #wrap-losses .stat-value { color: #d0d0d0; -webkit-text-stroke: 2px #000; text-shadow: 0 8px 0px #000000, 0 15px 30px rgba(0,0,0,0.9); }
+        #wrap-losses .stat-value { color: #c0c0c0; -webkit-text-stroke: 3px #000; text-shadow: 0 8px 0px #000000, 0 15px 30px rgba(0,0,0,1); }
 
-        .impact-glitch {
-            animation: violentAberration 0.6s cubic-bezier(0.25, 1, 0.5, 1) both;
+        /* --------------------------------------------------------------------------
+           THE "DOPAMINE SLAM" IMPACT UPDATE ANIMATION
+           -------------------------------------------------------------------------- */
+        .impact-shockwave {
+            animation: containerShock 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
-        @keyframes violentAberration {
-            0% { transform: translateX(0); filter: brightness(1) contrast(1); }
-            10% { transform: translateX(-15px) scale(1.05) skewX(-10deg); filter: brightness(2) contrast(1.5); box-shadow: -10px 0 0 rgba(0,255,255,0.5), 10px 0 0 rgba(255,0,60,0.5); }
-            20% { transform: translateX(10px) scale(1.05) skewX(10deg); box-shadow: 10px 0 0 rgba(0,255,255,0.5), -10px 0 0 rgba(255,0,60,0.5); }
-            40% { transform: translateX(-5px) skewX(0deg); }
-            60% { transform: translateX(5px); }
-            100% { transform: translateX(0); filter: brightness(1) contrast(1); box-shadow: none; }
+        @keyframes containerShock {
+            0% { transform: scale(1); box-shadow: 0 25px 45px rgba(0,0,0,0.9); }
+            20% { transform: scale(1.08) translateX(-10px); box-shadow: -20px 0 50px var(--cyan-core), 20px 0 50px var(--blood-core); background: #fff; }
+            40% { transform: scale(1.05) translateX(10px); box-shadow: 20px 0 50px var(--cyan-core), -20px 0 50px var(--blood-core); }
+            100% { transform: scale(1) translateX(0); box-shadow: 0 25px 45px rgba(0,0,0,0.9); background: var(--theme-core); }
         }
 
         .cipher-flash {
-            animation: textCipher 0.6s ease-out forwards;
+            animation: textDecipherSlam 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
-        @keyframes textCipher {
-            0% { transform: scale(1.5) translateZ(50px); color: #fff; text-shadow: 0 0 50px #fff; }
-            100% { transform: scale(1) translateZ(0); color: #fff; }
+        @keyframes textDecipherSlam {
+            0% { transform: scale(1); filter: brightness(1); }
+            20% { transform: scale(1.3) rotate(-3deg); color: #fff; -webkit-text-stroke: 4px var(--theme-core); text-shadow: 0 0 100px #fff; }
+            100% { transform: scale(1) rotate(0deg); color: #fff; -webkit-text-stroke: 3px #000; }
         }
 
+        /* --------------------------------------------------------------------------
+           DIGITAL CORRUPTED ASH PARTICLES
+           -------------------------------------------------------------------------- */
         #particle-layer { position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
         
-        .ember {
-            position: absolute; background: var(--blood-core); border-radius: 50%;
-            box-shadow: 0 0 10px var(--blood-core), 0 0 20px #ff8800;
-            animation: floatEmber linear infinite;
+        .digital-ash {
+            position: absolute; 
+            background: var(--blood-core); 
+            /* Square, digital look instead of round dots */
+            width: 4px; height: 4px; 
+            box-shadow: 0 0 10px var(--blood-core), 0 0 20px var(--gold-core);
+            animation: floatDigital linear infinite;
         }
 
-        @keyframes floatEmber {
-            0% { transform: translateY(100vh) scale(0); opacity: 0; }
-            20% { opacity: 1; }
-            80% { opacity: 0.8; }
-            100% { transform: translateY(-100px) scale(2) translateX(-50px) rotate(45deg); opacity: 0; }
+        @keyframes floatDigital {
+            0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            50% { transform: translateY(50vh) translateX(-20px) scale(1.5); opacity: 1; }
+            55% { transform: translateY(45vh) translateX(20px) scale(1.5) skewX(20deg); opacity: 0.5; /* Glitch */ }
+            60% { transform: translateY(40vh) translateX(-20px) scale(1.5); opacity: 1; }
+            100% { transform: translateY(-100px) translateX(-50px) scale(0); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Depth of Field Particle Layer -->
+    <!-- Background Particle System -->
     <div id="particle-layer"></div>
 
     <div id="overlay-container">
@@ -232,14 +262,14 @@
         <!-- Top Protocol Banner -->
         <div class="protocol-banner">
             <div class="protocol-label" id="tier-display">SYS_INIT</div>
-            <div class="protocol-sub" id="mode-display">AWAITING TARGET</div>
+            <div class="protocol-sub" id="mode-display">AWAITING CONNECTION</div>
         </div>
 
         <!-- 1. Total Points -->
         <div class="monolith-wrapper" id="wrap-points">
             <div class="monolith-block">
                 <div class="stat-label">Bloodpoints Extracted</div>
-                <div class="stat-value" id="val-points">0</div>
+                <div class="stat-value" id="val-points" data-val="0">0</div>
             </div>
         </div>
 
@@ -247,8 +277,8 @@
         <div class="monolith-wrapper" id="wrap-cleared">
             <div class="monolith-block">
                 <div class="stat-label">Killers Cleansed</div>
-                <div class="stat-value" id="val-cleared">0</div>
-                <div class="stat-subtext" id="sub-cleared">ROSTER STATUS: UNKNOWN</div>
+                <div class="stat-value" id="val-cleared" data-val="0">0</div>
+                <div class="stat-subtext" id="sub-cleared">ROSTER: SCANNING...</div>
             </div>
         </div>
 
@@ -256,7 +286,7 @@
         <div class="monolith-wrapper" id="wrap-perks">
             <div class="monolith-block">
                 <div class="stat-label">Perks Shattered</div>
-                <div class="stat-value" id="val-perks">0</div>
+                <div class="stat-value" id="val-perks" data-val="0">0</div>
             </div>
         </div>
 
@@ -264,7 +294,7 @@
         <div class="monolith-wrapper" id="wrap-losses">
             <div class="monolith-block">
                 <div class="stat-label">Total Defeats</div>
-                <div class="stat-value" id="val-losses">0</div>
+                <div class="stat-value" id="val-losses" data-val="0">0</div>
             </div>
         </div>
 
@@ -275,9 +305,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // ----------------------------------------------------------------------
-        // FIREBASE CREDENTIALS
-        // ----------------------------------------------------------------------
+
         const firebaseConfig = {
             apiKey: "AIzaSyBMAxj2E3snmnOcQXIylkIIS1cTnuu0hlY",
             authDomain: "dashboard-1db87.firebaseapp.com",
@@ -296,55 +324,47 @@
         const modeDisplay = document.getElementById('mode-display');
         const tierDisplay = document.getElementById('tier-display');
 
-     
-        function spawnEmbers() {
+        function spawnDigitalAsh() {
             const layer = document.getElementById('particle-layer');
             setInterval(() => {
-                const ember = document.createElement('div');
-                ember.classList.add('ember');
+                const ash = document.createElement('div');
+                ash.classList.add('digital-ash');
                 
-                const size = Math.random() * 5 + 1; 
-                ember.style.width = `${size}px`;
-                ember.style.height = `${size}px`;
+                // Spawn randomly on the right side
+                ash.style.right = `${Math.random() * 400 - 50}px`;
+                ash.style.animationDuration = `${Math.random() * 4 + 2}s`;
                 
-                // Random depth blurring
-                if (Math.random() > 0.6) ember.style.filter = `blur(${Math.random() * 3}px)`;
-                
-                // Spawn on right side of screen
-                ember.style.right = `${Math.random() * 500}px`;
-                ember.style.animationDuration = `${Math.random() * 3 + 2}s`;
-                
-                layer.appendChild(ember);
-                setTimeout(() => ember.remove(), 5000);
-            }, 150); // High density
+                layer.appendChild(ash);
+                setTimeout(() => ash.remove(), 6000);
+            }, 200); 
         }
-        spawnEmbers();
+        spawnDigitalAsh();
 
         if (!streamerUsername) {
-            tierDisplay.innerText = "ERROR";
+            tierDisplay.innerText = "ERROR_404";
             modeDisplay.innerText = "NO TARGET ASSIGNED";
             document.querySelector('.protocol-banner').classList.add('hardcore-pulse');
         } else {
-   
-            function cipherRoll(obj, start, end, duration) {
+            
+            function hyperDecipherRoll(obj, start, end, duration) {
                 let startTimestamp = null;
-                const glitchChars = "¥§%&X#@80Z";
+                const cyberChars = "01X%#8Z"; // Numbers and blocky symbols
                 
                 const step = (timestamp) => {
                     if (!startTimestamp) startTimestamp = timestamp;
                     const progress = Math.min((timestamp - startTimestamp) / duration, 1);
                     
-                    if (progress < 0.8) {
-                        // Glitch phase: Rapidly cycle random symbols
+                    if (progress < 0.6) {
+                        // The "Scramble" Phase: Rapidly print random symbols matching the length of the final number
                         let randomStr = "";
                         const len = end.toString().length;
-                        for(let i=0; i<len; i++) {
-                            randomStr += glitchChars[Math.floor(Math.random() * glitchChars.length)];
+                        for(let i = 0; i < len; i++) {
+                            randomStr += cyberChars[Math.floor(Math.random() * cyberChars.length)];
                         }
                         obj.innerText = randomStr;
                     } else {
-                        // Snap phase: ease into actual number
-                        const easeOut = 1 - Math.pow(1 - ((progress - 0.8) * 5), 3);
+                        // The "Odometer Snap" Phase: Ease rapidly into the correct number
+                        const easeOut = 1 - Math.pow(1 - ((progress - 0.6) * 2.5), 4);
                         const current = Math.floor(start + (end - start) * easeOut);
                         obj.innerText = current.toLocaleString();
                     }
@@ -353,37 +373,37 @@
                         window.requestAnimationFrame(step);
                     } else {
                         obj.innerText = end.toLocaleString();
+                        obj.setAttribute('data-val', end);
                     }
                 };
                 window.requestAnimationFrame(step);
             }
 
-
             const previousState = { points: null, cleared: null, perks: null, losses: null };
 
-            function triggerImpactUpdate(elementId, wrapId, newValue, stateKey) {
+            function triggerPremiumImpact(elementId, wrapId, newValue, stateKey) {
                 const el = document.getElementById(elementId);
                 const wrap = document.getElementById(wrapId);
                 
                 if (previousState[stateKey] !== newValue) {
                     const oldValue = previousState[stateKey] === null ? 0 : previousState[stateKey];
                     
-                    // Reset Animations instantly via reflow hack
+                    // Reset Animations instantly via DOM reflow
                     el.classList.remove('cipher-flash');
-                    wrap.classList.remove('impact-glitch');
+                    wrap.classList.remove('impact-shockwave');
                     void wrap.offsetWidth; 
                     
-                    // Fire violent glitch and decipher
-                    wrap.classList.add('impact-glitch');
+                    // Fire the violent shockwave and bright text slam
+                    wrap.classList.add('impact-shockwave');
                     el.classList.add('cipher-flash');
                     
-                    cipherRoll(el, oldValue, newValue, 600);
+                    // Roll numbers aggressively (700ms to match the CSS animation duration)
+                    hyperDecipherRoll(el, oldValue, newValue, 700);
                     
                     previousState[stateKey] = newValue;
                 }
             }
 
-          
             const userRef = doc(db, 'player_state', streamerUsername);
             
             onSnapshot(userRef, (docSnap) => {
@@ -396,6 +416,7 @@
                     const completedArray = data.completed_killers || [];
                     const currentCleansed = completedArray.length;
                     
+                    // Calculate true total cleared based on Tiers
                     const totalCleansed = (currentTier * 44) + currentCleansed;
                     
                     const stats = data.stats || {};
@@ -406,26 +427,26 @@
                     // Update Top Banner
                     tierDisplay.innerText = `TIER ${currentTier}`;
                     if (mode === 'hardcore') {
-                        modeDisplay.innerText = "HARDCORE PROTOCOL";
+                        modeDisplay.innerText = "HARDCORE PROTOCOL ACTIVE";
                         document.querySelector('.protocol-banner').classList.add('hardcore-pulse');
                     } else {
-                        modeDisplay.innerText = "NORMAL PROTOCOL";
+                        modeDisplay.innerText = "NORMAL PROTOCOL ACTIVE";
                         document.querySelector('.protocol-banner').classList.remove('hardcore-pulse');
                     }
 
                     document.getElementById('sub-cleared').innerText = `${currentCleansed} / 44 (TIER ${currentTier})`;
 
-                    // Trigger AAA Animations
-                    triggerImpactUpdate('val-points', 'wrap-points', points, 'points');
-                    triggerImpactUpdate('val-cleared', 'wrap-cleared', totalCleansed, 'cleared');
-                    triggerImpactUpdate('val-perks', 'wrap-perks', sacrificed, 'perks');
-                    triggerImpactUpdate('val-losses', 'wrap-losses', losses, 'losses');
+                    // Trigger High-End Animations
+                    triggerPremiumImpact('val-points', 'wrap-points', points, 'points');
+                    triggerPremiumImpact('val-cleared', 'wrap-cleared', totalCleansed, 'cleared');
+                    triggerPremiumImpact('val-perks', 'wrap-perks', sacrificed, 'perks');
+                    triggerPremiumImpact('val-losses', 'wrap-losses', losses, 'losses');
 
                 } else {
                     modeDisplay.innerText = "AWAITING TARGET DATA...";
                 }
             }, (error) => {
-                tierDisplay.innerText = "ERROR";
+                tierDisplay.innerText = "ERROR_503";
                 modeDisplay.innerText = "UPLINK SEVERED";
                 document.querySelector('.protocol-banner').classList.add('hardcore-pulse');
             });

@@ -360,9 +360,7 @@
                 }
             }
 
-            // ----------------------------------------------------------------------
-            // FIREBASE REAL-TIME SYNC
-            // ----------------------------------------------------------------------
+            
             const userRef = doc(db, 'roulette_state', streamerUsername);
             
             onSnapshot(userRef, (docSnap) => {

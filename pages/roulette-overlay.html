@@ -3,27 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entity's Roulette - Overlay</title>
+    <title>Entity's Roulette - AAA Addictive Overlay</title>
     
     <!-- Ultra Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,700;0,900;1,900&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
         /* ==========================================================================
-           AAA HOLOGRAPHIC DESIGN SYSTEM - HIGH LEGIBILITY EDITION
+           AAA HOLOGRAPHIC DESIGN SYSTEM - ADDICTIVE & HIGH LEGIBILITY
            ========================================================================== */
         :root {
-            /* Ultra-Transparent Glassmorphism for OBS */
-            --bg-glass-base: rgba(5, 5, 8, 0.45);
-            --bg-glass-highlight: rgba(15, 15, 25, 0.75);
-            --border-sheen: rgba(255, 255, 255, 0.25);
+            /* Deep Obsidian Glass */
+            --bg-glass: rgba(8, 8, 12, 0.85);
+            --bg-glass-light: rgba(20, 20, 28, 0.95);
             
-            /* High-Fidelity Neon Palette */
-            --gold-aura: #ffaa00; --gold-ambient: rgba(255, 170, 0, 0.2);
-            --blood-aura: #ff003c; --blood-ambient: rgba(255, 0, 60, 0.2);
-            --ethereal-aura: #00e5ff; --ethereal-ambient: rgba(0, 229, 255, 0.2);
-            --diamond-aura: #b3d4ff; --diamond-ambient: rgba(179, 212, 255, 0.2);
-            --void-aura: #9d00ff; --void-ambient: rgba(157, 0, 255, 0.2);
+            /* Hyper-Saturated Neon Palette */
+            --gold-glow: #ffc400; --gold-dark: #997300;
+            --blood-glow: #ff003c; --blood-dark: #8a0020;
+            --ethereal-glow: #00f0ff; --ethereal-dark: #007a8a;
+            --diamond-glow: #d4e8ff; --diamond-dark: #5a7399;
+            --void-glow: #ae00ff; --void-dark: #5e008a;
 
             --font-ui: 'Teko', sans-serif;
             --font-data: 'Montserrat', sans-serif;
@@ -40,223 +39,194 @@
         }
 
         /* --------------------------------------------------------------------------
-           3D PERSPECTIVE STAGE
+           STAGE (Flattened for Pixel-Perfect Downscaling in OBS)
            -------------------------------------------------------------------------- */
         #perspective-wrapper {
             position: absolute; top: 0; right: 0;
             width: 100%; height: 100%;
-            perspective: 2000px; 
             display: flex; justify-content: flex-end;
             padding: 30px 40px 0 0; 
         }
 
         #overlay-container {
-            display: flex; flex-direction: column; gap: 20px; 
-            width: 400px; /* Slightly wider for massive text */
-            transform-style: preserve-3d;
-            transform: rotateY(-6deg) rotateX(2deg);
+            display: flex; flex-direction: column; gap: 26px; /* Increased gap for glowing borders */
+            width: 420px; 
+            /* 3D Transform REMOVED to keep it perfectly sharp at small sizes */
         }
 
         /* --------------------------------------------------------------------------
-           PREMIUM DATA BLOCKS (Glass & Independent Parallax)
+           PREMIUM DATA BLOCKS (Liquid Glass & THICK Conic Borders)
            -------------------------------------------------------------------------- */
-        .stat-block {
+        .stat-block-wrapper {
             position: relative;
-            background: linear-gradient(135deg, var(--bg-glass-base) 0%, rgba(2,2,3,0.95) 100%);
-            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
-            border-top: 1.5px solid var(--border-sheen);
-            border-left: 1.5px solid var(--border-sheen);
-            padding: 12px 25px; /* Tighter padding lets text dominate */
-            display: flex; flex-direction: column; justify-content: center;
-            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
-            transform-style: preserve-3d;
+            border-radius: 20px; /* Rounder to accommodate thicker border */
+            padding: 6px; /* <-- DOUBLED BORDER THICKNESS (Was 3px) */
+            background: rgba(0,0,0,0.9);
             overflow: hidden;
+            
+            /* The wrapper now casts a colored glow based on its theme */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.9), 0 0 25px var(--theme-dark);
             
             /* Boot Sequence + Independent Floating */
             opacity: 0;
             animation: 
-                hudBootSequence 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, 
-                independentFloat 6s ease-in-out infinite alternate forwards,
-                ambientBreathe 4s ease-in-out infinite alternate;
+                hudBootSequence 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, 
+                independentFloat 6s ease-in-out infinite alternate forwards;
         }
 
-        /* Staggered Boot Animations */
-        #box-safe   { animation-delay: 0.1s, 0.1s, 0s; --flash-color: var(--gold-aura); }
-        #box-pot    { animation-delay: 0.3s, 1.2s, 1s; --flash-color: var(--blood-aura); }
-        #box-streak { animation-delay: 0.5s, 2.3s, 2s; --flash-color: var(--ethereal-aura); }
-        #box-best   { animation-delay: 0.7s, 3.4s, 3s; --flash-color: var(--diamond-aura); }
-        #box-jail   { animation-delay: 0.9s, 4.5s, 4s; --flash-color: var(--void-aura); }
+        /* Staggered Boot Animations & Theme Assignments */
+        #wrap-safe   { animation-delay: 0.1s, 0.1s; --theme-color: var(--gold-glow); --theme-dark: var(--gold-dark); }
+        #wrap-pot    { animation-delay: 0.2s, 1.2s; --theme-color: var(--blood-glow); --theme-dark: var(--blood-dark); }
+        #wrap-streak { animation-delay: 0.3s, 2.3s; --theme-color: var(--ethereal-glow); --theme-dark: var(--ethereal-dark); }
+        #wrap-best   { animation-delay: 0.4s, 3.4s; --theme-color: var(--diamond-glow); --theme-dark: var(--diamond-dark); }
+        #wrap-jail   { animation-delay: 0.5s, 4.5s; --theme-color: var(--void-glow); --theme-dark: var(--void-dark); }
 
         @keyframes hudBootSequence {
-            0% { opacity: 0; transform: translateX(100px) translateZ(-100px) scale(0.8) rotateX(-15deg); filter: blur(20px); }
-            100% { opacity: 1; transform: translateX(0) translateZ(0) scale(1) rotateX(0deg); filter: blur(0); }
+            0% { opacity: 0; transform: translateX(80px) scale(0.9); filter: blur(15px); }
+            100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
         }
 
         @keyframes independentFloat {
-            0% { transform: translateY(0px) translateZ(0px) rotateX(0deg); }
-            100% { transform: translateY(-6px) translateZ(20px) rotateX(3deg); }
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-8px); }
         }
 
-        @keyframes ambientBreathe {
-            0% { box-shadow: inset 0 0 20px rgba(0,0,0,0.9); }
-            100% { box-shadow: inset 0 0 60px var(--flash-color); }
-        }
-
-        /* --------------------------------------------------------------------------
-           SCANLINES & EDGE GLOWS
-           -------------------------------------------------------------------------- */
-        .stat-block::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 6px; height: 100%; z-index: 2;
-            background: #fff;
-            box-shadow: 0 0 15px var(--flash-color), 0 0 30px var(--flash-color);
-            animation: edgePulse 2s ease-in-out infinite alternate;
-        }
-        
-        @keyframes edgePulse {
-            0% { opacity: 0.5; filter: brightness(1); }
-            100% { opacity: 1; filter: brightness(2); box-shadow: 0 0 25px #fff, 0 0 50px var(--flash-color); }
-        }
-
-        /* CRT Diagonal Overlay */
-        .stat-block::after {
-            content: ''; position: absolute; inset: 0;
-            background-image: repeating-linear-gradient(
-                45deg, transparent, transparent 4px, rgba(255, 255, 255, 0.03) 4px, rgba(255, 255, 255, 0.03) 8px
+        /* THICK Continuous Spinning Conic Border */
+        .spinning-border {
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            /* Modified gradient to be much brighter and more prominent */
+            background: conic-gradient(
+                transparent 0deg, 
+                transparent 120deg, 
+                var(--theme-dark) 220deg, 
+                var(--theme-color) 360deg
             );
-            pointer-events: none; z-index: 1; opacity: 1;
+            animation: spin 2.5s linear infinite; /* Slightly faster spin */
+            z-index: 1;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Inner Glass Panel */
+        .stat-block {
+            position: relative;
+            background: linear-gradient(135deg, var(--bg-glass) 0%, var(--bg-glass-light) 100%);
+            border-radius: 14px; /* Mathematically fits inside the 20px wrapper with 6px padding */
+            padding: 14px 28px; 
+            display: flex; flex-direction: column; justify-content: center;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            z-index: 2;
+            overflow: hidden;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.9);
+            transition: background 0.3s ease;
         }
 
         /* --------------------------------------------------------------------------
-           TYPOGRAPHY: ENGINEERED FOR TINY SIZES
+           GLOSSY LIGHT SWEEP (Ambient Premium Polish)
+           -------------------------------------------------------------------------- */
+        .stat-block::after {
+            content: ''; position: absolute; top: 0; left: -150%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transform: skewX(-25deg);
+            z-index: 1;
+            animation: glossSweep 7s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+        }
+        @keyframes glossSweep {
+            0% { left: -150%; }
+            20% { left: 200%; }
+            100% { left: 200%; }
+        }
+
+        /* --------------------------------------------------------------------------
+           TYPOGRAPHY: ENGINEERED FOR TINY SIZES (MAX LEGIBILITY)
            -------------------------------------------------------------------------- */
         .stat-label {
-            font-family: var(--font-ui); font-size: 1.6rem; text-transform: uppercase; letter-spacing: 5px;
-            margin-bottom: -10px; font-weight: 700; z-index: 4; position: relative;
+            font-family: var(--font-ui); font-size: 1.8rem; text-transform: uppercase; letter-spacing: 4px;
+            margin-bottom: -12px; font-weight: 700; z-index: 4; position: relative;
             display: flex; justify-content: space-between; align-items: flex-end;
-            transform: translateZ(25px);
             color: #ffffff;
-            text-shadow: 0 2px 4px rgba(0,0,0,1), 0 0 10px var(--flash-color);
+            text-shadow: 0 4px 6px rgba(0,0,0,1), 0 0 15px var(--theme-color);
+        }
+
+        .stat-label span {
+            font-size: 1.35rem; opacity: 0.9; color: var(--theme-color);
+            text-shadow: 0 2px 4px rgba(0,0,0,1);
         }
 
         .stat-value {
             font-family: var(--font-data); 
-            font-size: 4.5rem; /* MASSIVE for downscaling */
+            font-size: 5rem; /* GIGANTIC */
             font-weight: 900; font-style: italic; 
-            line-height: 1.05; letter-spacing: 2px; z-index: 4; position: relative;
-            transform: translateZ(40px);
+            line-height: 1.05; letter-spacing: 1px; z-index: 4; position: relative;
             
-            /* The Legibility Matrix: Pure white core, black stroke, deep black shadow, neon aura */
+            /* The High-Contrast Matrix */
             color: #ffffff;
-            -webkit-text-stroke: 1px rgba(0,0,0,0.6);
+            -webkit-text-stroke: 2px #000000; /* Thick black outline */
             text-shadow: 
-                0 0 15px var(--flash-color), 
-                0 0 30px var(--flash-color), 
-                0 0 50px var(--flash-color), 
-                0 6px 0px rgba(0,0,0,0.9), /* Hard black 3D block underneath */
+                0 0 20px var(--theme-color), 
+                0 0 40px var(--theme-color), 
+                0 6px 0px #000000, 
                 0 15px 25px rgba(0,0,0,0.9);
+            
+            transform-origin: left center;
         }
 
         .stat-subtext {
-            font-family: var(--font-ui); font-size: 1.4rem; letter-spacing: 3px;
-            margin-top: -6px; font-weight: 600; z-index: 4; position: relative;
-            transform: translateZ(20px);
+            font-family: var(--font-ui); font-size: 1.5rem; letter-spacing: 3px;
+            margin-top: -4px; font-weight: 600; z-index: 4; position: relative;
             color: #ffffff;
             text-shadow: 0 2px 4px rgba(0,0,0,1);
         }
 
-        /* Dynamic Multiplier Animation */
+        /* Dynamic Multiplier Alert */
         .multi-high {
             color: #FFD700 !important;
-            animation: dangerPulse 0.8s infinite alternate !important;
+            animation: dangerPulse 0.6s infinite alternate !important;
         }
         @keyframes dangerPulse {
-            0% { text-shadow: 0 0 10px #ffaa00, 0 2px 4px rgba(0,0,0,1); transform: translateZ(20px) scale(1); }
-            100% { text-shadow: 0 0 30px #ffaa00, 0 0 50px #ffaa00, 0 2px 4px rgba(0,0,0,1); transform: translateZ(30px) scale(1.05); }
-        }
-
-        .block-safe { border-right: 2px solid rgba(255, 170, 0, 0.8); background-color: var(--gold-ambient); }
-        .block-pot { border-right: 2px solid rgba(255, 0, 60, 0.8); background-color: var(--blood-ambient); }
-        .block-streak { border-right: 2px solid rgba(0, 229, 255, 0.8); background-color: var(--ethereal-ambient); }
-        .block-best { border-right: 2px solid rgba(179, 212, 255, 0.8); background-color: var(--diamond-ambient); }
-        .block-jail { border-right: 2px solid rgba(157, 0, 255, 0.8); background-color: var(--void-ambient); }
-
-        /* --------------------------------------------------------------------------
-           CONTINUOUS ENTITY SPORE PARTICLES
-           -------------------------------------------------------------------------- */
-        .spore {
-            position: absolute;
-            background: #fff;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 1;
-            box-shadow: 0 0 10px var(--flash-color), 0 0 20px var(--flash-color);
-            animation: floatUp linear infinite;
-        }
-
-        @keyframes floatUp {
-            0% { transform: translateY(100px) scale(0); opacity: 0; }
-            20% { opacity: 0.8; }
-            80% { opacity: 0.8; }
-            100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
+            0% { text-shadow: 0 0 10px #ffaa00, 0 2px 4px rgba(0,0,0,1); transform: scale(1); }
+            100% { text-shadow: 0 0 30px #ffaa00, 0 0 60px #ffaa00, 0 2px 4px rgba(0,0,0,1); transform: scale(1.08) translateX(10px); }
         }
 
         /* --------------------------------------------------------------------------
-           ADVANCED UPDATE PHYSICS
+           ADDICTIVE UPDATE PHYSICS (Slot Machine Roll & Heartbeat Flash)
            -------------------------------------------------------------------------- */
-        .text-glitch-out { animation: glitchOut 0.4s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards; }
-        @keyframes glitchOut {
-            0% { opacity: 1; transform: translateX(0) skewX(0) scale(1); filter: blur(0px); }
-            50% { opacity: 0.8; transform: translateX(10px) skewX(-20deg) scale(1.1); filter: blur(2px); color: #fff; text-shadow: -4px 0 #ff003c, 4px 0 #00e5ff; }
-            100% { opacity: 0; transform: translateX(30px) skewX(-40deg) scale(0.5); filter: blur(10px); }
+        .update-flash-container {
+            animation: containerFlash 0.6s ease-out forwards;
+        }
+        @keyframes containerFlash {
+            0% { background: var(--bg-glass); box-shadow: inset 0 0 40px rgba(0,0,0,0.9); }
+            20% { background: rgba(255,255,255,0.2); box-shadow: inset 0 0 150px var(--theme-color); }
+            100% { background: var(--bg-glass); box-shadow: inset 0 0 40px rgba(0,0,0,0.9); }
         }
 
-        .text-glitch-in { animation: glitchIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        @keyframes glitchIn {
-            0% { opacity: 0; transform: translateX(-30px) scaleY(1.8) scaleX(0.5) skewX(40deg); filter: blur(10px); color: #fff; text-shadow: -10px 0 #ff003c, 10px 0 #00e5ff; }
-            40% { opacity: 1; transform: translateX(5px) scaleY(0.9) scaleX(1.1) skewX(-10deg); filter: blur(1px); color: #fff; text-shadow: -3px 0 #ff003c, 3px 0 #00e5ff; }
-            100% { opacity: 1; transform: translateX(0) scaleY(1) scaleX(1) skewX(0); filter: blur(0px); }
+        .update-pop-text {
+            animation: textPopHit 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
-
-        .box-glow-surge { animation: smoothWash 1.2s ease-out forwards; }
-        @keyframes smoothWash {
-            0% { filter: brightness(1); }
-            20% { filter: brightness(2.5); box-shadow: inset 0 0 150px var(--flash-color); background-color: rgba(255,255,255,0.2); }
-            100% { filter: brightness(1); }
-        }
-
-        .scanner-beam {
-            position: absolute; top: 0; left: 0; width: 100%; height: 3px;
-            background: #fff;
-            box-shadow: 0 0 15px #fff, 0 0 30px var(--flash-color), 0 -15px 40px var(--flash-color);
-            opacity: 0; z-index: 5; pointer-events: none;
-        }
-        .fire-scanner { animation: scanDown 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        @keyframes scanDown {
-            0% { top: 0; opacity: 1; height: 2px; }
-            50% { opacity: 1; height: 10px; }
-            100% { top: 100%; opacity: 0; height: 2px; }
-        }
-
-        .data-stream {
-            position: absolute; height: 3px;
-            background: linear-gradient(90deg, transparent, #fff, var(--flash-color), transparent);
-            pointer-events: none; z-index: 10; opacity: 0; border-radius: 2px;
+        @keyframes textPopHit {
+            0% { transform: scale(1); filter: brightness(1); }
+            30% { transform: scale(1.2) rotate(-2deg); filter: brightness(2) drop-shadow(0 0 30px #fff); color: #fff; -webkit-text-stroke: 2px var(--theme-color); }
+            100% { transform: scale(1) rotate(0deg); filter: brightness(1); color: #ffffff; -webkit-text-stroke: 2px #000000; }
         }
 
         /* --------------------------------------------------------------------------
            HUD HEADER
            -------------------------------------------------------------------------- */
         #connection-status {
-            font-family: var(--font-ui); font-size: 1.6rem; color: #ffffff;
-            text-shadow: 0 2px 4px rgba(0,0,0,1);
-            text-align: right; text-transform: uppercase; letter-spacing: 5px;
-            display: flex; justify-content: flex-end; align-items: center; gap: 14px;
-            padding-right: 5px; font-weight: 700; transform: translateZ(20px);
+            font-family: var(--font-ui); font-size: 1.8rem; color: #ffffff;
+            text-shadow: 0 3px 6px rgba(0,0,0,1);
+            text-align: right; text-transform: uppercase; letter-spacing: 6px;
+            display: flex; justify-content: flex-end; align-items: center; gap: 16px;
+            padding-right: 5px; font-weight: 700;
         }
-        .status-dot { width: 14px; height: 14px; border-radius: 50%; background: #ff003c; box-shadow: 0 0 20px #ff003c, 0 0 40px #ff003c; }
+        .status-dot { width: 16px; height: 16px; border-radius: 50%; background: #ff003c; box-shadow: 0 0 20px #ff003c, 0 0 40px #ff003c; border: 2px solid #000; }
         .status-dot.connected { background: #00ff66; box-shadow: 0 0 20px #00ff66, 0 0 40px #00ff66; animation: statusBeat 1s infinite alternate; }
-        @keyframes statusBeat { 0% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0.5; transform: scale(1); } }
+        @keyframes statusBeat { 0% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0.6; transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -270,46 +240,56 @@
             </div>
 
             <!-- Block 1 -->
-            <div class="stat-block block-safe" id="box-safe">
-                <div class="scanner-beam"></div>
-                <div class="stat-label">Safe Bank <span style="font-size: 1.2rem; opacity: 0.7; color: #ffaa00;">PTS</span></div>
-                <div class="stat-value" id="val-safe" data-val="0">0</div>
+            <div class="stat-block-wrapper" id="wrap-safe">
+                <div class="spinning-border"></div>
+                <div class="stat-block" id="box-safe">
+                    <div class="stat-label">Safe Bank <span>PTS</span></div>
+                    <div class="stat-value" id="val-safe">0</div>
+                </div>
             </div>
 
             <!-- Block 2 -->
-            <div class="stat-block block-pot" id="box-pot">
-                <div class="scanner-beam"></div>
-                <div class="stat-label">Active Pot <span style="font-size: 1.2rem; opacity: 0.7; color: #ff003c;">RISK</span></div>
-                <div class="stat-value" id="val-pot" data-val="0">0</div>
-                <div class="stat-subtext" id="sub-multiplier">MULTI: 1.0x</div>
+            <div class="stat-block-wrapper" id="wrap-pot">
+                <div class="spinning-border"></div>
+                <div class="stat-block" id="box-pot">
+                    <div class="stat-label">Active Pot <span>RISK</span></div>
+                    <div class="stat-value" id="val-pot">0</div>
+                    <div class="stat-subtext" id="sub-multiplier">MULTI: 1.0x</div>
+                </div>
             </div>
 
             <!-- Block 3 -->
-            <div class="stat-block block-streak" id="box-streak">
-                <div class="scanner-beam"></div>
-                <div class="stat-label">Global Streak <span style="font-size: 1.2rem; opacity: 0.7; color: #00e5ff;">WINS</span></div>
-                <div class="stat-value" id="val-streak" data-val="0">0</div>
+            <div class="stat-block-wrapper" id="wrap-streak">
+                <div class="spinning-border"></div>
+                <div class="stat-block" id="box-streak">
+                    <div class="stat-label">Global Streak <span>WINS</span></div>
+                    <div class="stat-value" id="val-streak">0</div>
+                </div>
             </div>
 
             <!-- Block 4 -->
-            <div class="stat-block block-best" id="box-best">
-                <div class="scanner-beam"></div>
-                <div class="stat-label">Highest Streak <span style="font-size: 1.2rem; opacity: 0.7; color: #b3d4ff;">RECORD</span></div>
-                <div class="stat-value" id="val-best" data-val="0">0</div>
+            <div class="stat-block-wrapper" id="wrap-best">
+                <div class="spinning-border"></div>
+                <div class="stat-block" id="box-best">
+                    <div class="stat-label">Highest Streak <span>RECORD</span></div>
+                    <div class="stat-value" id="val-best">0</div>
+                </div>
             </div>
 
             <!-- Block 5 -->
-            <div class="stat-block block-jail" id="box-jail">
-                <div class="scanner-beam"></div>
-                <div class="stat-label">Perks in Jail <span style="font-size: 1.2rem; opacity: 0.7; color: #9d00ff;">LOCKED</span></div>
-                <div class="stat-value" id="val-jail" data-val="0">0</div>
+            <div class="stat-block-wrapper" id="wrap-jail">
+                <div class="spinning-border"></div>
+                <div class="stat-block" id="box-jail">
+                    <div class="stat-label">Perks in Jail <span>LOCKED</span></div>
+                    <div class="stat-value" id="val-jail">0</div>
+                </div>
             </div>
 
         </div>
     </div>
 
     <!-- ==========================================================================
-         JAVASCRIPT LOGIC & ADVANCED PHYSICS
+         JAVASCRIPT LOGIC & ADDICTIVE TWEENING
          ========================================================================== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -336,91 +316,43 @@
         const statusText = document.getElementById('streamer-name-display');
         const statusDot = document.getElementById('dot-status');
 
-        // ----------------------------------------------------------------------
-        // AMBIENT SPORE PARTICLE GENERATOR
-        // ----------------------------------------------------------------------
-        function createAmbientSpores() {
-            const blocks = document.querySelectorAll('.stat-block');
-            blocks.forEach(block => {
-                setInterval(() => {
-                    const spore = document.createElement('div');
-                    spore.classList.add('spore');
-                    
-                    const size = Math.random() * 4 + 2; // 2px to 6px
-                    spore.style.width = `${size}px`;
-                    spore.style.height = `${size}px`;
-                    spore.style.left = `${Math.random() * 100}%`;
-                    spore.style.animationDuration = `${Math.random() * 3 + 2}s`;
-                    
-                    block.appendChild(spore);
-                    setTimeout(() => spore.remove(), 5000);
-                }, 800); // Spawn a new spore every 800ms per block
-            });
-        }
-        createAmbientSpores();
-
         if (!streamerUsername) {
             statusText.innerText = "NO TARGET ASSIGNED";
-            statusText.style.color = "var(--blood-aura)";
+            statusText.style.color = "var(--blood-glow)";
         } else {
             statusText.innerText = `UPLINK: ${streamerUsername.toUpperCase()}`;
             
             // ----------------------------------------------------------------------
-            // HACKER DECRYPTION SCRAMBLE
+            // HIGH-SPEED SLOT MACHINE ROLL (ADDICTIVE COUNTING)
             // ----------------------------------------------------------------------
-            function scrambleValue(obj, start, end, duration) {
+            function slotMachineRoll(obj, start, end, duration) {
                 let startTimestamp = null;
-                const cyberChars = '01XYZ%#@&¥';
                 
                 const step = (timestamp) => {
                     if (!startTimestamp) startTimestamp = timestamp;
                     const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                    const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-                    const current = Math.floor(start + (end - start) * easeProgress);
+                    
+                    // Ease Out Quart: Starts incredibly fast, slows down sharply at the end (Maximum Dopamine)
+                    const easeOut = 1 - Math.pow(1 - progress, 4);
+                    const current = Math.floor(start + (end - start) * easeOut);
+                    
+                    // Add motion blur simulation via text shadow when moving fast
+                    if (progress < 0.8) {
+                        obj.style.textShadow = `0 10px 10px rgba(255,255,255,0.5), 0 -10px 10px rgba(255,255,255,0.5)`;
+                    } else {
+                        obj.style.textShadow = ''; // Return to CSS default
+                    }
+
+                    obj.innerText = current.toLocaleString();
                     
                     if (progress < 1) {
-                        let currentStr = current.toString();
-                        let scrambled = currentStr.split('').map(c => 
-                            Math.random() < 0.5 ? cyberChars[Math.floor(Math.random() * cyberChars.length)] : c
-                        ).join('');
-                        obj.innerText = scrambled;
                         window.requestAnimationFrame(step);
                     } else {
                         obj.innerText = end.toLocaleString();
-                        obj.setAttribute('data-val', end); 
+                        obj.style.textShadow = ''; 
                     }
                 };
                 window.requestAnimationFrame(step);
-            }
-
-            // ----------------------------------------------------------------------
-            // HORIZONTAL DATA STREAM PARTICLES
-            // ----------------------------------------------------------------------
-            function spawnDataStreams(box) {
-                const streamCount = 5 + Math.floor(Math.random() * 5); 
-                for (let i = 0; i < streamCount; i++) {
-                    const stream = document.createElement('div');
-                    stream.classList.add('data-stream');
-                    
-                    stream.style.width = `${40 + Math.random() * 100}px`;
-                    stream.style.top = `${10 + Math.random() * 80}%`;
-                    stream.style.left = '-150px';
-                    
-                    box.appendChild(stream);
-                    
-                    stream.animate([
-                        { transform: `translateX(0)`, opacity: 0 },
-                        { opacity: 1, offset: 0.1 },
-                        { opacity: 1, offset: 0.9 },
-                        { transform: `translateX(600px)`, opacity: 0 }
-                    ], {
-                        duration: 300 + Math.random() * 300,
-                        easing: 'linear',
-                        fill: 'forwards'
-                    });
-                    
-                    setTimeout(() => stream.remove(), 700);
-                }
             }
 
             // ----------------------------------------------------------------------
@@ -433,27 +365,22 @@
             function triggerPremiumUpdate(elementId, boxId, newValue, stateKey) {
                 const el = document.getElementById(elementId);
                 const box = document.getElementById(boxId);
-                const scanner = box.querySelector('.scanner-beam');
+                const wrapBox = document.getElementById(boxId.replace('box', 'wrap')); // Select the outer glowing wrapper
                 
                 if (previousState[stateKey] !== newValue) {
                     const oldValue = previousState[stateKey] === null ? 0 : previousState[stateKey];
                     
-                    el.classList.remove('text-glitch-in');
-                    el.classList.add('text-glitch-out');
-                    
-                    box.classList.remove('box-glow-surge');
-                    scanner.classList.remove('fire-scanner');
+                    // Reset Animations instantly
+                    el.classList.remove('update-pop-text');
+                    box.classList.remove('update-flash-container');
                     void box.offsetWidth; 
                     
-                    box.classList.add('box-glow-surge');
-                    scanner.classList.add('fire-scanner'); 
+                    // Fire the Flash & Bounce
+                    box.classList.add('update-flash-container');
+                    el.classList.add('update-pop-text');
                     
-                    setTimeout(() => {
-                        el.classList.remove('text-glitch-out');
-                        el.classList.add('text-glitch-in');
-                        spawnDataStreams(box);
-                        scrambleValue(el, oldValue, newValue, 600);
-                    }, 400); 
+                    // Spin the numbers up rapidly (600ms)
+                    slotMachineRoll(el, oldValue, newValue, 600);
                     
                     previousState[stateKey] = newValue;
                 }
@@ -479,7 +406,7 @@
                     const multiEl = document.getElementById('sub-multiplier');
                     multiEl.innerText = `MULTI: ${multiplier.toFixed(1)}x`;
                     
-                    // Activate Danger Pulse for high multipliers
+                    // Activate Violent Danger Pulse for high multipliers
                     if (multiplier >= 2.0) {
                         multiEl.classList.add('multi-high');
                     } else {

@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entity's Roulette - AAA Addictive Overlay</title>
+    <title>Entity's Roulette Overlay</title>
     
     <!-- Ultra Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,700;0,900;1,900&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* ==========================================================================
-           AAA HOLOGRAPHIC DESIGN SYSTEM - ADDICTIVE & HIGH LEGIBILITY
-           ========================================================================== */
+    
         :root {
             /* Deep Obsidian Glass */
             --bg-glass: rgba(8, 8, 12, 0.85);
@@ -38,9 +36,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* --------------------------------------------------------------------------
-           STAGE (Flattened for Pixel-Perfect Downscaling in OBS)
-           -------------------------------------------------------------------------- */
+ 
         #perspective-wrapper {
             position: absolute; top: 0; right: 0;
             width: 100%; height: 100%;
@@ -54,9 +50,7 @@
             /* 3D Transform REMOVED to keep it perfectly sharp at small sizes */
         }
 
-        /* --------------------------------------------------------------------------
-           PREMIUM DATA BLOCKS (Liquid Glass & THICK Conic Borders)
-           -------------------------------------------------------------------------- */
+
         .stat-block-wrapper {
             position: relative;
             border-radius: 20px; /* Rounder to accommodate thicker border */
@@ -126,9 +120,6 @@
             transition: background 0.3s ease;
         }
 
-        /* --------------------------------------------------------------------------
-           GLOSSY LIGHT SWEEP (Ambient Premium Polish)
-           -------------------------------------------------------------------------- */
         .stat-block::after {
             content: ''; position: absolute; top: 0; left: -150%; width: 50%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
@@ -142,9 +133,7 @@
             100% { left: 200%; }
         }
 
-        /* --------------------------------------------------------------------------
-           TYPOGRAPHY: ENGINEERED FOR TINY SIZES (MAX LEGIBILITY)
-           -------------------------------------------------------------------------- */
+
         .stat-label {
             font-family: var(--font-ui); font-size: 1.8rem; text-transform: uppercase; letter-spacing: 4px;
             margin-bottom: -12px; font-weight: 700; z-index: 4; position: relative;
@@ -193,9 +182,7 @@
             100% { text-shadow: 0 0 30px #ffaa00, 0 0 60px #ffaa00, 0 2px 4px rgba(0,0,0,1); transform: scale(1.08) translateX(10px); }
         }
 
-        /* --------------------------------------------------------------------------
-           ADDICTIVE UPDATE PHYSICS (Slot Machine Roll & Heartbeat Flash)
-           -------------------------------------------------------------------------- */
+  
         .update-flash-container {
             animation: containerFlash 0.6s ease-out forwards;
         }
@@ -214,9 +201,7 @@
             100% { transform: scale(1) rotate(0deg); filter: brightness(1); color: #ffffff; -webkit-text-stroke: 2px #000000; }
         }
 
-        /* --------------------------------------------------------------------------
-           HUD HEADER
-           -------------------------------------------------------------------------- */
+  
         #connection-status {
             font-family: var(--font-ui); font-size: 1.8rem; color: #ffffff;
             text-shadow: 0 3px 6px rgba(0,0,0,1);
@@ -288,16 +273,11 @@
         </div>
     </div>
 
-    <!-- ==========================================================================
-         JAVASCRIPT LOGIC & ADDICTIVE TWEENING
-         ========================================================================== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // ----------------------------------------------------------------------
-        // FIREBASE CREDENTIALS
-        // ----------------------------------------------------------------------
+      
         const firebaseConfig = {
             apiKey: "AIzaSyBMAxj2E3snmnOcQXIylkIIS1cTnuu0hlY",
             authDomain: "dashboard-1db87.firebaseapp.com",
@@ -322,9 +302,7 @@
         } else {
             statusText.innerText = `UPLINK: ${streamerUsername.toUpperCase()}`;
             
-            // ----------------------------------------------------------------------
-            // HIGH-SPEED SLOT MACHINE ROLL (ADDICTIVE COUNTING)
-            // ----------------------------------------------------------------------
+
             function slotMachineRoll(obj, start, end, duration) {
                 let startTimestamp = null;
                 
@@ -355,9 +333,6 @@
                 window.requestAnimationFrame(step);
             }
 
-            // ----------------------------------------------------------------------
-            // ADVANCED ANIMATION COORDINATOR
-            // ----------------------------------------------------------------------
             const previousState = {
                 safeBank: null, currentPot: null, totalStreak: null, highestStreak: null, ransomJail: null
             };

@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,700;0,900;1,900&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
-    
         :root {
             /* Deep Obsidian Glass */
             --bg-glass: rgba(8, 8, 12, 0.85);
@@ -35,7 +34,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
- 
         #perspective-wrapper {
             position: absolute; top: 0; right: 0;
             width: 100%; height: 100%;
@@ -43,41 +41,58 @@
             padding: 30px 40px 0 0; 
         }
 
-        #overlay-container {
-            display: flex; flex-direction: column; gap: 26px; /* Increased gap for glowing borders */
-            width: 420px; 
-            /* 3D Transform REMOVED to keep it perfectly sharp at small sizes */
+        /* GRID MANAGER: Stacks Intro and Stats perfectly on top of each other */
+        #view-manager {
+            display: grid;
+            width: 420px;
         }
 
+        .view-layer {
+            grid-area: 1 / 1; /* Forces both views into the exact same spatial grid */
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            
+            /* Advanced Futuristic Transition */
+            opacity: 0;
+            transform: translateX(80px) scale(0.9);
+            filter: blur(15px);
+            pointer-events: none;
+            transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                        transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                        filter 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .view-active {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+            filter: blur(0);
+            pointer-events: auto;
+        }
+
+        #overlay-container {
+            display: flex; flex-direction: column; gap: 26px; 
+            width: 100%; 
+        }
 
         .stat-block-wrapper {
             position: relative;
-            border-radius: 20px; /* Rounder to accommodate thicker border */
-            padding: 6px; /* <-- DOUBLED BORDER THICKNESS (Was 3px) */
+            border-radius: 20px;
+            padding: 6px; 
             background: rgba(0,0,0,0.9);
             overflow: hidden;
-            
-            /* The wrapper now casts a colored glow based on its theme */
             box-shadow: 0 15px 35px rgba(0,0,0,0.9), 0 0 25px var(--theme-dark);
             
-            /* Boot Sequence + Independent Floating */
-            opacity: 0;
-            animation: 
-                hudBootSequence 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, 
-                independentFloat 6s ease-in-out infinite alternate forwards;
+            /* Independent Floating */
+            animation: independentFloat 6s ease-in-out infinite alternate forwards;
         }
 
-        /* Staggered Boot Animations & Theme Assignments */
-        #wrap-safe   { animation-delay: 0.1s, 0.1s; --theme-color: var(--gold-glow); --theme-dark: var(--gold-dark); }
-        #wrap-pot    { animation-delay: 0.2s, 1.2s; --theme-color: var(--blood-glow); --theme-dark: var(--blood-dark); }
-        #wrap-streak { animation-delay: 0.3s, 2.3s; --theme-color: var(--ethereal-glow); --theme-dark: var(--ethereal-dark); }
-        #wrap-best   { animation-delay: 0.4s, 3.4s; --theme-color: var(--diamond-glow); --theme-dark: var(--diamond-dark); }
-        #wrap-jail   { animation-delay: 0.5s, 4.5s; --theme-color: var(--void-glow); --theme-dark: var(--void-dark); }
-
-        @keyframes hudBootSequence {
-            0% { opacity: 0; transform: translateX(80px) scale(0.9); filter: blur(15px); }
-            100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
-        }
+        /* Staggered Float Animations & Theme Assignments */
+        #wrap-safe   { animation-delay: 0.1s; --theme-color: var(--gold-glow); --theme-dark: var(--gold-dark); }
+        #wrap-pot    { animation-delay: 1.2s; --theme-color: var(--blood-glow); --theme-dark: var(--blood-dark); }
+        #wrap-streak { animation-delay: 2.3s; --theme-color: var(--ethereal-glow); --theme-dark: var(--ethereal-dark); }
+        #wrap-best   { animation-delay: 3.4s; --theme-color: var(--diamond-glow); --theme-dark: var(--diamond-dark); }
+        #wrap-jail   { animation-delay: 4.5s; --theme-color: var(--void-glow); --theme-dark: var(--void-dark); }
 
         @keyframes independentFloat {
             0% { transform: translateY(0px); }
@@ -89,14 +104,13 @@
             position: absolute;
             top: -50%; left: -50%;
             width: 200%; height: 200%;
-            /* Modified gradient to be much brighter and more prominent */
             background: conic-gradient(
                 transparent 0deg, 
                 transparent 120deg, 
                 var(--theme-dark) 220deg, 
                 var(--theme-color) 360deg
             );
-            animation: spin 2.5s linear infinite; /* Slightly faster spin */
+            animation: spin 2.5s linear infinite; 
             z-index: 1;
         }
 
@@ -109,7 +123,7 @@
         .stat-block {
             position: relative;
             background: linear-gradient(135deg, var(--bg-glass) 0%, var(--bg-glass-light) 100%);
-            border-radius: 14px; /* Mathematically fits inside the 20px wrapper with 6px padding */
+            border-radius: 14px; 
             padding: 14px 28px; 
             display: flex; flex-direction: column; justify-content: center;
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -132,7 +146,6 @@
             100% { left: 200%; }
         }
 
-
         .stat-label {
             font-family: var(--font-ui); font-size: 1.8rem; text-transform: uppercase; letter-spacing: 4px;
             margin-bottom: -12px; font-weight: 700; z-index: 4; position: relative;
@@ -148,19 +161,16 @@
 
         .stat-value {
             font-family: var(--font-data); 
-            font-size: 5rem; /* GIGANTIC */
+            font-size: 5rem; 
             font-weight: 900; font-style: italic; 
             line-height: 1.05; letter-spacing: 1px; z-index: 4; position: relative;
-            
-            /* The High-Contrast Matrix */
             color: #ffffff;
-            -webkit-text-stroke: 2px #000000; /* Thick black outline */
+            -webkit-text-stroke: 2px #000000;
             text-shadow: 
                 0 0 20px var(--theme-color), 
                 0 0 40px var(--theme-color), 
                 0 6px 0px #000000, 
                 0 15px 25px rgba(0,0,0,0.9);
-            
             transform-origin: left center;
         }
 
@@ -171,7 +181,6 @@
             text-shadow: 0 2px 4px rgba(0,0,0,1);
         }
 
-        /* Dynamic Multiplier Alert */
         .multi-high {
             color: #FFD700 !important;
             animation: dangerPulse 0.6s infinite alternate !important;
@@ -181,7 +190,6 @@
             100% { text-shadow: 0 0 30px #ffaa00, 0 0 60px #ffaa00, 0 2px 4px rgba(0,0,0,1); transform: scale(1.08) translateX(10px); }
         }
 
-  
         .update-flash-container {
             animation: containerFlash 0.6s ease-out forwards;
         }
@@ -200,72 +208,143 @@
             100% { transform: scale(1) rotate(0deg); filter: brightness(1); color: #ffffff; -webkit-text-stroke: 2px #000000; }
         }
 
-  
         #connection-status {
             font-family: var(--font-ui); font-size: 1.8rem; color: #ffffff;
             text-shadow: 0 3px 6px rgba(0,0,0,1);
             text-align: right; text-transform: uppercase; letter-spacing: 6px;
             display: flex; justify-content: flex-end; align-items: center; gap: 16px;
-            padding-right: 5px; font-weight: 700;
+            padding-right: 5px; margin-bottom: 26px; font-weight: 700;
         }
         .status-dot { width: 16px; height: 16px; border-radius: 50%; background: #ff003c; box-shadow: 0 0 20px #ff003c, 0 0 40px #ff003c; border: 2px solid #000; }
         .status-dot.connected { background: #00ff66; box-shadow: 0 0 20px #00ff66, 0 0 40px #00ff66; animation: statusBeat 1s infinite alternate; }
         @keyframes statusBeat { 0% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0.6; transform: scale(1); } }
+
+        /* ========================================================
+           INTRO VIEW SPECIFIC STYLES 
+           ======================================================== */
+        .intro-wrapper {
+            --theme-color: var(--blood-glow); 
+            --theme-dark: var(--blood-dark);
+            height: 100%; /* Inherits full height of the grid cell dictated by stats */
+            width: 100%;
+        }
+
+        .intro-spin {
+            /* Dual colored spin specifically for the massive intro box */
+            background: conic-gradient(
+                transparent 0deg, 
+                var(--gold-dark) 90deg, 
+                var(--gold-glow) 180deg, 
+                transparent 180deg, 
+                var(--blood-dark) 270deg, 
+                var(--blood-glow) 360deg
+            );
+            animation: spin 2s linear infinite; 
+        }
+
+        .intro-block {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .intro-subtitle {
+            font-family: var(--font-ui); font-size: 1.8rem; letter-spacing: 8px; 
+            color: var(--theme-color); margin-bottom: 10px; font-weight: 700;
+            text-shadow: 0 0 10px var(--theme-color), 0 2px 4px rgba(0,0,0,1);
+        }
+
+        .intro-title {
+            font-family: var(--font-data); font-size: 4.5rem; font-weight: 900; font-style: italic; 
+            line-height: 0.95; color: #fff; -webkit-text-stroke: 2px #000; 
+            text-shadow: 0 0 20px var(--theme-color), 0 10px 25px rgba(0,0,0,0.9); 
+            margin-bottom: 25px;
+        }
+
+        .intro-target {
+            font-family: var(--font-ui); font-size: 2.2rem; color: #fff; letter-spacing: 3px;
+            background: rgba(0,0,0,0.7); padding: 5px 25px; border-radius: 8px; 
+            border: 1px solid var(--theme-color); display: inline-block;
+            box-shadow: 0 0 20px rgba(255,0,60,0.3);
+        }
     </style>
 </head>
 <body>
 
     <div id="perspective-wrapper">
-        <div id="overlay-container">
+        <div id="view-manager">
             
-            <div id="connection-status">
-                <span id="streamer-name-display">ESTABLISHING UPLINK...</span>
-                <div class="status-dot" id="dot-status"></div>
-            </div>
-
-            <!-- Block 1 -->
-            <div class="stat-block-wrapper" id="wrap-safe">
-                <div class="spinning-border"></div>
-                <div class="stat-block" id="box-safe">
-                    <div class="stat-label">Safe Bank <span>PTS</span></div>
-                    <div class="stat-value" id="val-safe">0</div>
+            <!-- INTRO VIEW (3 Seconds) -->
+            <div id="intro-view" class="view-layer view-active">
+                <div class="stat-block-wrapper intro-wrapper">
+                    <div class="spinning-border intro-spin"></div>
+                    <div class="stat-block intro-block">
+                        <div class="intro-subtitle">CHALLENGE ACTIVE</div>
+                        <div class="intro-title">ENTITY'S<br>ROULETTE</div>
+                        <div class="intro-target" id="intro-target-name">AWAITING TARGET</div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Block 2 -->
-            <div class="stat-block-wrapper" id="wrap-pot">
-                <div class="spinning-border"></div>
-                <div class="stat-block" id="box-pot">
-                    <div class="stat-label">Active Pot <span>RISK</span></div>
-                    <div class="stat-value" id="val-pot">0</div>
-                    <div class="stat-subtext" id="sub-multiplier">MULTI: 1.0x</div>
+            <!-- STATS / PROGRESS VIEW (5 Seconds) -->
+            <div id="stats-view" class="view-layer">
+                
+                <div id="connection-status">
+                    <span id="streamer-name-display">ESTABLISHING UPLINK...</span>
+                    <div class="status-dot" id="dot-status"></div>
                 </div>
-            </div>
 
-            <!-- Block 3 -->
-            <div class="stat-block-wrapper" id="wrap-streak">
-                <div class="spinning-border"></div>
-                <div class="stat-block" id="box-streak">
-                    <div class="stat-label">Global Streak <span>WINS</span></div>
-                    <div class="stat-value" id="val-streak">0</div>
-                </div>
-            </div>
+                <div id="overlay-container">
+                    
+                    <!-- Block 1 -->
+                    <div class="stat-block-wrapper" id="wrap-safe">
+                        <div class="spinning-border"></div>
+                        <div class="stat-block" id="box-safe">
+                            <div class="stat-label">Safe Bank <span>PTS</span></div>
+                            <div class="stat-value" id="val-safe">0</div>
+                        </div>
+                    </div>
 
-            <!-- Block 4 -->
-            <div class="stat-block-wrapper" id="wrap-best">
-                <div class="spinning-border"></div>
-                <div class="stat-block" id="box-best">
-                    <div class="stat-label">Highest Streak <span>RECORD</span></div>
-                    <div class="stat-value" id="val-best">0</div>
-                </div>
-            </div>
+                    <!-- Block 2 -->
+                    <div class="stat-block-wrapper" id="wrap-pot">
+                        <div class="spinning-border"></div>
+                        <div class="stat-block" id="box-pot">
+                            <div class="stat-label">Active Pot <span>RISK</span></div>
+                            <div class="stat-value" id="val-pot">0</div>
+                            <div class="stat-subtext" id="sub-multiplier">MULTI: 1.0x</div>
+                        </div>
+                    </div>
 
-            <!-- Block 5 -->
-            <div class="stat-block-wrapper" id="wrap-jail">
-                <div class="spinning-border"></div>
-                <div class="stat-block" id="box-jail">
-                    <div class="stat-label">Perks in Jail <span>LOCKED</span></div>
-                    <div class="stat-value" id="val-jail">0</div>
+                    <!-- Block 3 -->
+                    <div class="stat-block-wrapper" id="wrap-streak">
+                        <div class="spinning-border"></div>
+                        <div class="stat-block" id="box-streak">
+                            <div class="stat-label">Global Streak <span>WINS</span></div>
+                            <div class="stat-value" id="val-streak">0</div>
+                        </div>
+                    </div>
+
+                    <!-- Block 4 -->
+                    <div class="stat-block-wrapper" id="wrap-best">
+                        <div class="spinning-border"></div>
+                        <div class="stat-block" id="box-best">
+                            <div class="stat-label">Highest Streak <span>RECORD</span></div>
+                            <div class="stat-value" id="val-best">0</div>
+                        </div>
+                    </div>
+
+                    <!-- Block 5 -->
+                    <div class="stat-block-wrapper" id="wrap-jail">
+                        <div class="spinning-border"></div>
+                        <div class="stat-block" id="box-jail">
+                            <div class="stat-label">Perks in Jail <span>LOCKED</span></div>
+                            <div class="stat-value" id="val-jail">0</div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -276,8 +355,8 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-      
         const firebaseConfig = {
+            // Your config here
             apiKey: "AIzaSyBMAxj2E3snmnOcQXIylkIIS1cTnuu0hlY",
             authDomain: "dashboard-1db87.firebaseapp.com",
             projectId: "dashboard-1db87",
@@ -294,14 +373,49 @@
         
         const statusText = document.getElementById('streamer-name-display');
         const statusDot = document.getElementById('dot-status');
+        const introTargetName = document.getElementById('intro-target-name');
 
+        // ==========================================
+        // UI VIEW LOOP LOGIC (Intro vs Stats)
+        // ==========================================
+        const introView = document.getElementById('intro-view');
+        const statsView = document.getElementById('stats-view');
+        let showingIntro = true;
+
+        function runDisplayLoop() {
+            if (showingIntro) {
+                // Show Intro, Hide Stats
+                introView.classList.add('view-active');
+                statsView.classList.remove('view-active');
+                
+                // Next transition in 3 Seconds
+                setTimeout(runDisplayLoop, 3000); 
+            } else {
+                // Show Stats, Hide Intro
+                statsView.classList.add('view-active');
+                introView.classList.remove('view-active');
+                
+                // Next transition in 5 Seconds
+                setTimeout(runDisplayLoop, 5000); 
+            }
+            showingIntro = !showingIntro;
+        }
+
+        // Start the infinite loop immediately
+        runDisplayLoop();
+
+        // ==========================================
+        // FIREBASE DATA LOGIC 
+        // ==========================================
         if (!streamerUsername) {
             statusText.innerText = "NO TARGET ASSIGNED";
             statusText.style.color = "var(--blood-glow)";
+            introTargetName.innerText = "NO TARGET ASSIGNED";
         } else {
-            statusText.innerText = `UPLINK: ${streamerUsername.toUpperCase()}`;
+            const formattedName = streamerUsername.toUpperCase();
+            statusText.innerText = `UPLINK: ${formattedName}`;
+            introTargetName.innerText = `TARGET: ${formattedName}`;
             
-
             function slotMachineRoll(obj, start, end, duration) {
                 let startTimestamp = null;
                 
@@ -309,15 +423,13 @@
                     if (!startTimestamp) startTimestamp = timestamp;
                     const progress = Math.min((timestamp - startTimestamp) / duration, 1);
                     
-                    // Ease Out Quart: Starts incredibly fast, slows down sharply at the end (Maximum Dopamine)
                     const easeOut = 1 - Math.pow(1 - progress, 4);
                     const current = Math.floor(start + (end - start) * easeOut);
                     
-                    // Add motion blur simulation via text shadow when moving fast
                     if (progress < 0.8) {
                         obj.style.textShadow = `0 10px 10px rgba(255,255,255,0.5), 0 -10px 10px rgba(255,255,255,0.5)`;
                     } else {
-                        obj.style.textShadow = ''; // Return to CSS default
+                        obj.style.textShadow = ''; 
                     }
 
                     obj.innerText = current.toLocaleString();
@@ -339,27 +451,22 @@
             function triggerPremiumUpdate(elementId, boxId, newValue, stateKey) {
                 const el = document.getElementById(elementId);
                 const box = document.getElementById(boxId);
-                const wrapBox = document.getElementById(boxId.replace('box', 'wrap')); // Select the outer glowing wrapper
                 
                 if (previousState[stateKey] !== newValue) {
                     const oldValue = previousState[stateKey] === null ? 0 : previousState[stateKey];
                     
-                    // Reset Animations instantly
                     el.classList.remove('update-pop-text');
                     box.classList.remove('update-flash-container');
                     void box.offsetWidth; 
                     
-                    // Fire the Flash & Bounce
                     box.classList.add('update-flash-container');
                     el.classList.add('update-pop-text');
                     
-                    // Spin the numbers up rapidly (600ms)
                     slotMachineRoll(el, oldValue, newValue, 600);
                     
                     previousState[stateKey] = newValue;
                 }
             }
-
             
             const userRef = doc(db, 'roulette_state', streamerUsername);
             
@@ -378,7 +485,6 @@
                     const multiEl = document.getElementById('sub-multiplier');
                     multiEl.innerText = `MULTI: ${multiplier.toFixed(1)}x`;
                     
-                    // Activate Violent Danger Pulse for high multipliers
                     if (multiplier >= 2.0) {
                         multiEl.classList.add('multi-high');
                     } else {

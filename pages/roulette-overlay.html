@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entity's Roulette Overlay</title>
+    <title>Entity's Roulette Overlay - Premium Edition</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,700;0,900;1,900&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -19,6 +19,9 @@
             --ethereal-glow: #00f0ff; --ethereal-dark: #007a8a;
             --diamond-glow: #d4e8ff; --diamond-dark: #5a7399;
             --void-glow: #ae00ff; --void-dark: #5e008a;
+            
+            /* Exclusive Intro Magenta Palette */
+            --intro-glow: red; --intro-dark: #7a0055;
 
             --font-ui: 'Teko', sans-serif;
             --font-data: 'Montserrat', sans-serif;
@@ -34,72 +37,142 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        /* ----- MAIN HUD WRAPPERS ----- */
         #perspective-wrapper {
-            position: absolute; top: 0; right: 0;
+            position: absolute; top: 0; left: 0;
             width: 100%; height: 100%;
-            display: flex; justify-content: flex-end;
-            padding: 30px 40px 0 0; 
+            pointer-events: none; /* Let clicks pass through empty areas */
         }
 
-        /* GRID MANAGER: Stacks Intro and Stats perfectly on top of each other */
-        #view-manager {
-            display: grid;
-            width: 420px;
-        }
-
-        .view-layer {
-            grid-area: 1 / 1; /* Forces both views into the exact same spatial grid */
-            width: 100%;
+        /* Container that swaps out via JS Loop */
+        .view-container {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            width: 420px; /* Locked to the exact grid width */
             display: flex;
             flex-direction: column;
+            gap: 26px;
+            pointer-events: auto;
             
-            /* Advanced Futuristic Transition */
+            /* Cinematic HUD Transition Physics */
+            transition: opacity 0.6s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.6s ease;
+        }
+
+        .view-hidden {
             opacity: 0;
-            transform: translateX(80px) scale(0.9);
-            filter: blur(15px);
+            transform: translateY(-40px) scale(0.95);
             pointer-events: none;
-            transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), 
-                        transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), 
-                        filter 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            filter: blur(15px);
         }
 
         .view-active {
             opacity: 1;
-            transform: translateX(0) scale(1);
-            filter: blur(0);
+            transform: translateY(0) scale(1);
             pointer-events: auto;
+            filter: blur(0);
         }
 
-        #overlay-container {
-            display: flex; flex-direction: column; gap: 26px; 
-            width: 100%; 
+        /* ----- INTRO SHOWCASE SPECIFICS ----- */
+        .intro-wrapper {
+            position: relative;
+            border-radius: 20px; 
+            padding: 6px; 
+            background: rgba(0,0,0,0.9);
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.9), 0 0 45px var(--theme-dark);
+            opacity: 0;
+            animation: 
+                hudBootSequence 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, 
+                independentFloat 6s ease-in-out infinite alternate forwards;
         }
 
+        #wrap-intro { --theme-color: var(--intro-glow); --theme-dark: var(--intro-dark); }
+
+        .intro-block {
+            position: relative;
+            background: linear-gradient(135deg, var(--bg-glass) 0%, rgba(30, 0, 20, 0.95) 100%);
+            border-radius: 14px;
+            padding: 55px 20px; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            z-index: 2;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.9);
+        }
+
+        .intro-block::after {
+            content: ''; position: absolute; top: 0; left: -150%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transform: skewX(-25deg);
+            z-index: 1;
+            animation: glossSweep 7s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+        }
+
+        .intro-badge {
+            font-family: var(--font-ui); font-size: 1.3rem; letter-spacing: 5px;
+            color: #fff; background: rgba(0,0,0,0.8);
+            padding: 6px 20px; border-radius: 4px;
+            border: 1px solid var(--theme-color);
+            box-shadow: 0 0 15px var(--theme-dark);
+            margin-bottom: 25px; font-weight: 700;
+            z-index: 4; position: relative;
+        }
+
+        .intro-title {
+            font-family: var(--font-ui); font-size: 5.5rem; font-weight: 900;
+            line-height: 0.9; color: #ffffff;
+            -webkit-text-stroke: 2px #000000;
+            text-shadow: 0 0 20px var(--theme-color), 0 0 40px var(--theme-color), 0 6px 0px #000000, 0 15px 25px rgba(0,0,0,0.9);
+            margin-bottom: 15px; text-transform: uppercase;
+            z-index: 4; position: relative;
+            animation: introPulse 2s infinite alternate;
+        }
+
+        @keyframes introPulse {
+            0% { transform: scale(1); text-shadow: 0 0 20px var(--theme-color), 0 15px 25px rgba(0,0,0,0.9); }
+            100% { transform: scale(1.03); text-shadow: 0 0 40px var(--theme-color), 0 0 80px var(--theme-color), 0 15px 25px rgba(0,0,0,0.9); }
+        }
+
+        .intro-subtitle {
+            font-family: var(--font-data); font-size: 1.1rem; font-weight: 700;
+            letter-spacing: 8px; color: #fff; text-transform: uppercase;
+            z-index: 4; position: relative;
+            text-shadow: 0 2px 4px rgba(0,0,0,1);
+        }
+
+        /* ----- PROGRESS GRID SPECIFICS ----- */
         .stat-block-wrapper {
             position: relative;
-            border-radius: 20px;
+            border-radius: 20px; 
             padding: 6px; 
             background: rgba(0,0,0,0.9);
             overflow: hidden;
             box-shadow: 0 15px 35px rgba(0,0,0,0.9), 0 0 25px var(--theme-dark);
-            
-            /* Independent Floating */
-            animation: independentFloat 6s ease-in-out infinite alternate forwards;
+            opacity: 0;
+            animation: 
+                hudBootSequence 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, 
+                independentFloat 6s ease-in-out infinite alternate forwards;
         }
 
-        /* Staggered Float Animations & Theme Assignments */
-        #wrap-safe   { animation-delay: 0.1s; --theme-color: var(--gold-glow); --theme-dark: var(--gold-dark); }
-        #wrap-pot    { animation-delay: 1.2s; --theme-color: var(--blood-glow); --theme-dark: var(--blood-dark); }
-        #wrap-streak { animation-delay: 2.3s; --theme-color: var(--ethereal-glow); --theme-dark: var(--ethereal-dark); }
-        #wrap-best   { animation-delay: 3.4s; --theme-color: var(--diamond-glow); --theme-dark: var(--diamond-dark); }
-        #wrap-jail   { animation-delay: 4.5s; --theme-color: var(--void-glow); --theme-dark: var(--void-dark); }
+        /* Staggered Boot Animations & Theme Assignments */
+        #wrap-safe   { animation-delay: 0.1s, 0.1s; --theme-color: var(--gold-glow); --theme-dark: var(--gold-dark); }
+        #wrap-pot    { animation-delay: 0.2s, 1.2s; --theme-color: var(--blood-glow); --theme-dark: var(--blood-dark); }
+        #wrap-streak { animation-delay: 0.3s, 2.3s; --theme-color: var(--ethereal-glow); --theme-dark: var(--ethereal-dark); }
+        #wrap-best   { animation-delay: 0.4s, 3.4s; --theme-color: var(--diamond-glow); --theme-dark: var(--diamond-dark); }
+        #wrap-jail   { animation-delay: 0.5s, 4.5s; --theme-color: var(--void-glow); --theme-dark: var(--void-dark); }
+
+        @keyframes hudBootSequence {
+            0% { opacity: 0; transform: translateX(80px) scale(0.9); filter: blur(15px); }
+            100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+        }
 
         @keyframes independentFloat {
             0% { transform: translateY(0px); }
             100% { transform: translateY(-8px); }
         }
 
-        /* THICK Continuous Spinning Conic Border */
+        /* THICK Continuous Spinning Conic Border (Used in both intro & progress) */
         .spinning-border {
             position: absolute;
             top: -50%; left: -50%;
@@ -140,6 +213,7 @@
             z-index: 1;
             animation: glossSweep 7s cubic-bezier(0.25, 1, 0.5, 1) infinite;
         }
+
         @keyframes glossSweep {
             0% { left: -150%; }
             20% { left: 200%; }
@@ -165,7 +239,7 @@
             font-weight: 900; font-style: italic; 
             line-height: 1.05; letter-spacing: 1px; z-index: 4; position: relative;
             color: #ffffff;
-            -webkit-text-stroke: 2px #000000;
+            -webkit-text-stroke: 2px #000000; 
             text-shadow: 
                 0 0 20px var(--theme-color), 
                 0 0 40px var(--theme-color), 
@@ -185,23 +259,20 @@
             color: #FFD700 !important;
             animation: dangerPulse 0.6s infinite alternate !important;
         }
+
         @keyframes dangerPulse {
             0% { text-shadow: 0 0 10px #ffaa00, 0 2px 4px rgba(0,0,0,1); transform: scale(1); }
             100% { text-shadow: 0 0 30px #ffaa00, 0 0 60px #ffaa00, 0 2px 4px rgba(0,0,0,1); transform: scale(1.08) translateX(10px); }
         }
 
-        .update-flash-container {
-            animation: containerFlash 0.6s ease-out forwards;
-        }
+        .update-flash-container { animation: containerFlash 0.6s ease-out forwards; }
         @keyframes containerFlash {
             0% { background: var(--bg-glass); box-shadow: inset 0 0 40px rgba(0,0,0,0.9); }
             20% { background: rgba(255,255,255,0.2); box-shadow: inset 0 0 150px var(--theme-color); }
             100% { background: var(--bg-glass); box-shadow: inset 0 0 40px rgba(0,0,0,0.9); }
         }
 
-        .update-pop-text {
-            animation: textPopHit 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
+        .update-pop-text { animation: textPopHit 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes textPopHit {
             0% { transform: scale(1); filter: brightness(1); }
             30% { transform: scale(1.2) rotate(-2deg); filter: brightness(2) drop-shadow(0 0 30px #fff); color: #fff; -webkit-text-stroke: 2px var(--theme-color); }
@@ -213,138 +284,81 @@
             text-shadow: 0 3px 6px rgba(0,0,0,1);
             text-align: right; text-transform: uppercase; letter-spacing: 6px;
             display: flex; justify-content: flex-end; align-items: center; gap: 16px;
-            padding-right: 5px; margin-bottom: 26px; font-weight: 700;
+            padding-right: 5px; font-weight: 700;
         }
+
         .status-dot { width: 16px; height: 16px; border-radius: 50%; background: #ff003c; box-shadow: 0 0 20px #ff003c, 0 0 40px #ff003c; border: 2px solid #000; }
         .status-dot.connected { background: #00ff66; box-shadow: 0 0 20px #00ff66, 0 0 40px #00ff66; animation: statusBeat 1s infinite alternate; }
         @keyframes statusBeat { 0% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0.6; transform: scale(1); } }
-
-        /* ========================================================
-           INTRO VIEW SPECIFIC STYLES 
-           ======================================================== */
-        .intro-wrapper {
-            --theme-color: var(--blood-glow); 
-            --theme-dark: var(--blood-dark);
-            height: 100%; /* Inherits full height of the grid cell dictated by stats */
-            width: 100%;
-        }
-
-        .intro-spin {
-            /* Dual colored spin specifically for the massive intro box */
-            background: conic-gradient(
-                transparent 0deg, 
-                var(--gold-dark) 90deg, 
-                var(--gold-glow) 180deg, 
-                transparent 180deg, 
-                var(--blood-dark) 270deg, 
-                var(--blood-glow) 360deg
-            );
-            animation: spin 2s linear infinite; 
-        }
-
-        .intro-block {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-
-        .intro-subtitle {
-            font-family: var(--font-ui); font-size: 1.8rem; letter-spacing: 8px; 
-            color: var(--theme-color); margin-bottom: 10px; font-weight: 700;
-            text-shadow: 0 0 10px var(--theme-color), 0 2px 4px rgba(0,0,0,1);
-        }
-
-        .intro-title {
-            font-family: var(--font-data); font-size: 4.5rem; font-weight: 900; font-style: italic; 
-            line-height: 0.95; color: #fff; -webkit-text-stroke: 2px #000; 
-            text-shadow: 0 0 20px var(--theme-color), 0 10px 25px rgba(0,0,0,0.9); 
-            margin-bottom: 25px;
-        }
-
-        .intro-target {
-            font-family: var(--font-ui); font-size: 2.2rem; color: #fff; letter-spacing: 3px;
-            background: rgba(0,0,0,0.7); padding: 5px 25px; border-radius: 8px; 
-            border: 1px solid var(--theme-color); display: inline-block;
-            box-shadow: 0 0 20px rgba(255,0,60,0.3);
-        }
     </style>
 </head>
 <body>
 
     <div id="perspective-wrapper">
-        <div id="view-manager">
+        
+        <!-- =================== INTRO SHOWCASE =================== -->
+        <div id="intro-container" class="view-container view-hidden">
+            <div class="intro-wrapper" id="wrap-intro">
+                <div class="spinning-border"></div>
+                <div class="intro-block">
+                    <div class="intro-badge">CHALLENGE SHOWCASE</div>
+                    <div class="intro-title">Entity's<br>Roulette</div>
+                    <div class="intro-subtitle">Survive The Odds</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =================== PROGRESS GRIDS =================== -->
+        <div id="progress-container" class="view-container view-hidden">
             
-            <!-- INTRO VIEW (3 Seconds) -->
-            <div id="intro-view" class="view-layer view-active">
-                <div class="stat-block-wrapper intro-wrapper">
-                    <div class="spinning-border intro-spin"></div>
-                    <div class="stat-block intro-block">
-                        <div class="intro-subtitle">CHALLENGE ACTIVE</div>
-                        <div class="intro-title">ENTITY'S<br>ROULETTE</div>
-                        <div class="intro-target" id="intro-target-name">AWAITING TARGET</div>
-                    </div>
+            <div id="connection-status">
+                <span id="streamer-name-display">ESTABLISHING UPLINK...</span>
+                <div class="status-dot" id="dot-status"></div>
+            </div>
+
+            <!-- Block 1 -->
+            <div class="stat-block-wrapper" id="wrap-safe">
+                <div class="spinning-border"></div>
+                <div class="stat-block" id="box-safe">
+                    <div class="stat-label">Safe Bank <span>PTS</span></div>
+                    <div class="stat-value" id="val-safe">0</div>
                 </div>
             </div>
 
-            <!-- STATS / PROGRESS VIEW (5 Seconds) -->
-            <div id="stats-view" class="view-layer">
-                
-                <div id="connection-status">
-                    <span id="streamer-name-display">ESTABLISHING UPLINK...</span>
-                    <div class="status-dot" id="dot-status"></div>
+            <!-- Block 2 -->
+            <div class="stat-block-wrapper" id="wrap-pot">
+                <div class="spinning-border"></div>
+                <div class="stat-block" id="box-pot">
+                    <div class="stat-label">Active Pot <span>RISK</span></div>
+                    <div class="stat-value" id="val-pot">0</div>
+                    <div class="stat-subtext" id="sub-multiplier">MULTI: 1.0x</div>
                 </div>
+            </div>
 
-                <div id="overlay-container">
-                    
-                    <!-- Block 1 -->
-                    <div class="stat-block-wrapper" id="wrap-safe">
-                        <div class="spinning-border"></div>
-                        <div class="stat-block" id="box-safe">
-                            <div class="stat-label">Safe Bank <span>PTS</span></div>
-                            <div class="stat-value" id="val-safe">0</div>
-                        </div>
-                    </div>
+            <!-- Block 3 -->
+            <div class="stat-block-wrapper" id="wrap-streak">
+                <div class="spinning-border"></div>
+                <div class="stat-block" id="box-streak">
+                    <div class="stat-label">Global Streak <span>WINS</span></div>
+                    <div class="stat-value" id="val-streak">0</div>
+                </div>
+            </div>
 
-                    <!-- Block 2 -->
-                    <div class="stat-block-wrapper" id="wrap-pot">
-                        <div class="spinning-border"></div>
-                        <div class="stat-block" id="box-pot">
-                            <div class="stat-label">Active Pot <span>RISK</span></div>
-                            <div class="stat-value" id="val-pot">0</div>
-                            <div class="stat-subtext" id="sub-multiplier">MULTI: 1.0x</div>
-                        </div>
-                    </div>
+            <!-- Block 4 -->
+            <div class="stat-block-wrapper" id="wrap-best">
+                <div class="spinning-border"></div>
+                <div class="stat-block" id="box-best">
+                    <div class="stat-label">Highest Streak <span>RECORD</span></div>
+                    <div class="stat-value" id="val-best">0</div>
+                </div>
+            </div>
 
-                    <!-- Block 3 -->
-                    <div class="stat-block-wrapper" id="wrap-streak">
-                        <div class="spinning-border"></div>
-                        <div class="stat-block" id="box-streak">
-                            <div class="stat-label">Global Streak <span>WINS</span></div>
-                            <div class="stat-value" id="val-streak">0</div>
-                        </div>
-                    </div>
-
-                    <!-- Block 4 -->
-                    <div class="stat-block-wrapper" id="wrap-best">
-                        <div class="spinning-border"></div>
-                        <div class="stat-block" id="box-best">
-                            <div class="stat-label">Highest Streak <span>RECORD</span></div>
-                            <div class="stat-value" id="val-best">0</div>
-                        </div>
-                    </div>
-
-                    <!-- Block 5 -->
-                    <div class="stat-block-wrapper" id="wrap-jail">
-                        <div class="spinning-border"></div>
-                        <div class="stat-block" id="box-jail">
-                            <div class="stat-label">Perks in Jail <span>LOCKED</span></div>
-                            <div class="stat-value" id="val-jail">0</div>
-                        </div>
-                    </div>
-
+            <!-- Block 5 -->
+            <div class="stat-block-wrapper" id="wrap-jail">
+                <div class="spinning-border"></div>
+                <div class="stat-block" id="box-jail">
+                    <div class="stat-label">Perks in Jail <span>LOCKED</span></div>
+                    <div class="stat-value" id="val-jail">0</div>
                 </div>
             </div>
 
@@ -355,8 +369,37 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+    
+        const introView = document.getElementById('intro-container');
+        const progressView = document.getElementById('progress-container');
+
+        function executeDisplayLoop() {
+            // 1. Trigger Intro Display
+            introView.classList.remove('view-hidden');
+            introView.classList.add('view-active');
+            
+            progressView.classList.remove('view-active');
+            progressView.classList.add('view-hidden');
+
+            setTimeout(() => {
+                // 2. Hide Intro, Trigger Progress Data
+                introView.classList.remove('view-active');
+                introView.classList.add('view-hidden');
+                
+                progressView.classList.remove('view-hidden');
+                progressView.classList.add('view-active');
+
+                // 3. Keep Progress visible for 5s, then restart loop
+                setTimeout(executeDisplayLoop, 10000);
+
+            }, 3000); // Keep Intro visible for 3s
+        }
+
+        // Kickoff the continuous display loop instantly upon load
+        executeDisplayLoop();
+
+       
         const firebaseConfig = {
-            // Your config here
             apiKey: "AIzaSyBMAxj2E3snmnOcQXIylkIIS1cTnuu0hlY",
             authDomain: "dashboard-1db87.firebaseapp.com",
             projectId: "dashboard-1db87",
@@ -364,6 +407,7 @@
             messagingSenderId: "711217707380",
             appId: "1:711217707380:web:247cfdfb2dc3c2c4485421",
             measurementId: "G-Z4WBDQ9HEH"
+            
         };
 
         const app = initializeApp(firebaseConfig);
@@ -373,52 +417,15 @@
         
         const statusText = document.getElementById('streamer-name-display');
         const statusDot = document.getElementById('dot-status');
-        const introTargetName = document.getElementById('intro-target-name');
 
-        // ==========================================
-        // UI VIEW LOOP LOGIC (Intro vs Stats)
-        // ==========================================
-        const introView = document.getElementById('intro-view');
-        const statsView = document.getElementById('stats-view');
-        let showingIntro = true;
-
-        function runDisplayLoop() {
-            if (showingIntro) {
-                // Show Intro, Hide Stats
-                introView.classList.add('view-active');
-                statsView.classList.remove('view-active');
-                
-                // Next transition in 3 Seconds
-                setTimeout(runDisplayLoop, 3000); 
-            } else {
-                // Show Stats, Hide Intro
-                statsView.classList.add('view-active');
-                introView.classList.remove('view-active');
-                
-                // Next transition in 5 Seconds
-                setTimeout(runDisplayLoop, 5000); 
-            }
-            showingIntro = !showingIntro;
-        }
-
-        // Start the infinite loop immediately
-        runDisplayLoop();
-
-        // ==========================================
-        // FIREBASE DATA LOGIC 
-        // ==========================================
         if (!streamerUsername) {
             statusText.innerText = "NO TARGET ASSIGNED";
             statusText.style.color = "var(--blood-glow)";
-            introTargetName.innerText = "NO TARGET ASSIGNED";
         } else {
-            const formattedName = streamerUsername.toUpperCase();
-            statusText.innerText = `UPLINK: ${formattedName}`;
-            introTargetName.innerText = `TARGET: ${formattedName}`;
+            statusText.innerText = `UPLINK: ${streamerUsername.toUpperCase()}`;
             
             function slotMachineRoll(obj, start, end, duration) {
                 let startTimestamp = null;
-                
                 const step = (timestamp) => {
                     if (!startTimestamp) startTimestamp = timestamp;
                     const progress = Math.min((timestamp - startTimestamp) / duration, 1);
@@ -467,7 +474,7 @@
                     previousState[stateKey] = newValue;
                 }
             }
-            
+
             const userRef = doc(db, 'roulette_state', streamerUsername);
             
             onSnapshot(userRef, (docSnap) => {

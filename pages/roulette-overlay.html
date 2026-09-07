@@ -3,25 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entity's Roulette Overlay - Performance Lite Edition</title>
+    <title>Entity's Roulette </title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,700;0,900;1,900&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            /* Solid Dark Backgrounds instead of expensive glass blurs */
-            --bg-solid: rgba(12, 12, 16, 0.95);
-            --bg-solid-light: rgba(22, 22, 30, 0.98);
+            /* Solid Dark Tech Backgrounds (No GPU-heavy blurs) */
+            --bg-solid: rgba(15, 15, 20, 0.98);
             
-            /* Hyper-Saturated Neon Palette */
+            /* Neon Palette */
             --gold-glow: #ffc400; --gold-dark: #997300;
             --blood-glow: #ff003c; --blood-dark: #8a0020;
             --ethereal-glow: #00f0ff; --ethereal-dark: #007a8a;
             --diamond-glow: #d4e8ff; --diamond-dark: #5a7399;
             --void-glow: #ae00ff; --void-dark: #5e008a;
             
-            /* Exclusive Intro Magenta Palette */
-            --intro-glow: red; --intro-dark: #7a0055;
+            /* Intro Palette */
+            --intro-glow: #ff003c; --intro-dark: #7a0055;
 
             --font-ui: 'Teko', sans-serif;
             --font-data: 'Montserrat', sans-serif;
@@ -37,57 +36,144 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ----- MAIN HUD WRAPPERS ----- */
         #perspective-wrapper {
             position: absolute; top: 0; left: 0;
             width: 100%; height: 100%;
             pointer-events: none; 
         }
 
-        /* Container that swaps out via JS Loop */
+        /* 
+         =============================================
+         GPU-OPTIMIZED CYCLER
+         =============================================
+        */
         .view-container {
             position: absolute; top: 30px; right: 40px;
             width: 420px; 
-            display: flex; flex-direction: column; gap: 26px;
+            display: flex; flex-direction: column; gap: 20px;
             pointer-events: auto;
-            /* REMOVED FILTER: BLUR for extreme performance gain */
-            transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+            /* Only animating opacity and transform guarantees no GPU repaints */
+            transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
             will-change: opacity, transform;
+            transform: translateZ(0);
         }
 
         .view-hidden {
-            opacity: 0;
-            transform: translateY(-20px) scale(0.95);
-            pointer-events: none;
+            opacity: 0; transform: translateY(-15px) scale(0.97); pointer-events: none;
         }
-
         .view-active {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            pointer-events: auto;
+            opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
         }
 
-        /* ----- INTRO SHOWCASE SPECIFICS ----- */
-        .intro-wrapper {
-            position: relative; border-radius: 20px; padding: 6px; 
-            background: rgba(0,0,0,0.9); overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.9); /* Simplified shadow */
-            opacity: 0;
-            animation: hudBootSequence 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-            will-change: transform, opacity;
-        }
-
-        #wrap-intro { --theme-color: var(--intro-glow); --theme-dark: var(--intro-dark); }
-
-        .intro-block {
+        /* 
+         =============================================
+         ULTRA-LITE E-SPORTS STAT BLOCKS
+         =============================================
+        */
+        .stat-block {
             position: relative;
-            background: linear-gradient(135deg, var(--bg-solid) 0%, rgba(30, 0, 20, 0.98) 100%);
-            border-radius: 14px; padding: 55px 20px; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            text-align: center; z-index: 2;
-            /* REMOVED backdrop-filter entirely */
+            background: var(--bg-solid);
+            border-radius: 8px; /* Sharper, cleaner edges */
+            border: 2px solid rgba(255,255,255,0.05);
+            /* Static premium left-border instead of spinning gradients */
+            border-left: 6px solid var(--theme-color);
+            padding: 12px 24px; 
+            display: flex; flex-direction: column; justify-content: center;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.6); /* Single static shadow */
+            overflow: hidden;
+            
+            /* Staggered Boot */
+            opacity: 0;
+            animation: slideInBoot 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            will-change: transform, opacity;
+            transform: translateZ(0);
         }
 
+        #wrap-intro  { --theme-color: var(--intro-glow); padding: 50px 20px; text-align: center; align-items: center; border-left: 8px solid var(--theme-color); }
+        #wrap-safe   { animation-delay: 0.05s; --theme-color: var(--gold-glow); }
+        #wrap-pot    { animation-delay: 0.10s; --theme-color: var(--blood-glow); }
+        #wrap-streak { animation-delay: 0.15s; --theme-color: var(--ethereal-glow); }
+        #wrap-best   { animation-delay: 0.20s; --theme-color: var(--diamond-glow); }
+        #wrap-jail   { animation-delay: 0.25s; --theme-color: var(--void-glow); }
+
+        @keyframes slideInBoot {
+            0% { opacity: 0; transform: translateX(30px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        /* 
+         =============================================
+         CHEAP HARDWARE ACCELERATED FLASH ANIMATION
+         =============================================
+        */
+        /* The flash is just a white overlay that fades out. Zero GPU calculations. */
+        .stat-block::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.25);
+            opacity: 0; pointer-events: none;
+            will-change: opacity;
+        }
+        .update-flash-container::after {
+            animation: pureFade 0.6s ease-out forwards;
+        }
+        @keyframes pureFade {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* 
+         =============================================
+         TYPOGRAPHY (Static Shadows Only)
+         =============================================
+        */
+        .stat-label {
+            font-family: var(--font-ui); font-size: 1.8rem; text-transform: uppercase; letter-spacing: 4px;
+            margin-bottom: -12px; font-weight: 700; z-index: 4; position: relative;
+            display: flex; justify-content: space-between; align-items: flex-end;
+            color: #ffffff; text-shadow: 2px 2px 0px rgba(0,0,0,1);
+        }
+        .stat-label span { font-size: 1.35rem; opacity: 0.9; color: var(--theme-color); }
+
+        .stat-value {
+            font-family: var(--font-data); font-size: 5.2rem; font-weight: 900; font-style: italic; 
+            line-height: 1.05; letter-spacing: 1px; z-index: 4; position: relative;
+            color: #ffffff; -webkit-text-stroke: 2px #000000; 
+            /* Hard static shadow, no blur radius to calculate */
+            text-shadow: 4px 4px 0px rgba(0,0,0,1);
+            transform-origin: left center;
+            will-change: transform;
+        }
+
+        .stat-subtext {
+            font-family: var(--font-ui); font-size: 1.5rem; letter-spacing: 3px;
+            margin-top: -4px; font-weight: 600; z-index: 4; position: relative; color: #ffffff;
+        }
+
+        /* Pure Transform Animations for text (Zero Drop-Shadow rendering) */
+        .update-pop-text { 
+            animation: purePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; 
+        }
+        @keyframes purePop {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.15) rotate(-2deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .multi-high {
+            color: #FFD700 !important;
+            animation: dangerScale 0.6s infinite alternate !important;
+            will-change: transform;
+        }
+        @keyframes dangerScale {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.08) translateX(5px); }
+        }
+
+        /* 
+         =============================================
+         INTRO CARD SPECIFICS
+         =============================================
+        */
         .intro-badge {
             font-family: var(--font-ui); font-size: 1.3rem; letter-spacing: 5px;
             color: #fff; background: rgba(0,0,0,0.8);
@@ -98,122 +184,37 @@
         .intro-title {
             font-family: var(--font-ui); font-size: 5.5rem; font-weight: 900;
             line-height: 0.9; color: #ffffff; -webkit-text-stroke: 2px #000000;
-            /* Reduced shadow layers from 4 down to 2 */
-            text-shadow: 0 0 15px var(--theme-color), 0 8px 10px rgba(0,0,0,0.9);
+            text-shadow: 4px 4px 0px rgba(0,0,0,1);
             margin-bottom: 15px; text-transform: uppercase; z-index: 4; position: relative;
+            animation: introScale 2s infinite alternate;
+            will-change: transform;
+        }
+        @keyframes introScale {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.03); }
         }
 
         .intro-subtitle {
             font-family: var(--font-data); font-size: 1.1rem; font-weight: 700;
             letter-spacing: 8px; color: #fff; text-transform: uppercase;
-            z-index: 4; position: relative; text-shadow: 0 2px 4px rgba(0,0,0,1);
+            z-index: 4; position: relative; text-shadow: 2px 2px 0px rgba(0,0,0,1);
         }
 
-        /* ----- PROGRESS GRID SPECIFICS ----- */
-        .stat-block-wrapper {
-            position: relative; border-radius: 20px; padding: 4px; /* Slightly thinner padding */
-            background: rgba(0,0,0,0.9); overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.8);
-            opacity: 0;
-            /* REMOVED floating animation */
-            animation: hudBootSequence 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-            will-change: transform, opacity;
-        }
-
-        #wrap-safe   { animation-delay: 0.1s; --theme-color: var(--gold-glow); --theme-dark: var(--gold-dark); }
-        #wrap-pot    { animation-delay: 0.2s; --theme-color: var(--blood-glow); --theme-dark: var(--blood-dark); }
-        #wrap-streak { animation-delay: 0.3s; --theme-color: var(--ethereal-glow); --theme-dark: var(--ethereal-dark); }
-        #wrap-best   { animation-delay: 0.4s; --theme-color: var(--diamond-glow); --theme-dark: var(--diamond-dark); }
-        #wrap-jail   { animation-delay: 0.5s; --theme-color: var(--void-glow); --theme-dark: var(--void-dark); }
-
-        @keyframes hudBootSequence {
-            /* REMOVED blur from boot sequence */
-            0% { opacity: 0; transform: translateX(50px) scale(0.95); }
-            100% { opacity: 1; transform: translateX(0) scale(1); }
-        }
-
-        /* Spinning border is hardware accelerated now */
-        .spinning-border {
-            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: conic-gradient(
-                transparent 0deg, transparent 120deg, 
-                var(--theme-dark) 220deg, var(--theme-color) 360deg
-            );
-            animation: spin 3s linear infinite; 
-            z-index: 1;
-            will-change: transform;
-            transform: translateZ(0);
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Inner Panel uses solid background instead of blur */
-        .stat-block {
-            position: relative;
-            background: linear-gradient(135deg, var(--bg-solid) 0%, var(--bg-solid-light) 100%);
-            border-radius: 14px; padding: 14px 28px; 
-            display: flex; flex-direction: column; justify-content: center;
-            z-index: 2; overflow: hidden;
-            /* Removed backdrop-filter and gloss sweeps */
-        }
-
-        .stat-label {
-            font-family: var(--font-ui); font-size: 1.8rem; text-transform: uppercase; letter-spacing: 4px;
-            margin-bottom: -12px; font-weight: 700; z-index: 4; position: relative;
-            display: flex; justify-content: space-between; align-items: flex-end;
-            color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,1);
-        }
-        .stat-label span { font-size: 1.35rem; opacity: 0.9; color: var(--theme-color); }
-
-        .stat-value {
-            font-family: var(--font-data); font-size: 5rem; font-weight: 900; font-style: italic; 
-            line-height: 1.05; letter-spacing: 1px; z-index: 4; position: relative;
-            color: #ffffff; -webkit-text-stroke: 2px #000000; 
-            /* Simplified shadow */
-            text-shadow: 0 0 15px var(--theme-color), 0 5px 10px rgba(0,0,0,0.8);
-            transform-origin: left center;
-        }
-
-        .stat-subtext {
-            font-family: var(--font-ui); font-size: 1.5rem; letter-spacing: 3px;
-            margin-top: -4px; font-weight: 600; z-index: 4; position: relative; color: #ffffff;
-        }
-
-        .multi-high {
-            color: #FFD700 !important;
-            animation: dangerPulse 0.8s infinite alternate !important;
-        }
-        @keyframes dangerPulse {
-            0% { text-shadow: 0 0 5px #ffaa00; transform: scale(1); }
-            100% { text-shadow: 0 0 15px #ffaa00; transform: scale(1.05) translateX(5px); }
-        }
-
-        /* Simplified flash animation (no box-shadow spam) */
-        .update-flash-container { animation: containerFlash 0.5s ease-out forwards; }
-        @keyframes containerFlash {
-            0% { background: var(--bg-solid); }
-            20% { background: rgba(255,255,255,0.1); }
-            100% { background: var(--bg-solid); }
-        }
-
-        /* Simplified text pop (No filter: drop-shadow spam) */
-        .update-pop-text { animation: textPopHit 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        @keyframes textPopHit {
-            0% { transform: scale(1); }
-            30% { transform: scale(1.15) rotate(-2deg); color: var(--theme-color); }
-            100% { transform: scale(1) rotate(0deg); color: #ffffff; }
-        }
-
+        /* 
+         =============================================
+         CONNECTION STATUS
+         =============================================
+        */
         #connection-status {
-            font-family: var(--font-ui); font-size: 1.8rem; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,1);
+            font-family: var(--font-ui); font-size: 1.8rem; color: #ffffff; text-shadow: 2px 2px 0px rgba(0,0,0,1);
             text-align: right; text-transform: uppercase; letter-spacing: 6px;
             display: flex; justify-content: flex-end; align-items: center; gap: 16px;
-            padding-right: 5px; font-weight: 700;
+            padding-right: 5px; font-weight: 700; margin-bottom: 5px;
         }
 
-        .status-dot { width: 16px; height: 16px; border-radius: 50%; background: #ff003c; border: 2px solid #000; }
+        .status-dot { width: 16px; height: 16px; border-radius: 50%; background: #ff003c; border: 2px solid #000; will-change: opacity; }
         .status-dot.connected { background: #00ff66; animation: statusBeat 1s infinite alternate; }
-        @keyframes statusBeat { 0% { opacity: 1; } 100% { opacity: 0.5; } }
+        @keyframes statusBeat { 0% { opacity: 1; } 100% { opacity: 0.4; } }
     </style>
 </head>
 <body>
@@ -222,13 +223,10 @@
         
         <!-- =================== INTRO SHOWCASE =================== -->
         <div id="intro-container" class="view-container view-hidden">
-            <div class="intro-wrapper" id="wrap-intro">
-                <div class="spinning-border"></div>
-                <div class="intro-block">
-                    <div class="intro-badge">CHALLENGE SHOWCASE</div>
-                    <div class="intro-title">Entity's<br>Roulette</div>
-                    <div class="intro-subtitle">Survive The Odds</div>
-                </div>
+            <div class="stat-block" id="wrap-intro">
+                <div class="intro-badge">CHALLENGE SHOWCASE</div>
+                <div class="intro-title">Entity's<br>Roulette</div>
+                <div class="intro-subtitle">Survive The Odds</div>
             </div>
         </div>
 
@@ -240,45 +238,30 @@
                 <div class="status-dot" id="dot-status"></div>
             </div>
 
-            <div class="stat-block-wrapper" id="wrap-safe">
-                <div class="spinning-border"></div>
-                <div class="stat-block" id="box-safe">
-                    <div class="stat-label">Safe Bank <span>PTS</span></div>
-                    <div class="stat-value" id="val-safe">0</div>
-                </div>
+            <div class="stat-block" id="wrap-safe">
+                <div class="stat-label">Safe Bank <span>PTS</span></div>
+                <div class="stat-value" id="val-safe">0</div>
             </div>
 
-            <div class="stat-block-wrapper" id="wrap-pot">
-                <div class="spinning-border"></div>
-                <div class="stat-block" id="box-pot">
-                    <div class="stat-label">Active Pot <span>RISK</span></div>
-                    <div class="stat-value" id="val-pot">0</div>
-                    <div class="stat-subtext" id="sub-multiplier">MULTI: 1.0x</div>
-                </div>
+            <div class="stat-block" id="wrap-pot">
+                <div class="stat-label">Active Pot <span>RISK</span></div>
+                <div class="stat-value" id="val-pot">0</div>
+                <div class="stat-subtext" id="sub-multiplier">MULTI: 1.0x</div>
             </div>
 
-            <div class="stat-block-wrapper" id="wrap-streak">
-                <div class="spinning-border"></div>
-                <div class="stat-block" id="box-streak">
-                    <div class="stat-label">Global Streak <span>WINS</span></div>
-                    <div class="stat-value" id="val-streak">0</div>
-                </div>
+            <div class="stat-block" id="wrap-streak">
+                <div class="stat-label">Global Streak <span>WINS</span></div>
+                <div class="stat-value" id="val-streak">0</div>
             </div>
 
-            <div class="stat-block-wrapper" id="wrap-best">
-                <div class="spinning-border"></div>
-                <div class="stat-block" id="box-best">
-                    <div class="stat-label">Highest Streak <span>RECORD</span></div>
-                    <div class="stat-value" id="val-best">0</div>
-                </div>
+            <div class="stat-block" id="wrap-best">
+                <div class="stat-label">Highest Streak <span>RECORD</span></div>
+                <div class="stat-value" id="val-best">0</div>
             </div>
 
-            <div class="stat-block-wrapper" id="wrap-jail">
-                <div class="spinning-border"></div>
-                <div class="stat-block" id="box-jail">
-                    <div class="stat-label">Perks in Jail <span>LOCKED</span></div>
-                    <div class="stat-value" id="val-jail">0</div>
-                </div>
+            <div class="stat-block" id="wrap-jail">
+                <div class="stat-label">Perks in Jail <span>LOCKED</span></div>
+                <div class="stat-value" id="val-jail">0</div>
             </div>
 
         </div>
@@ -291,6 +274,7 @@
         const introView = document.getElementById('intro-container');
         const progressView = document.getElementById('progress-container');
 
+        // Loop execution
         function executeDisplayLoop() {
             introView.classList.remove('view-hidden');
             introView.classList.add('view-active');
@@ -305,11 +289,10 @@
                 progressView.classList.remove('view-hidden');
                 progressView.classList.add('view-active');
 
-                setTimeout(executeDisplayLoop, 10000);
+                setTimeout(executeDisplayLoop, 10000); // Back to intro after 10s
 
-            }, 3000); 
+            }, 4000); // Keep intro on screen for 4s
         }
-
         executeDisplayLoop();
 
         const firebaseConfig = {
@@ -337,7 +320,7 @@
         } else {
             statusText.innerText = `UPLINK: ${streamerUsername.toUpperCase()}`;
             
-            // Highly optimized JS Roll (Removed text-shadow recalculations)
+            // Ultra-lightweight roll calculation
             function slotMachineRoll(obj, start, end, duration) {
                 let startTimestamp = null;
                 const step = (timestamp) => {
@@ -359,13 +342,14 @@
 
             const previousState = { safeBank: null, currentPot: null, totalStreak: null, highestStreak: null, ransomJail: null };
 
-            function triggerPremiumUpdate(elementId, boxId, newValue, stateKey) {
+            function triggerLiteUpdate(elementId, boxId, newValue, stateKey) {
                 const el = document.getElementById(elementId);
                 const box = document.getElementById(boxId);
                 
                 if (previousState[stateKey] !== newValue) {
                     const oldValue = previousState[stateKey] === null ? 0 : previousState[stateKey];
                     
+                    // Reset CSS animations via DOM reflow
                     el.classList.remove('update-pop-text');
                     box.classList.remove('update-flash-container');
                     void box.offsetWidth; 
@@ -373,7 +357,7 @@
                     box.classList.add('update-flash-container');
                     el.classList.add('update-pop-text');
                     
-                    slotMachineRoll(el, oldValue, newValue, 600);
+                    slotMachineRoll(el, oldValue, newValue, 500);
                     previousState[stateKey] = newValue;
                 }
             }
@@ -392,11 +376,11 @@
                     if (multiplier >= 2.0) { multiEl.classList.add('multi-high'); } 
                     else { multiEl.classList.remove('multi-high'); }
 
-                    triggerPremiumUpdate('val-safe', 'box-safe', data.safeBank || 0, 'safeBank');
-                    triggerPremiumUpdate('val-pot', 'box-pot', data.currentPot || 0, 'currentPot');
-                    triggerPremiumUpdate('val-streak', 'box-streak', data.totalStreak || 0, 'totalStreak');
-                    triggerPremiumUpdate('val-best', 'box-best', data.highestStreak || 0, 'highestStreak');
-                    triggerPremiumUpdate('val-jail', 'box-jail', (data.ransomJail || []).length, 'ransomJail');
+                    triggerLiteUpdate('val-safe', 'wrap-safe', data.safeBank || 0, 'safeBank');
+                    triggerLiteUpdate('val-pot', 'wrap-pot', data.currentPot || 0, 'currentPot');
+                    triggerLiteUpdate('val-streak', 'wrap-streak', data.totalStreak || 0, 'totalStreak');
+                    triggerLiteUpdate('val-best', 'wrap-best', data.highestStreak || 0, 'highestStreak');
+                    triggerLiteUpdate('val-jail', 'wrap-jail', (data.ransomJail || []).length, 'ransomJail');
 
                 } else {
                     statusText.innerText = "AWAITING TARGET DATA...";

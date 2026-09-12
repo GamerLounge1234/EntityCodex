@@ -3014,10 +3014,16 @@
                 </div>
 
                 <div class="action-zone" id="s-actionZoneInitial">
-                    <button class="btn-primary" id="btnInitiate" onclick="RouletteGame.startDraft(false)">Suggest the
-                        perks</button>
+                    <button class="btn-primary" id="btnInitiate" onclick="RouletteGame.requestDraft(false)">Suggest the perks</button>
                     <button class="btn-outline" id="btnJailbreak" style="display: none;"
-                        onclick="RouletteGame.initiateJailbreak()">Jailbreak Trial</button>
+                        onclick="RouletteGame.requestDraft(true)">Jailbreak Trial</button>
+                </div>
+                <div class="action-zone" id="s-confirmZone" style="display: none; flex-direction: column; align-items: center; gap: 15px;">
+                    <p id="confirm-party-text" style="color: var(--entity-orange); font-size: 1.2rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">Locking in Party Size: ...</p>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+                        <button class="btn-outline" onclick="RouletteGame.cancelConfirm()">Wait, Go Back</button>
+                        <button class="btn-primary" onclick="RouletteGame.startDraft(false)">Lock & Roll</button>
+                    </div>
                 </div>
 
                 <div class="decision-panel" id="s-decisionPanel">
@@ -3974,9 +3980,10 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
             resetToInitial() {
                 document.getElementById('s-perkDisplayArea').innerHTML = '<p style="color: var(--text-muted); width: 100%; text-align: center; margin-top: 50px;">Awaiting algorithmic input...</p>';
                 document.getElementById('s-actionZoneInitial').style.display = 'flex';
+                document.getElementById('s-confirmZone').style.display = 'none'; 
                 document.getElementById('s-actionZoneMatch').style.display = 'none';
                 this.updateDashboard();
-            },
+            },,
             hardReset() {
                 if (confirm("WARNING: Are you entirely sure you want to wipe your Survivor Database? This sets ALL Points, Streaks, and Pot to 0. (Roster unlock settings will remain).")) {
                     RouletteState.reset();
@@ -3986,12 +3993,45 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
         };
 
         const RouletteGame = {
-            startDraft(isDoubleDown = false) {
-                document.getElementById('s-decisionPanel').classList.remove('active'); clearInterval(rouletteDecisionTimeout);
-                const displayArea = document.getElementById('s-perkDisplayArea');
-                const btnInitiate = document.getElementById('btnInitiate');
+            pendingJailbreak: false,
 
-                // Enforce party size lock if Doubling Down
+            requestDraft(isJailbreak = false) {
+                if (RouletteState.currentPot > 0 && RouletteState.lockedPartySize) {
+                    if (isJailbreak) RouletteState.isJailbreakActive = true;
+                    this.startDraft(false);
+                    return;
+                }
+
+                const select = document.getElementById('party-size');
+                const text = select.options[select.selectedIndex].text;
+                
+                document.getElementById('s-actionZoneInitial').style.display = 'none';
+                document.getElementById('s-confirmZone').style.display = 'flex';
+                document.getElementById('confirm-party-text').innerText = `Locking in: ${text}?`;
+                
+                this.pendingJailbreak = isJailbreak;
+            },
+
+            cancelConfirm() {
+                document.getElementById('s-confirmZone').style.display = 'none';
+                document.getElementById('s-actionZoneInitial').style.display = 'flex';
+                this.pendingJailbreak = false;
+            },
+
+            startDraft(isDoubleDown = false) {
+                if (this.pendingJailbreak) {
+                    RouletteState.isJailbreakActive = true;
+                    this.pendingJailbreak = false;
+                }
+
+                document.getElementById('s-decisionPanel').classList.remove('active'); 
+                clearInterval(rouletteDecisionTimeout);
+                const displayArea = document.getElementById('s-perkDisplayArea');
+
+                document.getElementById('s-actionZoneInitial').style.display = 'none';
+                document.getElementById('s-confirmZone').style.display = 'none'; // Hide confirm screen
+                document.getElementById('s-actionZoneMatch').style.display = 'none';
+                
                 if (RouletteState.currentPot === 0 || !RouletteState.lockedPartySize) {
                     RouletteState.lockedPartySize = document.getElementById('party-size').value;
                 } else {

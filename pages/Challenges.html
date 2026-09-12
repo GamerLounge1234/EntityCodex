@@ -4141,7 +4141,7 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
             }
         };
 
-        const RouletteLeaderboard = {
+const RouletteLeaderboard = {
             async fetch() {
                 const lbContainer = document.getElementById('s-leaderboard-list');
                 lbContainer.innerHTML = 'Consulting the Archives...';
@@ -4167,7 +4167,7 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                         else return (b.safeBank || 0) - (a.safeBank || 0);
                     });
 
-                    // Added the "Playstyle" column header
+                    // Added the "Current Streak" column header alongside "Highest Streak"
                     let html = `<table class="lb-table">
                 <tr>
                     <th>Rank</th>
@@ -4175,6 +4175,7 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                     <th>Playstyle</th>
                     <th>Date Conquered</th>
                     <th>Safe Bank</th>
+                    <th>Current Streak</th>
                     <th>Highest Streak</th>
                 </tr>`;
 
@@ -4194,7 +4195,7 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                             dateDisplay = `<span style="color:#aaa;">${d.toLocaleDateString()}</span>`;
                         }
 
-                        // NEW: Playstyle Logic
+                        // Playstyle Logic
                         let playstyle = '-';
                         if (data.playedPartySizes && data.playedPartySizes.length > 0) {
                             if (data.playedPartySizes.length > 1) {
@@ -4208,13 +4209,14 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                             }
                         }
 
-                        // Added the Playstyle data cell
+                        // Added the Current Streak data cell pulling from data.totalStreak
                         html += `<tr class="${isMe ? 'lb-me' : ''}">
                     <td>#${rank}</td>
                     <td>${nameDisplay}</td>
                     <td><span style="color: var(--entity-orange); font-weight: bold; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">${playstyle}</span></td>
                     <td>${dateDisplay}</td>
                     <td><strong style="color:${isVictor ? 'var(--gold-ascension)' : 'var(--bone-white)'};">${safePoints}</strong></td>
+                    <td><strong style="color:#4fc3f7;">${data.totalStreak || 0}</strong></td>
                     <td><strong style="color:#00ff66;">${data.highestStreak || 0}</strong></td>
                 </tr>`;
                         rank++;

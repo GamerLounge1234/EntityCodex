@@ -3454,7 +3454,7 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
             currentTier: 0, tierArchive: {},
             completedKillers: [], bannedPerks: {}, points: 0, stats: { sacrificed: 0, lifelines: 0, losses: 0 },
             currentKiller: null, selectedLoadout: [], activePerks: [], sacrificedThisRun: [],
-            runBannedDisciplines: [], // NEW: Tracks Tier 2 blocked disciplines
+            runBannedDisciplines: [], // Tracks Tier 2 blocked disciplines
 
             async load() {
                 if (!db) return this.updateUI();
@@ -3471,12 +3471,35 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                         this.points = data.points || 0;
                         this.stats = data.stats || { sacrificed: 0, lifelines: 0, losses: 0 };
                         this.runBannedDisciplines = data.runBannedDisciplines || [];
+
+                        // FIX: Load mid-run states from Firebase
+                        this.currentKiller = data.currentKiller || null;
+                        this.selectedLoadout = data.selectedLoadout || [];
+                        this.activePerks = data.activePerks || [];
+                        this.sacrificedThisRun = data.sacrificedThisRun || [];
                     }
                     this.updateUI();
                 } catch (e) {
                     console.error("Firebase Descent Load Error:", e);
                     this.updateUI();
                 }
+            },
+            async save() {
+                this.updateUI();
+                if (!db) return;
+                try {
+                    await setDoc(doc(db, 'player_state', currentUser), {
+                        mode: this.mode, currentTier: this.currentTier, tierArchive: this.tierArchive,
+                        completed_killers: this.completedKillers, banned_perks: this.bannedPerks,
+                        points: this.points, stats: this.stats, runBannedDisciplines: this.runBannedDisciplines,
+                        
+                        // FIX: Save mid-run states to Firebase
+                        currentKiller: this.currentKiller,
+                        selectedLoadout: this.selectedLoadout,
+                        activePerks: this.activePerks,
+                        sacrificedThisRun: this.sacrificedThisRun
+                    }, { merge: true });
+                } catch (e) { console.error("Firebase Save Error:", e); }
             },
             async save() {
                 this.updateUI();
@@ -3599,21 +3622,46 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                     el.innerText = killer;
                     el.onclick = () => {
                         if (!DescentState.completedKillers.includes(killer)) {
-                            DescentState.currentKiller = killer;
-                            DescentState.resetRun();
+                            
+                            // FIX: Check if we are resuming an active run!
+                            if (DescentState.currentKiller === killer && DescentState.selectedLoadout.length > 0) {
+                                if (DescentState.selectedLoadout.length === 4) {
+                                    // Trial is active, resume it!
+                                    document.getElementById('nav-builder-k').style.display = 'block';
+                                    document.getElementById('nav-trial-k').style.display = 'block';
+                                    DescentTracker.showView('t-trial');
+                                    DescentBuilder.init(); 
+                                    DescentTrial.init();
+                                } else {
+                                    // Builder in progress, resume drafting!
+                                    document.getElementById('nav-builder-k').style.display = 'block';
+                                    document.getElementById('nav-trial-k').style.display = 'none';
+                                    DescentTracker.showView('t-builder');
+                                    DescentBuilder.init();
+                                }
+                            } else {
+                                // Starting a new killer
+                                if (DescentState.currentKiller && DescentState.currentKiller !== killer && DescentState.selectedLoadout.length > 0) {
+                                    if (!confirm(`You have an active run with ${DescentState.currentKiller}. Abandon it to start with ${killer}?`)) return;
+                                }
 
-                            // TIER 2+ RULE: Entity's Choice (Ban 2 Disciplines)
-                            if (DescentState.currentTier >= 2) {
-                                const schools = Object.keys(KillerPerks);
-                                let shuffled = [...schools].sort(() => 0.5 - Math.random());
-                                DescentState.runBannedDisciplines = [shuffled[0], shuffled[1]];
-                                alert(`ASCENSION TIER ${DescentState.currentTier} PROTOCOL:\nThe Entity has sealed the ${shuffled[0]} and ${shuffled[1]} disciplines for this trial!`);
+                                DescentState.currentKiller = killer;
+                                DescentState.resetRun();
+
+                                // TIER 2+ RULE: Entity's Choice (Ban 2 Disciplines)
+                                if (DescentState.currentTier >= 2) {
+                                    const schools = Object.keys(KillerPerks);
+                                    let shuffled = [...schools].sort(() => 0.5 - Math.random());
+                                    DescentState.runBannedDisciplines = [shuffled[0], shuffled[1]];
+                                    alert(`ASCENSION TIER ${DescentState.currentTier} PROTOCOL:\nThe Entity has sealed the ${shuffled[0]} and ${shuffled[1]} disciplines for this trial!`);
+                                }
+                                
                                 DescentState.save();
+                                DescentTracker.showView('t-builder');
+                                document.getElementById('nav-builder-k').style.display = 'block'; 
+                                document.getElementById('nav-trial-k').style.display = 'none';
+                                DescentBuilder.init();
                             }
-
-                            DescentTracker.showView('t-builder');
-                            document.getElementById('nav-builder-k').style.display = 'block'; document.getElementById('nav-trial-k').style.display = 'none';
-                            DescentBuilder.init();
                         }
                     };
                     grid.appendChild(el);

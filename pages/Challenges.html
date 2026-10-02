@@ -3755,9 +3755,24 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
 
         const DescentTrial = {
             isSacrificeMode: false,
-            init() { document.getElementById('trial-killer-name').innerText = DescentState.currentKiller; DescentState.activePerks = JSON.parse(JSON.stringify(DescentState.selectedLoadout)); this.isSacrificeMode = false; this.renderStage(); },
-            start() { document.getElementById('nav-trial-k').style.display = 'block'; DescentTracker.showView('t-trial'); this.init(); },
+            init() { 
+                document.getElementById('trial-killer-name').innerText = DescentState.currentKiller; 
+                // FIX: Removed the line that destroyed activePerks here
+                this.isSacrificeMode = false; 
+                this.renderStage(); 
+            },
+            start() { 
+                // FIX: Lock in the active perks ONLY when starting a fresh trial
+                DescentState.activePerks = JSON.parse(JSON.stringify(DescentState.selectedLoadout));
+                DescentState.sacrificedThisRun = [];
+                DescentState.save();
+
+                document.getElementById('nav-trial-k').style.display = 'block'; 
+                DescentTracker.showView('t-trial'); 
+                this.init(); 
+            },
             renderStage() {
+                // ... (Keep renderStage exactly as you have it) ...
                 const container = document.getElementById('trial-perks-container'); const msg = document.getElementById('trial-message'); const controls = document.getElementById('trial-controls');
                 container.innerHTML = '';
                 if (this.isSacrificeMode) { msg.innerText = "THE ENTITY DEMANDS A SACRIFICE. SELECT A PERK TO SHATTER."; msg.style.color = "var(--neon-red)"; controls.style.display = 'none'; container.classList.add('sacrifice-mode'); }
@@ -3786,7 +3801,11 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                     if (DescentState.sacrificedThisRun.length > 0) { DescentState.activePerks.push(DescentState.sacrificedThisRun.pop()); this.renderStage(); }
                     DescentState.save(); return;
                 }
-                DescentState.completedKillers.push(DescentState.currentKiller); DescentState.save();
+                DescentState.completedKillers.push(DescentState.currentKiller); 
+                
+                // FIX: Cleanup the run after a full victory
+                DescentState.resetRun();
+                DescentState.save();
                 alert(`The Entity is pleased. +${pts} Points.`);
                 document.getElementById('nav-builder-k').style.display = 'none'; document.getElementById('nav-trial-k').style.display = 'none';
                 DescentTracker.showView('t-roster');
@@ -3812,6 +3831,8 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                             }
                         });
                     }
+                    // FIX: Terminate the dead run properly
+                    DescentState.resetRun();
                     DescentState.save();
                     document.getElementById('nav-builder-k').style.display = 'none'; document.getElementById('nav-trial-k').style.display = 'none'; DescentTracker.showView('t-roster'); return;
                 }

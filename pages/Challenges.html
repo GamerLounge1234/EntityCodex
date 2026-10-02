@@ -3501,17 +3501,6 @@ Wiretap|Ada Wong|Bug a Generator to reveal the Killer's Aura to the whole team.`
                     }, { merge: true });
                 } catch (e) { console.error("Firebase Save Error:", e); }
             },
-            async save() {
-                this.updateUI();
-                if (!db) return;
-                try {
-                    await setDoc(doc(db, 'player_state', currentUser), {
-                        mode: this.mode, currentTier: this.currentTier, tierArchive: this.tierArchive,
-                        completed_killers: this.completedKillers, banned_perks: this.bannedPerks,
-                        points: this.points, stats: this.stats, runBannedDisciplines: this.runBannedDisciplines
-                    }, { merge: true });
-                } catch (e) { console.error("Firebase Save Error:", e); }
-            },
             updateUI() {
                 let totalCleansed = (this.currentTier * 44) + this.completedKillers.length;
                 document.getElementById('stat-points').innerText = this.points;

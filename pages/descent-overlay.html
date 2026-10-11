@@ -3,40 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entity's Descent - Killer Overlay</title>
+    <title>Entity's Descent - AAA Premium Overlay</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Rajdhani:wght@500;700&family=Teko:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:ital,wght@0,700;0,900;1,900&family=Teko:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
-      
         :root {
-            /* Deep Void Obsidian */
-            --bg-void: rgba(12, 10, 15, 0.90);
-            --bg-void-light: rgba(22, 18, 26, 0.95);
+            /* AAA DBD Palette */
+            --entity-void: #030305;
+            --fog-glass: rgba(12, 10, 15, 0.85);
+            --fog-solid: #0d0b12;
             
-            /* Premium Neon Palette */
             --blood-core: #ff003c;
-            --blood-dark: #7a001d;
-            --blood-glow: rgba(255, 0, 60, 0.8);
+            --blood-dark: #4a0011;
             
-            --gold-core: #ffc800;
-            --gold-dark: #8a6c00;
-            --gold-glow: rgba(255, 200, 0, 0.8);
+            --auric-core: #ffc800;
+            --auric-dark: #4a3a00;
 
-            --cyan-core: #00f0ff;
-            
-            --ash-gray: #b8b8cc;
+            --void-core: #b829ff;
+            --void-dark: #3a005c;
+
+            --ash-core: #b0b0c0;
+            --ash-dark: #2a2a35;
             
             /* Typography */
-            --font-ui: 'Teko', sans-serif;
-            --font-num: 'Anton', sans-serif;
-            --font-tech: 'Rajdhani', sans-serif;
+            --font-label: 'Teko', sans-serif;
+            --font-value: 'Anton', sans-serif;
+            --font-title: 'Montserrat', sans-serif;
             
-            /* Geometric Cuts - Mathematically adjusted for ultra-thick borders */
-            --clip-monolith: polygon(30px 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%, 0 30px);
-            --clip-inner: polygon(23px 0, 100% 0, 100% calc(100% - 23px), calc(100% - 23px) 100%, 0 100%, 0 23px);
+            /* Cinematic Easing */
+            --ease-cinematic: cubic-bezier(0.19, 1, 0.22, 1);
+            --ease-snappy: cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
@@ -48,256 +47,324 @@
             -webkit-font-smoothing: antialiased;
         }
 
-     
-        #overlay-container {
-            position: absolute;
-            top: 40px; right: 40px;
-            display: flex; flex-direction: column; gap: 28px; /* Increased gap for huge glowing borders */
-            width: 480px; 
-            z-index: 2;
-            padding-right: 18px;
-            border-right: 4px solid rgba(255, 255, 255, 0.15);
+        /* --- AMBIENT DBD FOG (Background FX) --- */
+        .ambient-fog {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 100% 0%, rgba(255, 0, 60, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 100% 100%, rgba(184, 41, 255, 0.05) 0%, transparent 50%);
+            pointer-events: none; z-index: 0;
         }
 
-        /* Continuous Energy Flow along the spine */
-        #overlay-container::after {
-            content: ''; position: absolute; top: 0; right: -4px; width: 4px; height: 100%;
-            background: linear-gradient(to bottom, transparent, var(--blood-core), #fff, var(--blood-core), transparent);
-            background-size: 100% 300%;
-            animation: spineFlow 2.5s infinite linear;
-            box-shadow: 0 0 25px var(--blood-glow);
+        /* --- STABLE WRAPPER --- */
+        #perspective-wrapper {
+            position: absolute; top: 0; right: 0;
+            width: 100%; height: 100%;
+            display: flex; justify-content: flex-end;
+            padding: 30px 40px 0 0; 
+            perspective: 1000px;
         }
-        @keyframes spineFlow { 0% { background-position: 0% -100%; } 100% { background-position: 0% 200%; } }
 
-     
-        .protocol-banner {
-            background: rgba(0, 0, 0, 0.85);
-            padding: 12px 25px;
-            text-align: right;
-            border-right: 8px solid var(--blood-core);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,0,60,0.2);
+        /* Perfect Symmetry & Stability - No scale bouncing here */
+        #main-container {
             position: relative;
-            
-            /* Cinematic Reveal */
-            transform-origin: right center;
-            animation: cinematicReveal 1s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+            width: 440px; 
+            height: 100%;
+            display: flex; flex-direction: column;
+            transform-style: preserve-3d;
         }
 
-        .protocol-label {
-            font-family: var(--font-ui); font-size: 2.4rem; color: #fff;
-            text-transform: uppercase; letter-spacing: 8px; line-height: 0.9;
-            text-shadow: 0 4px 6px rgba(0,0,0,1), 0 0 15px var(--blood-core);
+        /* --- SCREEN STATE TRANSITIONS --- */
+        .screen-state {
+            position: absolute; top: 0; right: 0; width: 100%;
+            display: flex; flex-direction: column; gap: 20px;
+            transition: opacity 1.2s var(--ease-cinematic), transform 1.2s var(--ease-cinematic), filter 1.2s var(--ease-cinematic);
+            will-change: transform, opacity, filter;
         }
 
-        .protocol-sub {
-            font-family: var(--font-tech); font-size: 1.15rem; color: var(--ash-gray);
-            font-weight: 700; letter-spacing: 5px; text-transform: uppercase;
-            background: rgba(255,0,60,0.15); display: inline-block; padding: 3px 10px; margin-top: 5px;
-            border: 1px solid rgba(255,0,60,0.3);
-        }
+        .state-active { opacity: 1; transform: translateZ(0) translateX(0); filter: blur(0px); pointer-events: auto; }
+        .state-hidden { opacity: 0; transform: translateZ(-80px) translateX(40px); filter: blur(15px); pointer-events: none; }
 
-        .hardcore-pulse .protocol-sub { color: #fff; background: var(--blood-core); border-color: #fff; box-shadow: 0 0 20px var(--blood-core); animation: dangerFlash 0.8s infinite alternate; }
-        @keyframes dangerFlash { 0% { filter: brightness(1); } 100% { filter: brightness(1.6); box-shadow: 0 0 40px var(--blood-core); } }
-
-
-        .monolith-wrapper {
+        /* =========================================
+           AAA INTRO SCREEN (Entity's Descent)
+           ========================================= */
+        .intro-card {
             position: relative;
-            padding: 8px; /* ULTRA THICK BORDER (Doubled from before) */
-            
-            /* The shifting energy liquid gradient */
-            background: linear-gradient(60deg, var(--theme-dark) 0%, var(--theme-core) 30%, #ffffff 50%, var(--theme-core) 70%, var(--theme-dark) 100%);
-            background-size: 300% 300%;
-            
-            clip-path: var(--clip-monolith);
-            box-shadow: 0 25px 45px rgba(0,0,0,0.9);
-            
-            opacity: 1;
-            
-            /* High-Speed flowing energy animation */
-            animation: 
-                cinematicReveal 1s cubic-bezier(0.16, 1, 0.3, 1) backwards,
-                hyperFluxFlow 2.5s infinite linear;
-            
-            transform-origin: right center;
+            border-radius: 12px;
+            padding: 4px; /* Thick Border */
+            background: var(--fog-solid);
+            box-shadow: 0 15px 50px rgba(255, 0, 60, 0.3), inset 0 0 20px rgba(0,0,0,1);
+            overflow: hidden;
         }
 
-        /* Staggered load & Theme Mapping */
-        #wrap-points { animation-delay: 0.1s, 0.1s; --theme-core: var(--blood-core); --theme-dark: var(--blood-dark); --theme-glow: var(--blood-glow); }
-        #wrap-cleared { animation-delay: 0.2s, 0.2s; --theme-core: var(--gold-core); --theme-dark: var(--gold-dark); --theme-glow: var(--gold-glow); }
-        #wrap-perks { animation-delay: 0.3s, 0.3s; --theme-core: var(--blood-core); --theme-dark: var(--blood-dark); --theme-glow: var(--blood-glow); }
-        #wrap-losses { animation-delay: 0.4s, 0.4s; --theme-core: #666; --theme-dark: #222; --theme-glow: rgba(255,255,255,0.2); }
-
-        @keyframes cinematicReveal {
-            0% { transform: scaleX(0); filter: brightness(3); opacity: 0; }
-            100% { transform: scaleX(1); filter: brightness(1); opacity: 1; }
+        .intro-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(transparent 20%, var(--blood-core) 60%, #ffffff 100%);
+            animation: spinBorder 2s linear infinite;
         }
 
-        /* The continuous shifting, pulsing border energy */
-        @keyframes hyperFluxFlow {
-            0% { background-position: 0% 50%; filter: drop-shadow(0 0 15px var(--theme-core)); }
-            50% { background-position: 100% 50%; filter: drop-shadow(0 0 35px var(--theme-core)); }
-            100% { background-position: 0% 50%; filter: drop-shadow(0 0 15px var(--theme-core)); }
-        }
-
-        /* Inner Glass Plate */
-        .monolith-block {
+        .intro-inner {
             position: relative;
-            background: linear-gradient(145deg, var(--bg-void) 0%, var(--bg-void-light) 100%);
-            clip-path: var(--clip-inner);
-            padding: 16px 30px; 
-            display: flex; flex-direction: column; justify-content: center; align-items: flex-end;
+            background: linear-gradient(135deg, var(--entity-void), var(--blood-dark));
+            border-radius: 8px; /* Smooth matching corners */
+            padding: 60px 30px;
+            display: flex; align-items: center; justify-content: center; text-align: center;
             z-index: 2;
-            overflow: hidden; 
-            /* Inner shadow to separate the black void from the bright energy border */
-            box-shadow: inset 0 0 40px rgba(0,0,0,1);
+            box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.9);
         }
 
-      
-        .monolith-block::before {
-            content: ''; position: absolute; inset: 0;
-            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px);
-            background-size: 100% 200%;
-            animation: scanlineRoll 10s linear infinite;
-            pointer-events: none; z-index: 1;
+        .intro-title {
+            font-family: var(--font-title); font-size: 3.5rem; font-weight: 900;
+            font-style: italic; line-height: 1.1; color: #fff;
+            text-transform: uppercase; 
+            text-shadow: 0 0 30px var(--blood-core);
+            animation: textCinematic 1.5s var(--ease-cinematic) forwards;
         }
-        @keyframes scanlineRoll { 0% { background-position: 0 0; } 100% { background-position: 0 100%; } }
+        .intro-title span { color: var(--blood-core); text-shadow: 0 0 40px var(--blood-core), 0 0 10px #fff; }
 
-        .monolith-block::after {
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transform: skewX(-25deg);
-            z-index: 2;
-            animation: glossSweep 5s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+        @keyframes textCinematic {
+            0% { opacity: 0; transform: translateZ(50px); letter-spacing: 20px; filter: blur(10px); }
+            100% { opacity: 1; transform: translateZ(0); letter-spacing: -1px; filter: blur(0px); }
         }
-        @keyframes glossSweep { 0% { left: -100%; } 15% { left: 200%; } 100% { left: 200%; } }
+        @keyframes spinBorder { 100% { transform: rotate(360deg); } }
 
-       
-        .stat-label {
-            font-family: var(--font-ui); font-size: 1.9rem; text-transform: uppercase; letter-spacing: 5px;
-            color: var(--ash-gray); margin-bottom: -15px; font-weight: 700; z-index: 4; position: relative;
-            text-shadow: 0 4px 6px rgba(0,0,0,1);
-        }
 
-        .stat-value {
-            font-family: var(--font-num); font-size: 6.2rem; line-height: 1.05; letter-spacing: 2px; 
-            z-index: 4; position: relative;
-            
-            /* The Unbreakable Legibility Core */
-            color: #ffffff;
-            -webkit-text-stroke: 3px #000000;
-            text-shadow: 
-                0 0 25px var(--theme-core), 
-                0 0 45px var(--theme-core), 
-                0 8px 0px #000000, 
-                0 15px 30px rgba(0,0,0,1);
-                
-            transform-origin: right center;
-        }
-
-        .stat-subtext {
-            font-family: var(--font-tech); font-size: 1.3rem; letter-spacing: 4px; font-weight: 700;
-            color: var(--gold-core); text-shadow: 0 3px 5px rgba(0,0,0,1); margin-top: -5px; z-index: 4; position: relative;
-            background: rgba(0,0,0,0.6); padding: 2px 10px; border-radius: 4px;
-        }
-
-        #wrap-losses .stat-value { color: #d0d0d0; -webkit-text-stroke: 3px #000; text-shadow: 0 8px 0px #000000, 0 15px 30px rgba(0,0,0,1); }
-
-  
-        .impact-shockwave {
-            animation: 
-                containerShock 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards,
-                hyperFluxFlow 2.5s infinite linear !important;
-        }
-        @keyframes containerShock {
-            0% { transform: scale(1); }
-            20% { transform: scale(1.12) translateX(-15px); box-shadow: -25px 0 60px var(--cyan-core), 25px 0 60px var(--blood-core); filter: brightness(2) contrast(1.2); }
-            40% { transform: scale(1.08) translateX(15px); box-shadow: 25px 0 60px var(--cyan-core), -25px 0 60px var(--blood-core); }
-            100% { transform: scale(1) translateX(0); box-shadow: 0 25px 45px rgba(0,0,0,0.9); filter: brightness(1) contrast(1); }
-        }
-
-        .cipher-flash {
-            animation: textDecipherSlam 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-        @keyframes textDecipherSlam {
-            0% { transform: scale(1); filter: brightness(1); }
-            20% { transform: scale(1.3) rotate(-4deg); color: #fff; -webkit-text-stroke: 5px var(--theme-core); text-shadow: 0 0 100px #fff; }
-            100% { transform: scale(1) rotate(0deg); color: #fff; -webkit-text-stroke: 3px #000; }
-        }
-
-     
-        #particle-layer { position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
+        /* =========================================
+           STATS HUD (Stable, Symmetrical, Addictive)
+           ========================================= */
         
-        .digital-ash {
-            position: absolute; 
-            background: var(--blood-core); 
-            width: 6px; height: 6px; /* Larger to be seen on small streams */
-            box-shadow: 0 0 15px var(--blood-core), 0 0 30px var(--gold-core);
-            animation: floatDigital linear infinite;
+        /* Clean Target Banner */
+        #target-banner {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            padding-bottom: 8px; border-bottom: 2px solid rgba(255, 0, 60, 0.4);
+            margin-bottom: 5px;
+        }
+        .target-name {
+            font-family: var(--font-label); font-size: 2.2rem; color: #fff;
+            text-transform: uppercase; letter-spacing: 3px; font-weight: 700;
+            text-shadow: 0 0 15px var(--blood-core);
+        }
+        .tier-badge {
+            font-family: var(--font-label); font-size: 1.6rem; color: var(--blood-core);
+            background: rgba(255, 0, 60, 0.1); padding: 2px 12px; border-radius: 4px;
+            border: 1px solid var(--blood-core); box-shadow: 0 0 10px rgba(255,0,60,0.3);
+            letter-spacing: 4px; font-weight: 700;
         }
 
-        @keyframes floatDigital {
-            0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
-            10% { opacity: 1; }
-            50% { transform: translateY(50vh) translateX(-30px) scale(1.8); opacity: 1; }
-            55% { transform: translateY(45vh) translateX(30px) scale(1.8) skewX(25deg); opacity: 0.4; }
-            60% { transform: translateY(40vh) translateX(-30px) scale(1.8); opacity: 1; }
-            100% { transform: translateY(-100px) translateX(-70px) scale(0); opacity: 0; }
+        /* --- STABLE STAT BLOCKS --- */
+        .stat-wrapper {
+            position: relative;
+            border-radius: 12px; 
+            background: var(--fog-solid);
+            padding: 3px; /* Smooth thick edge glow */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+            
+            /* Entry Animation (No scale, just slide & fade) */
+            opacity: 0;
+            animation: slideInStable 0.8s var(--ease-cinematic) forwards;
         }
+
+        #wrap-points  { animation-delay: 0.1s; --theme: var(--blood-core); --theme-dark: var(--blood-dark); }
+        #wrap-cleared { animation-delay: 0.2s; --theme: var(--auric-core); --theme-dark: var(--auric-dark); }
+        #wrap-perks   { animation-delay: 0.3s; --theme: var(--void-core); --theme-dark: var(--void-dark); }
+        #wrap-losses  { animation-delay: 0.4s; --theme: var(--ash-core); --theme-dark: var(--ash-dark); }
+
+        @keyframes slideInStable {
+            0% { opacity: 0; transform: translateX(30px); filter: blur(10px); }
+            100% { opacity: 1; transform: translateX(0); filter: blur(0px); }
+        }
+
+        /* Smooth Edge Glowing Border using Masks (Perfect Symmetry) */
+        .edge-glow {
+            position: absolute; inset: 0; border-radius: 12px;
+            background: var(--fog-solid);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor; mask-composite: exclude;
+            pointer-events: none; z-index: 3; padding: 2px;
+        }
+        .edge-glow::before {
+            content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(transparent 30%, var(--theme) 70%, #fff 100%);
+            animation: borderRun 3.5s linear infinite;
+        }
+        @keyframes borderRun { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Inner Block */
+        .stat-block {
+            position: relative;
+            background: linear-gradient(145deg, var(--fog-glass) 0%, var(--entity-void) 100%);
+            border-radius: 9px; /* Fits perfectly inside the 12px outer with 3px padding */
+            padding: 10px 24px; 
+            display: flex; flex-direction: column; justify-content: center;
+            z-index: 2; overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Glass highlight sweep */
+        .stat-block::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            transform: skewX(-20deg);
+            animation: glassSweep 6s infinite;
+            pointer-events: none;
+        }
+        @keyframes glassSweep { 0%, 50% { left: -100%; } 100% { left: 200%; } }
+
+        /* Typography */
+        .stat-label {
+            font-family: var(--font-label); font-size: 1.8rem; text-transform: uppercase;
+            letter-spacing: 3px; font-weight: 700; color: #d0d0e0;
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-bottom: -15px; z-index: 4; position: relative;
+        }
+
+        /* High Visibility AAA Numbers */
+        .stat-value {
+            font-family: var(--font-value); font-size: 6rem; line-height: 1.1; letter-spacing: 1px; 
+            color: #ffffff; 
+            -webkit-text-stroke: 2px #000;
+            text-shadow: 0 0 20px var(--theme), 0 5px 15px rgba(0,0,0,0.8);
+            z-index: 4; position: relative;
+            transform-origin: left bottom;
+        }
+
+        /* Subtext (Roster info) */
+        .stat-subtext {
+            font-family: var(--font-label); font-size: 1.4rem; letter-spacing: 4px; font-weight: 700;
+            color: var(--theme); z-index: 4; position: relative; margin-top: -8px;
+            display: inline-block; text-shadow: 0 2px 4px rgba(0,0,0,1);
+        }
+
+        /* --- STABLE UPDATE ANIMATIONS --- */
+        /* Changes inner glow only, doesn't bounce the layout */
+        .update-flash { animation: innerFlash 0.7s var(--ease-snappy) forwards; }
+        @keyframes innerFlash {
+            0% { background: var(--entity-void); }
+            15% { background: var(--theme-dark); box-shadow: inset 0 0 50px var(--theme); }
+            100% { background: linear-gradient(145deg, var(--fog-glass) 0%, var(--entity-void) 100%); box-shadow: none; }
+        }
+
+        .text-glitch { animation: valueGlitch 0.7s var(--ease-snappy) forwards; }
+        @keyframes valueGlitch {
+            0% { transform: skew(0deg); text-shadow: 0 0 20px var(--theme); filter: brightness(1); }
+            15% { transform: skew(-8deg); text-shadow: -4px 0 #00ffff, 4px 0 #ff003c, 0 0 30px #fff; filter: brightness(1.5); }
+            30% { transform: skew(4deg); text-shadow: 4px 0 #00ffff, -4px 0 #ff003c; }
+            100% { transform: skew(0deg); text-shadow: 0 0 20px var(--theme); filter: brightness(1); }
+        }
+
+
+        /* =========================================
+           AAA TICKER SYSTEM (Bottom Addictive Crawl)
+           ========================================= */
+        .ticker-wrapper {
+            width: 100%; height: 32px;
+            background: var(--fog-solid);
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex; align-items: center;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.8);
+            border: 1px solid rgba(255, 0, 60, 0.2);
+            margin-top: 5px;
+        }
+
+        /* Ticker side fades */
+        .ticker-wrapper::before, .ticker-wrapper::after {
+            content: ''; position: absolute; top: 0; width: 40px; height: 100%; z-index: 5;
+        }
+        .ticker-wrapper::before { left: 0; background: linear-gradient(90deg, var(--fog-solid), transparent); }
+        .ticker-wrapper::after { right: 0; background: linear-gradient(-90deg, var(--fog-solid), transparent); }
+
+        .ticker-content {
+            display: flex; white-space: nowrap;
+            font-family: var(--font-label); font-size: 1.3rem; letter-spacing: 3px; font-weight: 500;
+            color: var(--ash-core);
+            animation: tickerScroll 20s linear infinite;
+        }
+        .ticker-content span { padding: 0 20px; }
+        .ticker-content span strong { color: var(--blood-core); font-weight: 700; }
+
+        @keyframes tickerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
     </style>
 </head>
 <body>
 
-    <!-- Background Particle System -->
-    <div id="particle-layer"></div>
+    <div class="ambient-fog"></div>
 
-    <div id="overlay-container">
-        
-        <!-- Top Protocol Banner -->
-        <div class="protocol-banner">
-            <div class="protocol-label" id="tier-display">SYS_INIT</div>
-            <div class="protocol-sub" id="mode-display">AWAITING CONNECTION</div>
-        </div>
+    <div id="perspective-wrapper">
+        <div id="main-container">
+            
+            <!-- AAA INTRO SCREEN -->
+            <div id="intro-screen" class="screen-state state-active">
+                <div class="intro-card">
+                    <div class="intro-inner">
+                        <div class="intro-title">Entity's<br><span>Descent</span></div>
+                    </div>
+                </div>
+            </div>
 
-        <!-- 1. Total Points -->
-        <div class="monolith-wrapper" id="wrap-points">
-            <div class="monolith-block">
-                <div class="stat-label">Bloodpoints Extracted</div>
-                <div class="stat-value" id="val-points" data-val="0">0</div>
+            <!-- AAA STATS HUD -->
+            <div id="stats-screen" class="screen-state state-hidden">
+                
+                <!-- Streamer & Tier Target -->
+                <div id="target-banner">
+                    <div class="target-name" id="streamer-name">CONNECTING...</div>
+                    <div class="tier-badge" id="tier-display">TIER 0</div>
+                </div>
+
+                <!-- 1. Points -->
+                <div class="stat-wrapper" id="wrap-points">
+                    <div class="edge-glow"></div>
+                    <div class="stat-block" id="block-points">
+                        <div class="stat-label">Bloodpoints Extracted</div>
+                        <div class="stat-value" id="val-points">0</div>
+                    </div>
+                </div>
+
+                <!-- 2. Cleansed -->
+                <div class="stat-wrapper" id="wrap-cleared">
+                    <div class="edge-glow"></div>
+                    <div class="stat-block" id="block-cleared">
+                        <div class="stat-label">Killers Cleansed</div>
+                        <div class="stat-value" id="val-cleared">0</div>
+                        <div class="stat-subtext" id="sub-cleared">ROSTER: SCANNING...</div>
+                    </div>
+                </div>
+
+                <!-- 3. Sacrificed -->
+                <div class="stat-wrapper" id="wrap-perks">
+                    <div class="edge-glow"></div>
+                    <div class="stat-block" id="block-perks">
+                        <div class="stat-label">Perks Shattered</div>
+                        <div class="stat-value" id="val-perks">0</div>
+                    </div>
+                </div>
+
+                <!-- 4. Losses -->
+                <div class="stat-wrapper" id="wrap-losses">
+                    <div class="edge-glow"></div>
+                    <div class="stat-block" id="block-losses">
+                        <div class="stat-label">Total Defeats</div>
+                        <div class="stat-value" id="val-losses">0</div>
+                    </div>
+                </div>
+
+                <!-- AAA TICKER -->
+                <div class="ticker-wrapper">
+                    <div class="ticker-content">
+                        <!-- Duplicated for seamless scrolling -->
+                        <span><strong>DEATH IS NOT AN ESCAPE</strong> // THE ENTITY HUNGERS // <strong>SURVIVE OR BE SACRIFICED</strong> // NO ONE ESCAPES DEATH // <strong>BLOOD FOR THE BLOOD WEB</strong> //</span>
+                        <span><strong>DEATH IS NOT AN ESCAPE</strong> // THE ENTITY HUNGERS // <strong>SURVIVE OR BE SACRIFICED</strong> // NO ONE ESCAPES DEATH // <strong>BLOOD FOR THE BLOOD WEB</strong> //</span>
+                    </div>
+                </div>
+
             </div>
         </div>
-
-        <!-- 2. Killers Cleared -->
-        <div class="monolith-wrapper" id="wrap-cleared">
-            <div class="monolith-block">
-                <div class="stat-label">Killers Cleansed</div>
-                <div class="stat-value" id="val-cleared" data-val="0">0</div>
-                <div class="stat-subtext" id="sub-cleared">ROSTER: SCANNING...</div>
-            </div>
-        </div>
-
-        <!-- 3. Perks Sacrificed -->
-        <div class="monolith-wrapper" id="wrap-perks">
-            <div class="monolith-block">
-                <div class="stat-label">Perks Shattered</div>
-                <div class="stat-value" id="val-perks" data-val="0">0</div>
-            </div>
-        </div>
-
-        <!-- 4. Total Losses -->
-        <div class="monolith-wrapper" id="wrap-losses">
-            <div class="monolith-block">
-                <div class="stat-label">Total Defeats</div>
-                <div class="stat-value" id="val-losses" data-val="0">0</div>
-            </div>
-        </div>
-
     </div>
-
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
 
         const firebaseConfig = {
             apiKey: "AIzaSyBMAxj2E3snmnOcQXIylkIIS1cTnuu0hlY",
@@ -314,84 +381,102 @@
         const urlParams = new URLSearchParams(window.location.search);
         const streamerUsername = urlParams.get('user');
         
-        const modeDisplay = document.getElementById('mode-display');
+        const streamerNameDisplay = document.getElementById('streamer-name');
         const tierDisplay = document.getElementById('tier-display');
 
-    
-        function spawnDigitalAsh() {
-            const layer = document.getElementById('particle-layer');
-            setInterval(() => {
-                const ash = document.createElement('div');
-                ash.classList.add('digital-ash');
-                
-                // Spawn randomly on the right side
-                ash.style.right = `${Math.random() * 450 - 50}px`;
-                ash.style.animationDuration = `${Math.random() * 3 + 2.5}s`;
-                
-                layer.appendChild(ash);
-                setTimeout(() => ash.remove(), 6000);
-            }, 180); 
-        }
-        spawnDigitalAsh();
+        // ==== ADVANCED LOOPING LOGIC CONTROLLER ====
+        const introScreen = document.getElementById('intro-screen');
+        const statsScreen = document.getElementById('stats-screen');
+        
+        function runOverlayLoop() {
+            // Reset intro animation by cloning
+            const oldIntro = introScreen.querySelector('.intro-card');
+            const newIntro = oldIntro.cloneNode(true);
+            oldIntro.parentNode.replaceChild(newIntro, oldIntro);
 
-        if (!streamerUsername) {
-            tierDisplay.innerText = "ERROR_404";
-            modeDisplay.innerText = "NO TARGET ASSIGNED";
-            document.querySelector('.protocol-banner').classList.add('hardcore-pulse');
-        } else {
-            
-          
-            function hyperDecipherRoll(obj, start, end, duration) {
-                let startTimestamp = null;
-                const cyberChars = "01X%#8Z"; 
+            introScreen.classList.remove('state-hidden');
+            introScreen.classList.add('state-active');
+            statsScreen.classList.remove('state-active');
+            statsScreen.classList.add('state-hidden');
+
+            setTimeout(() => {
+                introScreen.classList.remove('state-active');
+                introScreen.classList.add('state-hidden');
                 
+                // Reset slide-in animations for the stable blocks
+                const statWrappers = statsScreen.querySelectorAll('.stat-wrapper');
+                statWrappers.forEach(wrap => {
+                    wrap.style.animation = 'none';
+                    void wrap.offsetWidth; 
+                    wrap.style.animation = null;
+                });
+
+                statsScreen.classList.remove('state-hidden');
+                statsScreen.classList.add('state-active');
+
+                // Loop restarts after 15 seconds
+                setTimeout(runOverlayLoop, 15000); 
+
+            }, 4000); 
+        }
+        
+        runOverlayLoop();
+
+        // ==== FIREBASE DATA & STABLE ANIMATIONS ====
+        if (!streamerUsername) {
+            streamerNameDisplay.innerText = "NO TARGET";
+            streamerNameDisplay.style.color = "var(--blood-core)";
+        } else {
+            streamerNameDisplay.innerText = streamerUsername.toUpperCase();
+            
+            // Motion-blurred number rolling
+            function easeOutExpo(x) { return x === 1 ? 1 : 1 - Math.pow(2, -10 * x); }
+
+            function slotMachineRoll(obj, start, end, duration) {
+                let startTimestamp = null;
                 const step = (timestamp) => {
                     if (!startTimestamp) startTimestamp = timestamp;
                     const progress = Math.min((timestamp - startTimestamp) / duration, 1);
                     
-                    if (progress < 0.6) {
-                        let randomStr = "";
-                        const len = end.toString().length;
-                        for(let i = 0; i < len; i++) {
-                            randomStr += cyberChars[Math.floor(Math.random() * cyberChars.length)];
-                        }
-                        obj.innerText = randomStr;
+                    const easedProgress = easeOutExpo(progress);
+                    const current = Math.floor(start + (end - start) * easedProgress);
+                    
+                    if (progress < 0.8) {
+                        obj.style.filter = `blur(2px)`;
                     } else {
-                        const easeOut = 1 - Math.pow(1 - ((progress - 0.6) * 2.5), 4);
-                        const current = Math.floor(start + (end - start) * easeOut);
-                        obj.innerText = current.toLocaleString();
+                        obj.style.filter = 'none'; 
                     }
+
+                    obj.innerText = current.toLocaleString();
                     
                     if (progress < 1) {
                         window.requestAnimationFrame(step);
                     } else {
                         obj.innerText = end.toLocaleString();
-                        obj.setAttribute('data-val', end);
+                        obj.style.filter = 'none'; 
                     }
                 };
                 window.requestAnimationFrame(step);
             }
 
-        
             const previousState = { points: null, cleared: null, perks: null, losses: null };
 
-            function triggerPremiumImpact(elementId, wrapId, newValue, stateKey) {
+            // Triggers internal flash without altering layout geometry
+            function triggerStableUpdate(elementId, blockId, newValue, stateKey) {
                 const el = document.getElementById(elementId);
-                const wrap = document.getElementById(wrapId);
+                const block = document.getElementById(blockId);
                 
                 if (previousState[stateKey] !== newValue) {
                     const oldValue = previousState[stateKey] === null ? 0 : previousState[stateKey];
                     
-                    // Reset Animations instantly via DOM reflow
-                    el.classList.remove('cipher-flash');
-                    wrap.classList.remove('impact-shockwave');
-                    void wrap.offsetWidth; 
+                    el.classList.remove('text-glitch');
+                    block.classList.remove('update-flash');
+                    void block.offsetWidth; 
                     
-                    // Fire the violent shockwave and bright text slam
-                    wrap.classList.add('impact-shockwave');
-                    el.classList.add('cipher-flash');
+                    block.classList.add('update-flash');
+                    el.classList.add('text-glitch');
                     
-                    hyperDecipherRoll(el, oldValue, newValue, 700);
+                    slotMachineRoll(el, oldValue, newValue, 1000); 
                     
                     previousState[stateKey] = newValue;
                 }
@@ -401,34 +486,22 @@
             
             onSnapshot(userRef, (docSnap) => {
                 if (docSnap.exists()) {
-                    
                     const data = docSnap.data();
                     
                     const points = data.points || 0;
                     const currentTier = data.currentTier || 0;
                     const completedArray = data.completed_killers || [];
                     const currentCleansed = completedArray.length;
-                    
                     const totalCleansed = (currentTier * 44) + currentCleansed;
                     
                     const stats = data.stats || {};
                     const sacrificed = stats.sacrificed || 0;
                     const losses = stats.losses || 0;
-                    const mode = data.mode || 'normal';
 
-                    // Update Top Banner
                     tierDisplay.innerText = `TIER ${currentTier}`;
-                    if (mode === 'hardcore') {
-                        modeDisplay.innerText = "HARDCORE PROTOCOL ACTIVE";
-                        document.querySelector('.protocol-banner').classList.add('hardcore-pulse');
-                    } else {
-                        modeDisplay.innerText = "NORMAL PROTOCOL ACTIVE";
-                        document.querySelector('.protocol-banner').classList.remove('hardcore-pulse');
-                    }
-
                     document.getElementById('sub-cleared').innerText = `${currentCleansed} / 44 (TIER ${currentTier})`;
 
-                    // ---> Initial Load Bypass <---
+                    // First load vs Updates
                     if (previousState.points === null) {
                         document.getElementById('val-points').innerText = points.toLocaleString();
                         document.getElementById('val-cleared').innerText = totalCleansed.toLocaleString();
@@ -440,19 +513,18 @@
                         previousState.perks = sacrificed;
                         previousState.losses = losses;
                     } else {
-                        triggerPremiumImpact('val-points', 'wrap-points', points, 'points');
-                        triggerPremiumImpact('val-cleared', 'wrap-cleared', totalCleansed, 'cleared');
-                        triggerPremiumImpact('val-perks', 'wrap-perks', sacrificed, 'perks');
-                        triggerPremiumImpact('val-losses', 'wrap-losses', losses, 'losses');
+                        triggerStableUpdate('val-points', 'block-points', points, 'points');
+                        triggerStableUpdate('val-cleared', 'block-cleared', totalCleansed, 'cleared');
+                        triggerStableUpdate('val-perks', 'block-perks', sacrificed, 'perks');
+                        triggerStableUpdate('val-losses', 'block-losses', losses, 'losses');
                     }
 
                 } else {
-                    modeDisplay.innerText = "AWAITING TARGET DATA...";
+                    streamerNameDisplay.innerText = "AWAITING DATA...";
                 }
             }, (error) => {
-                tierDisplay.innerText = "ERROR_503";
-                modeDisplay.innerText = "UPLINK SEVERED";
-                document.querySelector('.protocol-banner').classList.add('hardcore-pulse');
+                streamerNameDisplay.innerText = "UPLINK SEVERED";
+                streamerNameDisplay.style.color = "var(--blood-core)";
             });
         }
     </script>

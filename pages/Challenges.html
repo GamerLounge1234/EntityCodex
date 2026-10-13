@@ -2231,6 +2231,277 @@
                 display: none;
             }
         }
+        /* ==========================================================================
+           ENTITY BROADCAST UPLINK (STREAM OVERLAY CONSOLE)
+           ========================================================================== */
+        .uplink-console {
+            max-width: 680px;
+            width: 95%;
+            margin: 1.5rem auto 0 auto;
+            background: linear-gradient(145deg, rgba(18, 4, 6, 0.92) 0%, rgba(6, 6, 10, 0.96) 100%);
+            border: 1px solid rgba(211, 47, 47, 0.45);
+            border-left: 4px solid var(--arterial-spray);
+            border-radius: 6px 12px 12px 6px;
+            padding: 1.25rem 1.5rem;
+            position: relative;
+            z-index: 100;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.85), inset 0 0 25px rgba(211, 47, 47, 0.08);
+            backdrop-filter: blur(12px);
+            text-align: left;
+            transition: var(--transition-smooth);
+            overflow: hidden;
+        }
+
+        .uplink-console::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--arterial-spray), var(--gold-ascension), transparent);
+            animation: uplinkScanline 4s linear infinite;
+        }
+
+        @keyframes uplinkScanline {
+            0% { left: -50%; }
+            100% { left: 150%; }
+        }
+
+        .uplink-console:hover {
+            border-color: var(--arterial-spray);
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.9), 0 0 25px rgba(211, 47, 47, 0.25);
+        }
+
+        .uplink-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .uplink-title-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .uplink-beacon {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #00ff66;
+            box-shadow: 0 0 10px #00ff66, 0 0 20px #00ff66;
+            animation: beaconPulse 1.5s infinite ease-in-out;
+        }
+
+        .uplink-console.unauthenticated .uplink-beacon {
+            background: var(--entity-orange);
+            box-shadow: 0 0 10px var(--entity-orange);
+        }
+
+        @keyframes beaconPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(0.75); opacity: 0.4; }
+        }
+
+        .uplink-title {
+            font-family: var(--font-ui);
+            font-size: 1.25rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--bone-white);
+            margin: 0;
+        }
+
+        .uplink-title span {
+            color: var(--arterial-spray);
+        }
+
+        .uplink-badges {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .uplink-badge {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--muted-bone);
+        }
+
+        .uplink-badge.user-tag {
+            color: var(--gold-ascension);
+            border-color: rgba(229, 184, 36, 0.4);
+            background: rgba(229, 184, 36, 0.1);
+        }
+
+        .uplink-url-bar {
+            display: flex;
+            align-items: stretch;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.75);
+            border: 1px solid #331515;
+            border-radius: 6px;
+            padding: 6px;
+            position: relative;
+            transition: border-color 0.3s ease;
+        }
+
+        .uplink-url-bar:focus-within {
+            border-color: var(--arterial-spray);
+            box-shadow: 0 0 15px rgba(255, 5, 5, 0.25);
+        }
+
+        .uplink-url-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #e0e0e8;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            padding: 8px 10px;
+            outline: none;
+            width: 100%;
+            cursor: text;
+            transition: filter 0.3s ease;
+        }
+
+        .uplink-url-input.stealth-blur {
+            filter: blur(5px);
+            user-select: none;
+        }
+
+        .uplink-url-input.stealth-blur:hover,
+        .uplink-url-input.stealth-blur:focus {
+            filter: blur(0px);
+        }
+
+        .uplink-btn-group {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .uplink-action-btn {
+            background: linear-gradient(135deg, var(--dried-blood), #1a0000);
+            color: var(--bone-white);
+            border: 1px solid var(--entity-red);
+            padding: 0 16px;
+            font-family: var(--font-ui);
+            font-size: 1.05rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.25s var(--smooth-curve);
+            white-space: nowrap;
+        }
+
+        .uplink-action-btn:hover {
+            background: var(--arterial-spray);
+            border-color: #fff;
+            box-shadow: 0 0 15px rgba(255, 5, 5, 0.6);
+            transform: translateY(-1px);
+        }
+
+        .uplink-action-btn.copied {
+            background: linear-gradient(135deg, #0d3b1e, #00ff66);
+            color: #000;
+            border-color: #fff;
+            font-weight: 900;
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.7);
+        }
+
+        .uplink-icon-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--muted-bone);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 0 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: var(--font-ui);
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .uplink-icon-btn:hover {
+            color: #fff;
+            border-color: var(--gold-ascension);
+            background: rgba(229, 184, 36, 0.15);
+        }
+
+        .uplink-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: var(--font-tracker);
+        }
+
+        .uplink-override-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .uplink-override-input {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px dashed rgba(211, 47, 47, 0.5);
+            color: var(--gold-ascension);
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            padding: 3px 8px;
+            border-radius: 3px;
+            width: 145px;
+            outline: none;
+            cursor: text;
+        }
+
+        .uplink-override-input:focus {
+            border-style: solid;
+            border-color: var(--gold-ascension);
+        }
+
+        @media (max-width: 650px) {
+            .uplink-url-bar {
+                flex-direction: column;
+            }
+            .uplink-btn-group {
+                width: 100%;
+            }
+            .uplink-action-btn {
+                flex: 1;
+                padding: 10px;
+            }
+            .uplink-icon-btn {
+                padding: 10px 14px;
+            }
+        }
     </style>
 </head>
 
@@ -2272,6 +2543,7 @@
          ========================================================================== -->
     <section id="killer-campaign" style="display: none;">
         <div class="descent-hero">
+            
             <h1 class="glitch-text" data-text="THE ENTITY'S DESCENT">THE ENTITY'S DESCENT</h1>
             <h2
                 style="color: #ccc; letter-spacing: 4px; font-size: 1.5rem; margin-bottom: 2rem; text-transform: uppercase;">
@@ -2281,6 +2553,44 @@
             <p style="margin-top: 1rem; color: #888; font-family: var(--font-journal);">Time to finish: 15–25 Hours
                 (Over 30 Hours if you dare to try the hardest modes)</p>
             <button class="open-tracker-btn" onclick="openKillerTracker()">Access Personal Tracker</button>
+            <!-- KILLER STREAM OVERLAY UPLINK -->
+            <div class="uplink-console" id="uplink-console-descent">
+                <div class="uplink-header">
+                    <div class="uplink-title-group">
+                        <span class="uplink-beacon"></span>
+                        <h4 class="uplink-title">Entity <span>Broadcast Uplink</span> // Descent Overlay</h4>
+                    </div>
+                    <div class="uplink-badges">
+                        <span class="uplink-badge">OBS Browser Source</span>
+                        <span class="uplink-badge user-tag" id="uplink-user-badge-descent">SYNCING...</span>
+                    </div>
+                </div>
+
+                <div class="uplink-url-bar">
+                    <input type="text" class="uplink-url-input" id="uplink-url-descent" readonly
+                        value="https://www.entitycodex.com/pages/descent-overlay.html?user=..." />
+                    <div class="uplink-btn-group">
+                        <button type="button" class="uplink-icon-btn" onclick="OverlayUplink.toggleBlur('descent')" title="Toggle Streamer Privacy Blur">
+                            👁️
+                        </button>
+                        <a href="#" target="_blank" rel="noopener" class="uplink-icon-btn" id="uplink-test-descent" title="Launch Overlay in New Tab">
+                            ↗ TEST
+                        </a>
+                        <button type="button" class="uplink-action-btn" id="uplink-copy-descent" onclick="OverlayUplink.copy('descent')">
+                            COPY UPLINK
+                        </button>
+                    </div>
+                </div>
+
+                <div class="uplink-footer">
+                    <span id="uplink-status-descent">Paste into OBS Browser Source (Recommended: 1920x1080)</span>
+                    <div class="uplink-override-box">
+                        <label for="uplink-override-descent">Target User:</label>
+                        <input type="text" class="uplink-override-input" id="uplink-override-descent"
+                            placeholder="Auto (Logged In)" oninput="OverlayUplink.manualOverride(this.value)" />
+                    </div>
+                </div>
+            </div>
             <p
                 style="color: #eee; font-size: 1.1rem; max-width: 800px; margin: 1rem auto; line-height: 1.6; font-family: var(--font-journal);">
                 Welcome to the fog! This is a massive, long-form challenge where every single choice matters. Your
@@ -2647,6 +2957,44 @@
                 style="color: var(--text-muted); letter-spacing: 4px; font-size: 1.1rem; text-transform: uppercase; text-shadow: 0 0 10px rgba(0,0,0,0.8);">
                 A 30-Hour Test of Greed, Survival, and Chance</p>
             <button class="open-tracker-btn" onclick="openSurvivorTracker()">Access Personal Tracker</button>
+            <!-- SURVIVOR STREAM OVERLAY UPLINK -->
+            <div class="uplink-console" id="uplink-console-roulette">
+                <div class="uplink-header">
+                    <div class="uplink-title-group">
+                        <span class="uplink-beacon"></span>
+                        <h4 class="uplink-title">Entity <span>Broadcast Uplink</span> // Roulette Overlay</h4>
+                    </div>
+                    <div class="uplink-badges">
+                        <span class="uplink-badge">OBS Browser Source</span>
+                        <span class="uplink-badge user-tag" id="uplink-user-badge-roulette">SYNCING...</span>
+                    </div>
+                </div>
+
+                <div class="uplink-url-bar">
+                    <input type="text" class="uplink-url-input" id="uplink-url-roulette" readonly
+                        value="https://www.entitycodex.com/pages/roulette-overlay.html?user=..." />
+                    <div class="uplink-btn-group">
+                        <button type="button" class="uplink-icon-btn" onclick="OverlayUplink.toggleBlur('roulette')" title="Toggle Streamer Privacy Blur">
+                            👁️
+                        </button>
+                        <a href="#" target="_blank" rel="noopener" class="uplink-icon-btn" id="uplink-test-roulette" title="Launch Overlay in New Tab">
+                            ↗ TEST
+                        </a>
+                        <button type="button" class="uplink-action-btn" id="uplink-copy-roulette" onclick="OverlayUplink.copy('roulette')">
+                            COPY UPLINK
+                        </button>
+                    </div>
+                </div>
+
+                <div class="uplink-footer">
+                    <span id="uplink-status-roulette">Paste into OBS Browser Source (Recommended: 1920x1080)</span>
+                    <div class="uplink-override-box">
+                        <label for="uplink-override-roulette">Target User:</label>
+                        <input type="text" class="uplink-override-input" id="uplink-override-roulette"
+                            placeholder="Auto (Logged In)" oninput="OverlayUplink.manualOverride(this.value)" />
+                    </div>
+                </div>
+            </div>
         </header>
 
         <section class="rules-wrapper">
@@ -4336,6 +4684,154 @@ const RouletteLeaderboard = {
         window.RouletteUI = RouletteUI;
 
         RouletteState.load();
+        /* ==========================================================================
+           ENTITY BROADCAST UPLINK ENGINE (DYNAMIC OVERLAY URL GENERATOR)
+           ========================================================================== */
+        const OverlayUplink = {
+            baseUrls: {
+                descent: 'https://www.entitycodex.com/pages/descent-overlay.html?user=',
+                roulette: 'https://www.entitycodex.com/pages/roulette-overlay.html?user='
+            },
+            customUserOverride: '',
+            scrambleChars: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*@!?/\\',
+            scrambleTimers: {},
+
+            // Detects logged-in user from localStorage or session DOM
+            resolveActiveUser() {
+                if (this.customUserOverride && this.customUserOverride.trim() !== '') {
+                    return { username: this.customUserOverride.trim(), isAuth: true, isOverride: true };
+                }
+
+                const storedUser = localStorage.getItem('currentUser');
+                if (storedUser && storedUser.trim() !== '' && storedUser !== 'Unknown_Victim' && storedUser !== 'null') {
+                    return { username: storedUser.trim(), isAuth: true, isOverride: false };
+                }
+
+                return { username: 'Unknown_Victim', isAuth: false, isOverride: false };
+            },
+
+            // Cyberpunk decryption text effect when locking onto a username
+            decryptText(inputElement, finalUrl, key) {
+                if (!inputElement) return;
+                clearInterval(this.scrambleTimers[key]);
+
+                let iteration = 0;
+                const basePrefix = this.baseUrls[key];
+                const targetQuery = finalUrl.replace(basePrefix, '');
+
+                this.scrambleTimers[key] = setInterval(() => {
+                    const scrambled = targetQuery
+                        .split('')
+                        .map((char, index) => {
+                            if (index < iteration) return targetQuery[index];
+                            return this.scrambleChars[Math.floor(Math.random() * this.scrambleChars.length)];
+                        })
+                        .join('');
+
+                    inputElement.value = basePrefix + scrambled;
+
+                    if (iteration >= targetQuery.length) {
+                        clearInterval(this.scrambleTimers[key]);
+                        inputElement.value = finalUrl;
+                    }
+                    iteration += 1 / 2;
+                }, 25);
+            },
+
+            // Syncs both Descent and Roulette overlay consoles
+            syncAll(animate = true) {
+                const { username, isAuth, isOverride } = this.resolveActiveUser();
+                const encodedUser = encodeURIComponent(username);
+
+                ['descent', 'roulette'].forEach(mode => {
+                    const consoleEl = document.getElementById(`uplink-console-${mode}`);
+                    const inputEl = document.getElementById(`uplink-url-${mode}`);
+                    const badgeEl = document.getElementById(`uplink-user-badge-${mode}`);
+                    const testBtn = document.getElementById(`uplink-test-${mode}`);
+                    const statusEl = document.getElementById(`uplink-status-${mode}`);
+
+                    if (!consoleEl || !inputEl) return;
+
+                    const fullUrl = `${this.baseUrls[mode]}${encodedUser}`;
+
+                    if (animate) {
+                        this.decryptText(inputEl, fullUrl, mode);
+                    } else {
+                        inputEl.value = fullUrl;
+                    }
+
+                    if (testBtn) testBtn.href = fullUrl;
+
+                    if (isAuth) {
+                        consoleEl.classList.remove('unauthenticated');
+                        badgeEl.textContent = isOverride ? `OVERRIDE: ${username}` : `LOCKED: ${username}`;
+                        statusEl.innerHTML = `Signal locked for <strong style="color:#fff;">${username}</strong> // Ready for OBS Browser Source`;
+                    } else {
+                        consoleEl.classList.add('unauthenticated');
+                        badgeEl.textContent = 'UNAUTHENTICATED';
+                        statusEl.innerHTML = `<span style="color:var(--entity-orange);">⚠️ Not logged in — Log in or type your username in Target User to personalize!</span>`;
+                    }
+                });
+            },
+
+            // Allows typing any username (e.g., kashdeckem or itswhitesugar) on the fly
+            manualOverride(val) {
+                this.customUserOverride = val;
+                const descentOverride = document.getElementById('uplink-override-descent');
+                const rouletteOverride = document.getElementById('uplink-override-roulette');
+                if (descentOverride && descentOverride.value !== val) descentOverride.value = val;
+                if (rouletteOverride && rouletteOverride.value !== val) rouletteOverride.value = val;
+                this.syncAll(false);
+            },
+
+            // One-click clipboard copy with visual feedback
+            async copy(mode) {
+                const inputEl = document.getElementById(`uplink-url-${mode}`);
+                const copyBtn = document.getElementById(`uplink-copy-${mode}`);
+                if (!inputEl || !copyBtn) return;
+
+                try {
+                    await navigator.clipboard.writeText(inputEl.value);
+                } catch (err) {
+                    inputEl.select();
+                    document.execCommand('copy');
+                }
+
+                const originalText = 'COPY UPLINK';
+                copyBtn.classList.add('copied');
+                copyBtn.textContent = '✔ LINK COPIED';
+
+                setTimeout(() => {
+                    copyBtn.classList.remove('copied');
+                    copyBtn.textContent = originalText;
+                }, 2200);
+            },
+
+            // Streamer privacy blur toggle
+            toggleBlur(mode) {
+                const inputEl = document.getElementById(`uplink-url-${mode}`);
+                if (inputEl) inputEl.classList.toggle('stealth-blur');
+            },
+
+            init() {
+                this.syncAll(true);
+
+                // Listen for login changes across tabs
+                window.addEventListener('storage', (e) => {
+                    if (e.key === 'currentUser') this.syncAll(true);
+                });
+
+                // Observe #authContainer in case ../assets/js/session.js updates auth state after load
+                const authContainer = document.getElementById('authContainer');
+                if (authContainer) {
+                    const observer = new MutationObserver(() => this.syncAll(true));
+                    observer.observe(authContainer, { childList: true, subtree: true });
+                }
+            }
+        };
+
+        window.OverlayUplink = OverlayUplink;
+        window.addEventListener('DOMContentLoaded', () => OverlayUplink.init());
     </script>
     <script src="../assets/js/session.js"></script>
 </body>
